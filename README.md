@@ -1,1 +1,3 @@
 # coho_CWT_analysis
+
+The Fishery Regulation Assessment Model [FRAM](https://framverse.github.io/fram_doc/) is used by the Pacific Salmon Commission to estimate impacts of fisheries on Coho stocks and to evaluate bilateral management objectives. Improvement, validation, and updating of this model are high priority activities needed to ensure accurate estimates of fishery impacts for stocks ranging from Alaska to California. This repository contains work associated with a PSC Southern Endowment Fund project assessing coded wire tag (CWT) data used in Coho FRAM and the Mixed Stock Model (MSM) that generates stock specific exploitation rates.
