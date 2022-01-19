@@ -1,0 +1,181 @@
+---
+title: "Coho CWT FRAM & MSM Analysis"
+author: "Dan.Auerbach@dfw.wa.gov, Angelika.Hagen-Breaux@dfw.wa.gov, carrie_cook-tabor@fws.gov"
+date: "`r Sys.Date()`"
+editor_options: 
+  chunk_output_type: console
+output: 
+  bookdown::html_document2:
+    fig_caption: yes
+    theme: cerulean
+    toc: yes
+    toc_depth: 3
+    toc_float: yes
+    code_folding: hide
+---
+
+```{r setup, results = FALSE, warning = FALSE, message = FALSE}
+knitr::opts_chunk$set(echo = TRUE, results = FALSE, warning = FALSE, message = FALSE, fig.width = 9, fig.height = 9)
+
+library("tidyverse")
+library("gt")
+library("odbc"); library("DBI")
+#library("ggridges")
+
+fp <- list(
+  db_msm = "T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Projects/Coho FRAM MSM CWT analysis/MSMDB/MSM_98-2020- SF2019.mdb"
+  # data_fram = "data/postseason_fram_spwn_hvst_ests.csv",
+  # data_cwt = "data/rmis_cwts.csv",
+  )
+
+```
+
+# Summary
+
+# Data
+
+```{r read_in_rmis_recoveries, eval=FALSE}
+dir_rmis_recs <- "T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Projects/Coho FRAM MSM CWT analysis/ERAnalysis/RMISRecoveries/"
+
+focal_cols_recs <- c("recovery_id", "tag_code", "run_year", "recovery_location_code", "recovery_location_name", "fishery", "gear", "estimated_number")
+
+# rmis_recs <- purrr::map_dfr(
+#   list.files(dir_rmis_recs, full.names = T)
+#   ,
+#   ~readr::read_csv(.x, col_select = all_of(focal_cols_recs))
+#   )
+# 
+# saveRDS(rmis_recs, "rmis_coho_recoveries_86_2020.rds")
+
+```
+
+```{r}
+rmis_recs <- readRDS("rmis_coho_recoveries_86_2020.rds")
+
+rmis_recs |> 
+  count(estimated_number < 1) |> 
+  mutate(pct_n = n / nrow(rmis_recs))
+
+rmis_recs |> count(fishery) |> arrange(desc(n)) |> print(n=100)
+
+#everything
+rmis_recs |> count(run_year) |> ggplot(aes(run_year, n)) + geom_col() + geom_smooth()
+#exclude NA estimated number...not a huge diff
+rmis_recs |> 
+  filter(!is.na(estimated_number)) |> 
+  count(run_year) |> 
+  ggplot(aes(run_year, n)) + geom_col() + geom_smooth()
+
+rmis_recs |> 
+  mutate(across(c(fishery, gear), factor)) |> 
+  count(run_year, fishery) |> 
+  ggplot(aes(run_year, fishery)) +
+  geom_raster(aes(fill = n))
+
+rmis_recs |> 
+  mutate(
+    f_type = case_when(
+      between(fishery, 10, 19) ~ "troll",
+      between(fishery, 20, 29) ~ "net",
+      between(fishery, 40, 49) ~ "sport",
+      between(fishery, 50, 59) ~ "escp"
+    )
+    ) |> 
+  count(run_year, f_type) |> 
+  #ggplot(aes(run_year, f_type)) +
+  # geom_raster(aes(fill = n)) +
+  # scale_fill_distiller(direction = 1)
+  ggplot(aes(run_year, n, fill = f_type)) +
+  geom_col() +
+  facet_wrap(~f_type)
+
+```
+
+
+[NEEDS REVISION]
+After querying RMIS for coho recoveries by year, the raw recovery files are loaded into an Access database, which is then used to run the Mixed Stock Model (MSM). MSM associates individual recoveries to fisheries via the recovery code and gear fields and various lookups. The output of that mapping is exported as delimited files by year (a)
+
+
+```{r}
+#86-91, 92-97, 98-2020
+
+db <- "C:/Users/auerbdaa/Downloads/MSM_98-2020- SF2019_cmpct.mdb"
+db_con <- DBI::dbConnect(
+  drv = odbc::odbc(),
+  .connection_string = paste0("Driver={Microsoft Access Driver (*.mdb, *.accdb)};DBQ=", db, ";")
+  )
+
+msm_tbl_names <- c("Edit_Distinct")
+
+msm_tbl <- map(set_names(msm_tbl_names), ~collect(tbl(db_con, .x)))
+
+msm_tbl$Edit_Distinct
+
+DBI::dbDisconnect(db_con)
+
+```
+
+Starting to rough out an R version of MSM mapping...
+
+```{r}
+#Edit_Distinct.Gear == first character of RMIS fishery
+#approx logic: check match of Edit_Distinct.PSC_Code against corresponding Num_Chars of recovery_location_code
+#Edit_Distinct.Fishery_Number is a PSC fishery code, which then needs further mapping to FRAM
+
+msm_tbl$Edit_Distinct |> count(Num_Chars)
+
+
+split(msm_tbl$Edit_Distinct, msm_tbl$Edit_Distinct$Num_Chars)[1:2] |> 
+  map(
+    function(df){
+      nc = df$Num_Chars[1]
+      rmis_recs |> 
+        mutate(
+          PSC_Code = str_sub(recovery_location_code, 1, nc)
+        ) |> 
+        left_join(df, by = "PSC_Code")
+    }
+  )
+  
+
+
+```
+
+
+
+# Recovery patterns
+
+```{r}
+#trial dummy example
+mpdrec <- readxl::read_excel("T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Projects/Coho FRAM MSM CWT analysis/MSMDB/MappedRecoveries.xlsx", sheet = "MappedRecoveries")
+
+mpdrec |>
+  ggplot(aes(RunYear)) +
+  geom_bar()
+#equivalently...
+mpdrec |>
+  count(RunYear) |> 
+  ggplot(aes(RunYear, n)) +
+  geom_col()
+
+
+#all recoveries
+mpdrec |>
+  ggplot(aes(factor(RunYear), factor(PrNum))) +
+  geom_bin2d()
+
+#all non-escapement recoveries
+mpdrec |>
+  filter(MSMFishCode != 228) |> 
+  ggplot(aes(factor(RunYear), factor(PrNum))) +
+  geom_bin2d() +
+  scale_fill_distiller(direction = 1)
+
+```
+
+
+## PR by year
+
+## PR_MU by year
+
+
