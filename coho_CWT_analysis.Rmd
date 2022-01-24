@@ -22,11 +22,16 @@ library("gt")
 library("odbc"); library("DBI")
 #library("ggridges")
 
+dir_proj <- "T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Projects/Coho FRAM MSM CWT analysis/"
+
 fp <- list(
-  db_msm = "T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Projects/Coho FRAM MSM CWT analysis/MSMDB/MSM_98-2020- SF2019.mdb"
-  # data_fram = "data/postseason_fram_spwn_hvst_ests.csv",
-  # data_cwt = "data/rmis_cwts.csv",
+  db_msm = "T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Projects/Coho FRAM MSM CWT analysis/MSMDB/MSM_98-2020- SF2019.mdb",
+  rmis_recs = file.path(dir_proj, "rmis_coho_recoveries_86_2020.rds"),
+  rmis_rel = file.path(dir_proj, "rmis_coho_releases_for_rec_86_2020.rds"),
+  rmis_rec_rel = file.path(dir_proj, "rmis_coho_rec_rel_86_2020.rds")
   )
+
+rmis_rr <- readRDS(fp$rmis_rec_rel)
 
 ```
 
@@ -45,12 +50,71 @@ focal_cols_recs <- c("recovery_id", "tag_code", "run_year", "recovery_location_c
 #   ~readr::read_csv(.x, col_select = all_of(focal_cols_recs))
 #   )
 # 
-# saveRDS(rmis_recs, "rmis_coho_recoveries_86_2020.rds")
+# saveRDS(rmis_recs, "T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Projects/Coho FRAM MSM CWT analysis/rmis_coho_recoveries_86_2020.rds")
 
 ```
 
-```{r}
-rmis_recs <- readRDS("rmis_coho_recoveries_86_2020.rds")
+```{r get_releases_by_tag_code, eval=FALSE}
+rmis_recs |> 
+  mutate(year_set = if_else(run_year <= 1992, "86-92", "93-20")) |> 
+  #distinct(year_set, tag_code) |> split(~year_set) |> 
+  distinct(tag_code) |> rownames_to_column(var = "id") |> 
+  mutate(
+    id = as.numeric(id), 
+    block = cut(id, breaks = c(seq(0,20000,by=2000))),
+    block = letters[as.integer(block)]
+    ) |> #count(block)
+  split(~block) |> 
+  writexl::write_xlsx("T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Projects/Coho FRAM MSM CWT analysis/ERAnalysis/tag_codes_by_block.xlsx")
+
+f <- "T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Projects/Coho FRAM MSM CWT analysis/ERAnalysis/tag_codes_by_block.xlsx"
+
+#readxl::read_excel(f, sheet = "a") |> pluck("tag_code") |> writeLines("clipboard")
+#readxl::read_excel(f, sheet = "b") |> pluck("tag_code") |> writeLines("clipboard")
+#readxl::read_excel(f, sheet = "c") |> pluck("tag_code") |> writeLines("clipboard")
+#readxl::read_excel(f, sheet = "d") |> pluck("tag_code") |> writeLines("clipboard")
+#readxl::read_excel(f, sheet = "e") |> pluck("tag_code") |> writeLines("clipboard")
+#readxl::read_excel(f, sheet = "f") |> pluck("tag_code") |> writeLines("clipboard")
+#readxl::read_excel(f, sheet = "g") |> pluck("tag_code") |> writeLines("clipboard")
+
+focal_cols_rel <- c("tag_code_or_release_id", "brood_year", "release_location_code", "hatchery_location_code", "stock_location_code", "release_location_name", "hatchery_location_name", "stock_location_name", "release_location_state", "release_location_rmis_region", "release_location_rmis_basin", "cwt_1st_mark_count", "cwt_2nd_mark_count")
+
+rmis_rel <- map_df(
+  c(
+  "https://www.rmis.org/reports/CSV13497.txt",
+  "https://www.rmis.org/reports/CSV13656.txt",
+  "https://www.rmis.org/reports/CSV13738.txt",
+  "https://www.rmis.org/reports/CSV13814.txt",
+  "https://www.rmis.org/reports/CSV13854.txt",
+  "https://www.rmis.org/reports/CSV14030.txt",
+  "https://www.rmis.org/reports/CSV14116.txt"
+  ),
+  ~read_csv(.x, col_select = all_of(focal_cols_rel))
+  )
+
+saveRDS(rmis_rel, "T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Projects/Coho FRAM MSM CWT analysis/rmis_coho_releases_for_rec_86_2020.rds")
+
+```
+
+```{r build_rec_rel, eval=FALSE}
+
+left_join(
+  readRDS(fp$rmis_recs) |> 
+    mutate(
+      rec_loc_1 = str_sub(recovery_location_code,1,1),
+      rec_loc_2 = str_sub(recovery_location_code,2,2)
+    )
+  ,
+  readRDS(fp$rmis_rel) |> select(-contains("n_code")),
+  by = c("tag_code" = "tag_code_or_release_id")
+  ) |> 
+  saveRDS(file.path(dir_proj, "rmis_coho_rec_rel_86_2020.rds"))
+
+```
+
+
+```{r first_pass_can_delete}
+rmis_recs <- readRDS(fp$rmis_recs)
 
 rmis_recs |> 
   count(estimated_number < 1) |> 
@@ -90,6 +154,20 @@ rmis_recs |>
   facet_wrap(~f_type)
 
 ```
+
+```{r}
+rmis_recs |> 
+  mutate(
+    f_type = case_when(
+      between(fishery, 10, 19) ~ "troll",
+      between(fishery, 20, 29) ~ "net",
+      between(fishery, 40, 49) ~ "sport",
+      between(fishery, 50, 59) ~ "escp"
+    )
+    )
+```
+
+
 
 
 [NEEDS REVISION]
