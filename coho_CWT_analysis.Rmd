@@ -31,13 +31,16 @@ fp <- list(
   rmis_rec_rel = file.path(dir_proj, "rmis_coho_rec_rel_86_2020.rds")
   )
 
-rmis_rr <- readRDS(fp$rmis_rec_rel)
+rmis_rr <- readRDS(fp$rmis_rec_rel) |> 
+  filter(!is.na(release_location_state)) #drop 3 recent
 
 ```
 
 # Summary
 
 # Data
+
+## RMIS wrangling
 
 ```{r read_in_rmis_recoveries, eval=FALSE}
 dir_rmis_recs <- "T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Projects/Coho FRAM MSM CWT analysis/ERAnalysis/RMISRecoveries/"
@@ -77,7 +80,7 @@ f <- "T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Projects/Coho FRA
 #readxl::read_excel(f, sheet = "f") |> pluck("tag_code") |> writeLines("clipboard")
 #readxl::read_excel(f, sheet = "g") |> pluck("tag_code") |> writeLines("clipboard")
 
-focal_cols_rel <- c("tag_code_or_release_id", "brood_year", "release_location_code", "hatchery_location_code", "stock_location_code", "release_location_name", "hatchery_location_name", "stock_location_name", "release_location_state", "release_location_rmis_region", "release_location_rmis_basin", "cwt_1st_mark_count", "cwt_2nd_mark_count")
+focal_cols_rel <- c("tag_code_or_release_id", "brood_year", "release_location_code", "hatchery_location_code", "stock_location_code", "release_location_name", "hatchery_location_name", "stock_location_name", "release_location_state", "release_location_rmis_region", "release_location_rmis_basin", "cwt_1st_mark", "cwt_1st_mark_count", "cwt_2nd_mark", "cwt_2nd_mark_count")
 
 rmis_rel <- map_df(
   c(
@@ -89,8 +92,13 @@ rmis_rel <- map_df(
   "https://www.rmis.org/reports/CSV14030.txt",
   "https://www.rmis.org/reports/CSV14116.txt"
   ),
-  ~read_csv(.x, col_select = all_of(focal_cols_rel))
+  ~read_csv(.x, col_select = all_of(focal_cols_rel)) |> 
+    mutate(
+      cwt_1st_mark = as.character(cwt_1st_mark),
+      cwt_2nd_mark = as.character(cwt_2nd_mark)
+      )
   )
+
 
 saveRDS(rmis_rel, "T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Projects/Coho FRAM MSM CWT analysis/rmis_coho_releases_for_rec_86_2020.rds")
 
@@ -102,7 +110,13 @@ left_join(
   readRDS(fp$rmis_recs) |> 
     mutate(
       rec_loc_1 = str_sub(recovery_location_code,1,1),
-      rec_loc_2 = str_sub(recovery_location_code,2,2)
+      rec_loc_2 = str_sub(recovery_location_code,2,2),
+      f_type = case_when(
+        between(fishery, 10, 19) ~ "troll",
+        between(fishery, 20, 39) ~ "net",
+        between(fishery, 40, 49) ~ "sport",
+        between(fishery, 50, 59) ~ "escp"
+      )
     )
   ,
   readRDS(fp$rmis_rel) |> select(-contains("n_code")),
@@ -112,67 +126,7 @@ left_join(
 
 ```
 
-
-```{r first_pass_can_delete}
-rmis_recs <- readRDS(fp$rmis_recs)
-
-rmis_recs |> 
-  count(estimated_number < 1) |> 
-  mutate(pct_n = n / nrow(rmis_recs))
-
-rmis_recs |> count(fishery) |> arrange(desc(n)) |> print(n=100)
-
-#everything
-rmis_recs |> count(run_year) |> ggplot(aes(run_year, n)) + geom_col() + geom_smooth()
-#exclude NA estimated number...not a huge diff
-rmis_recs |> 
-  filter(!is.na(estimated_number)) |> 
-  count(run_year) |> 
-  ggplot(aes(run_year, n)) + geom_col() + geom_smooth()
-
-rmis_recs |> 
-  mutate(across(c(fishery, gear), factor)) |> 
-  count(run_year, fishery) |> 
-  ggplot(aes(run_year, fishery)) +
-  geom_raster(aes(fill = n))
-
-rmis_recs |> 
-  mutate(
-    f_type = case_when(
-      between(fishery, 10, 19) ~ "troll",
-      between(fishery, 20, 29) ~ "net",
-      between(fishery, 40, 49) ~ "sport",
-      between(fishery, 50, 59) ~ "escp"
-    )
-    ) |> 
-  count(run_year, f_type) |> 
-  #ggplot(aes(run_year, f_type)) +
-  # geom_raster(aes(fill = n)) +
-  # scale_fill_distiller(direction = 1)
-  ggplot(aes(run_year, n, fill = f_type)) +
-  geom_col() +
-  facet_wrap(~f_type)
-
-```
-
-```{r}
-rmis_recs |> 
-  mutate(
-    f_type = case_when(
-      between(fishery, 10, 19) ~ "troll",
-      between(fishery, 20, 29) ~ "net",
-      between(fishery, 40, 49) ~ "sport",
-      between(fishery, 50, 59) ~ "escp"
-    )
-    )
-```
-
-
-
-
-[NEEDS REVISION]
-After querying RMIS for coho recoveries by year, the raw recovery files are loaded into an Access database, which is then used to run the Mixed Stock Model (MSM). MSM associates individual recoveries to fisheries via the recovery code and gear fields and various lookups. The output of that mapping is exported as delimited files by year (a)
-
+## mapping
 
 ```{r}
 #86-91, 92-97, 98-2020
@@ -220,8 +174,182 @@ split(msm_tbl$Edit_Distinct, msm_tbl$Edit_Distinct$Num_Chars)[1:2] |>
 ```
 
 
-
 # Recovery patterns
+
+## Rec by release state
+
+totals by year, needs further stratification
+
+```{r rec_by_rel_state}
+rmis_rr |> 
+  count(run_year, release_location_state) |> #release_location_rmis_region
+  ggplot(aes(run_year, n, fill = release_location_state)) + 
+  geom_col(show.legend = F) +
+  facet_wrap(~release_location_state, ncol = 1, scales = "free")
+
+  #filter(as.numeric(cwt_1st_mark) < 5000) |> 
+```
+
+## Rec release region, all
+
+```{r}
+#tidy objects up
+regions_col_riv <- c("CECR", "CRGN", "LOCR", "UPCR")
+regions_ps <- c("SPS", "MPS", "NPS", "HOOD", "JUAN", "SKAG", "NOWA")
+regions_wa_cst <- c("NWC", "GRAY", "WAGN", "WILP")
+
+rmis_rr |> 
+  count(run_year, f_type = f_type == "escp", release_location_rmis_region) |>
+  filter(!is.na(f_type)) |> 
+  ggplot(aes(run_year, release_location_rmis_region, fill = n)) + 
+  geom_raster(show.legend = T) +
+  wacolors::scale_fill_wa_c("gorge", reverse = T) +
+  facet_wrap(~f_type, ncol = 1, scales = "free")
+
+#raster n-recs region by year
+rmis_rr |> 
+  filter(f_type %in% c("net", "troll", "sport")) |> 
+  count(run_year, f_type, release_location_rmis_region) |>
+  ggplot(aes(run_year, release_location_rmis_region, fill = n)) + 
+  geom_raster(show.legend = T) +
+  wacolors::scale_fill_wa_c("gorge", reverse = T) +
+  facet_wrap(~f_type, ncol = 1, scales = "free")
+
+#lines n-recs region (line color) by year
+rmis_rr |> 
+  filter(f_type %in% c("net", "troll", "sport")) |> 
+  count(run_year, f_type, release_location_rmis_region) |>
+  ggplot(aes(run_year, n, color = release_location_rmis_region)) + 
+  geom_line(show.legend = T) +
+  #wacolors::scale_fill_wa_d("gorge", reverse = T) +
+  facet_wrap(~f_type, ncol = 1, scales = "free")
+
+#split by ps release regions
+rmis_rr |> 
+  filter(f_type %in% c("net", "troll", "sport")) |> 
+  count(run_year, f_type, release_location_rmis_region) |>
+  filter(release_location_rmis_region %in% regions_ps) |> 
+  ggplot(aes(run_year, n, color = release_location_rmis_region)) + 
+  geom_line(show.legend = T) +
+  wacolors::scale_fill_wa_d("rainier", reverse = T) +
+  facet_wrap(~f_type, ncol = 1)
+
+#aggregate by ps_release region, f_type color
+rmis_rr |> 
+  filter(
+    f_type %in% c("net", "troll", "sport"),
+    release_location_rmis_region %in% regions_ps
+    ) |> 
+  count(run_year, f_type) |>
+  ggplot(aes(run_year, n, color = f_type)) + 
+  geom_line(show.legend = T) +
+  facet_wrap(~f_type, ncol = 1)
+
+
+# rmis_rr |> 
+#   filter(f_type %in% c("net", "troll", "sport")) |> 
+#   group_by(run_year, f_type, release_location_rmis_region) |>
+#   summarise(n = n(), est_num = sum(estimated_number, na.rm = T), .groups = "drop") |> 
+#   #group_by(f_type) |> 
+#   group_by(release_location_rmis_region) |> 
+#   slice_max(order_by = n, n = 1) |> 
+#   arrange(desc(n)) |> print(n = 50)
+
+#comparing time periods of fishery recoveries by rel_region
+rmis_rr |> 
+  filter(
+    between(run_year, 1986, 2019),
+    f_type %in% c("net", "troll", "sport")
+    ) |> 
+  mutate(
+    year_block = case_when(
+      between(run_year, 1986, 1992) ~ "86-92",
+      between(run_year, 1993, 2009) ~ "93-09",
+      between(run_year, 2010, 2019) ~ "10-19"
+      ) |> factor(levels = c("86-92", "93-09", "10-19")),
+    ) |> 
+  group_by(year_block, f_type, release_location_rmis_region) |>
+  summarise(n = n(), est_num = sum(estimated_number, na.rm = T), .groups = "drop") |> 
+  filter(year_block != "93-09") |> 
+  ggplot(aes(release_location_rmis_region, n, fill = year_block)) +
+  geom_col(position = position_dodge()) +
+  facet_wrap(~f_type, scales = "free", ncol = 1)
+
+
+#comparing time periods of recoveries in fisheries, excluding ColR releases
+rmis_rr |> 
+  filter(
+    between(run_year, 1986, 2019),
+    f_type %in% c("net", "troll", "sport"),
+    !(release_location_rmis_region %in% regions_col_riv)
+    ) |> 
+  mutate(
+    year_block = case_when(
+      between(run_year, 1986, 1992) ~ "86-92",
+      between(run_year, 1993, 2009) ~ "93-09",
+      between(run_year, 2010, 2019) ~ "10-19"
+      ) |> factor(levels = c("86-92", "93-09", "10-19")),
+    ) |> 
+  group_by(year_block, release_location_state) |>
+  summarise(n = n(), est_num = sum(estimated_number, na.rm = T), .groups = "drop") |> 
+  filter(year_block != "93-09", release_location_state %in% c("BC", "OR", "WA")) |> 
+  ggplot(aes(release_location_state, n, fill = year_block)) +
+  geom_col(position = position_dodge())
+
+#drill down to examine just Fraser R releases
+#very little to work with in recent years...
+rmis_rr |> 
+  filter(
+    between(run_year, 1986, 2019),
+    f_type %in% c("net", "troll", "sport"),
+    release_location_rmis_region == "FRTH"
+    ) |> 
+  mutate(
+    year_block = case_when(
+      between(run_year, 1986, 1992) ~ "86-92",
+      between(run_year, 1993, 2009) ~ "93-09",
+      between(run_year, 2010, 2019) ~ "10-19"
+      ) |> factor(levels = c("86-92", "93-09", "10-19")),
+    ) |> 
+  group_by(year_block, release_location_rmis_basin) |>
+  summarise(n = n(), est_num = sum(estimated_number, na.rm = T), .groups = "drop") |> 
+  ggplot(aes(release_location_rmis_basin, n, fill = year_block)) +
+  geom_col(position = position_dodge())
+
+rmis_rr |> 
+  filter(release_location_rmis_basin == "LOFR", !is.na(f_type)) |> 
+  count(run_year, f_type) |> 
+  ggplot(aes(run_year, n, fill = f_type)) +
+  geom_col(position = position_dodge())
+
+rmis_rr |> 
+  filter(release_location_rmis_basin == "LOFR", f_type == "sport") |> 
+  count(run_year, rec_loc_1) |> 
+  ggplot(aes(run_year, n, fill = rec_loc_1)) +
+  geom_col(position = position_dodge())
+
+
+#looking for release region with adequate recoveries both time blocks
+#focus on fishery recoveries assuming that escp recs probably ok if fishery ok
+rmis_rr |> 
+  filter(
+    between(run_year, 1986, 2019),
+    f_type %in% c("net", "troll", "sport"),
+    ) |> 
+  mutate(
+    year_block = case_when(
+      between(run_year, 1986, 1992) ~ "86-92",
+      between(run_year, 1993, 2009) ~ "93-09",
+      between(run_year, 2010, 2019) ~ "10-19"
+      ) |> factor(levels = c("86-92", "93-09", "10-19")),
+    ) |> 
+
+
+```
+
+
+
+## trial dummy
 
 ```{r}
 #trial dummy example
