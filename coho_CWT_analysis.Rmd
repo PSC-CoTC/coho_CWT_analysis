@@ -32,7 +32,19 @@ fp <- list(
   )
 
 rmis_rr <- readRDS(fp$rmis_rec_rel) |> 
-  filter(!is.na(release_location_state)) #drop 3 recent
+  filter(!is.na(release_location_state)) |>  #drop 3 recent
+  mutate(age = run_year - brood_year)
+
+lu <- list(
+  #CCT queried releases, QAQC'd and assigned to PR and PR_MU
+  cwt_stk = read_csv(file.path(dir_proj, "MSMDB/MSM_Stock_CWT2.csv")) |> 
+    mutate(run_year = Run_ID+1985) |> 
+    select(run_year, tag_code = CWT_Code, area = Area_Agg,
+           pr = PR_Number, pr_mu = PR_MU_Number, n_rel = Number_Released, everything()) |> 
+    filter(!is.na(pr), !is.na(pr_mu), pr_mu > 0) |> 
+    #exclude a double-mapped row
+    filter(!(run_year == 1996 & tag_code == "071544" & FRAMStkID == 166))
+)
 
 ```
 
@@ -126,12 +138,13 @@ left_join(
 
 ```
 
-## mapping
+# Mapping
 
 ```{r}
 #86-91, 92-97, 98-2020
 
 db <- "C:/Users/auerbdaa/Downloads/MSM_98-2020- SF2019_cmpct.mdb"
+#db <- fp$db_msm
 db_con <- DBI::dbConnect(
   drv = odbc::odbc(),
   .connection_string = paste0("Driver={Microsoft Access Driver (*.mdb, *.accdb)};DBQ=", db, ";")
@@ -147,7 +160,50 @@ DBI::dbDisconnect(db_con)
 
 ```
 
-Starting to rough out an R version of MSM mapping...
+```{r}
+read_csv(file.path(dir_proj, "MSMDB/FishAggMap.csv"))
+
+distinct(rmis_rr, tag_code) #12936 releases
+distinct(lu$cwt_stk, tag_code) #5491 mapped
+
+length(setdiff(rmis_rr$tag_code, lu$cwt_stk$tag_code)) #7642 codes not mapped to PR...
+length(setdiff(lu$cwt_stk$tag_code, rmis_rr$tag_code)) #oddballs, most of the mapped are in recs
+#for example...
+filter(lu$cwt_stk, tag_code == "180691*1")
+#confirming that many 6-character, leading 0 codes are in recs...
+rmis_rr |> filter(nchar(tag_code) <= 6, str_sub(tag_code, 1,1) == "0")
+#but 5294 shared/mapped codes (recall dup run_year)
+length(intersect(rmis_rr$tag_code, lu$cwt_stk$tag_code)) 
+
+nrow(distinct(lu$cwt_stk, run_year, tag_code)) == nrow(lu$cwt_stk)
+count(lu$cwt_stk, run_year, tag_code) |> filter(n>1)
+# filter(lu$cwt_stk, run_year == 1996, tag_code == "071544")
+# filter(lu$cwt_stk, Stock_Name == "TANNER CR (BNVILLE)") #released in multiple pr_mus
+# filter(lu$cwt_stk, Release_Name == "YOUNGS R & BAY") #looks like it should be pr_mu==2
+
+
+#rmis_rr |> left_join(lu$cwt_stk, by = c("run_year", "tag_code")) |> count(is.na(pr))
+
+rmis_rr_cwt_stk <- inner_join(rmis_rr, lu$cwt_stk, by = c("run_year", "tag_code"))
+
+rmis_rr_cwt_stk |> 
+  #group_by(run_year, area) |> summarise()
+  #count(run_year, area) |> ggplot(aes(run_year, n)) + geom_col() + facet_wrap(~area)
+  count(run_year, pr) |> pivot_wider(names_from = run_year, values_from = n) |> arrange(pr)
+  ggplot(aes(run_year, n)) + geom_col() + facet_wrap(~pr)
+
+
+```
+
+```{r}
+rmis_rr |> 
+  distinct(release_location_state, release_location_rmis_region, release_location_rmis_basin) |> 
+  arrange(release_location_state, release_location_rmis_region, release_location_rmis_basin) |> 
+  mutate(pr = NA, pr_mu = NA, StockID = NA) |> 
+  writexl::write_xlsx(file.path(dir_proj, "lu_rmis_rel_to_pr_prmu.xlsx"))
+```
+
+
 
 ```{r}
 #Edit_Distinct.Gear == first character of RMIS fishery
@@ -347,9 +403,7 @@ rmis_rr |>
 
 ```
 
-
-
-## trial dummy
+## trial dummy with prelim MSM mapped 
 
 ```{r}
 #trial dummy example
