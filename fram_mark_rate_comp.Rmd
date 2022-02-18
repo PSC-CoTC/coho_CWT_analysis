@@ -1,0 +1,444 @@
+---
+title: "Untitled"
+author: "A Hagen-Breaux, D Auerbach"
+date: "`r Sys.Date()`"
+editor_options: 
+  chunk_output_type: console
+output: 
+  bookdown::html_document2:
+    fig_caption: yes
+    theme: cerulean
+    toc: yes
+    toc_depth: 3
+    toc_float: yes
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, results = FALSE, warning = FALSE, message = FALSE, fig.width = 9, fig.height = 9)
+
+library("tidyverse")
+library("gt")
+library("odbc"); library("DBI")
+library("patchwork")
+
+dir_proj <- "T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Projects/Coho FRAM MSM CWT analysis/MarkRateA"
+
+mdb <- "O:/code/coho/fram_mdbs/PSC_CoTC_PostSeason_CohoFRAMDB_thru2019_021021.mdb"
+  
+#wacolors::pal_vector("coast", 3) #c("#7BAEA0", "#386276", "#3A4332")
+#wacolors::pal_vector("rainier", 3)
+pal = c("#465177", "#E4C22B", "#965127")
+
+#needed to combine T/NT net pairs
+Tpair<-c(88,97,102,110,112,120,122,124,131,133,138,140,142,144,146,154,156,158,160)
+
+```
+
+# Data
+
+## Sampling
+
+```{r d_samp}
+#only using flag to constrain obs, but
+#if using flag to def which MR source...
+#Flag == 1, NS fisheries, use landed
+#Flag == 2, MSF/NR, use enc
+#Flag == NA, mixed regs and/or not modeled 
+
+d_samp <- read_csv(file.path(dir_proj, "Data for MR_R", "MR Sampling Data.csv")) |> 
+  #exclude some non-FRAM areas without FishID
+  filter(
+    !is.na(FishID),
+    !is.na(Flag)
+    ) |> 
+  select(RunYear = Year, FishID, TimeStep = TS, #Flag,
+         MK = `Mrkd Landed`,
+         UK = `UM Landed`,
+         MR = `Mrkd Released`,
+         UR = `UM Released`
+         ) |> 
+  mutate(
+    FisheryID = if_else(FishID %in% Tpair, FishID-1, FishID) 
+    ) |> #count(Flag)
+  group_by(RunYear, FisheryID, TimeStep) |> #, Flag
+  summarise(across(MK:UR, sum), .groups = "drop") |> #count(Flag) 
+  # only calculate landed mark rate if sum of marked and unmarked >20
+  # calculate encounter mark rate if sum of all encounters >20
+  mutate(
+    mr_kept = if_else( MK+UK > 19, MK/(MK+UK), NA_real_),
+    mr_enc = if_else( MK+UK+MR+UR > 19, (MK+MR)/(MK+UK+MR+UR), NA_real_)
+  ) |> 
+  rename_at(vars(MK:mr_enc), ~paste0(.,"_samp")) |> 
+  filter(!is.na(mr_enc_samp))
+```
+
+## FRAM post-season
+
+```{r d_fram}
+# d_fram <- left_join(
+#   #join run year to key cols of mortality table
+#   read_csv(file.path(dir_proj, "Data for MR_R", "FRAM2010_18.csv")) |> 
+#     select(RunID, StockID, FisheryID, TimeStep, LandedCatch, MSFLandedCatch, MSFNonRetention)
+#   ,
+#   read_csv(file.path(dir_proj, "Data for MR_R", "RunID.txt")) |> 
+#     select(RunID, RunYear)
+#   , 
+#   by = "RunID"
+#   ) |>
+#   #now add MarkReleaseRate
+#   left_join(
+#     read_csv(file.path(dir_proj, "Data for MR_R", "FisheryScalers.txt")) |> 
+#       select(RunID:TimeStep, MarkReleaseRate)
+#     ,
+#     by=c("RunID","FisheryID","TimeStep")
+#   ) |>
+#   #and FisheryNames
+#   left_join(
+#     read_csv(file.path(dir_proj, "Data for MR_R", "Fishery.csv")) |> 
+#       select(FisheryID, FisheryName)
+#     , by = "FisheryID"
+#   ) |> 
+#   mutate(
+#    MarkStatus = if_else(StockID %% 2 == 0, "M", "UM"),
+#    FisheryID = ifelse(FisheryID %in% Tpair, FisheryID-1, FisheryID),
+#    Kept = LandedCatch + MSFLandedCatch,
+#    Enc = LandedCatch + MSFLandedCatch + if_else(MarkReleaseRate>0,MSFNonRetention/MarkReleaseRate,0)
+#   )|>
+#   group_by(RunYear, FisheryID, FisheryName, MarkStatus, TimeStep)|>
+#   summarize(across(Kept:Enc,sum),.groups = "drop")|>
+#   pivot_wider(names_from = MarkStatus, values_from = c(Kept,Enc))|>
+#   mutate(
+#     mr_kept = Kept_M/(Kept_M+Kept_UM),
+#     mr_enc = Enc_M/(Enc_M+Enc_UM)
+#   ) |>
+#   rename_at(vars(Kept_M:mr_enc), ~paste0(.,"_fram")) |> 
+#   filter(!is.na(mr_enc_fram))
+
+# d_fram_mort <- framr::read_coho_mort(mdb, runs = 34:42) |> 
+#   select(RunID, RunYear, StockID, FisheryID, FisheryName, TimeStep, LandedCatch, MSFLandedCatch, MSFNonRetention) 
+# 
+# mdb_con <- DBI::dbConnect(drv = odbc::odbc(), .connection_string = paste0("Driver={Microsoft Access Driver (*.mdb, *.accdb)};DBQ=", mdb, ";"))
+# 
+# d_fram_fs <- tbl(mdb_con, "FisheryScalers") |> filter(RunID %in% 34:42) |> select(RunID:TimeStep, MarkReleaseRate) |> collect()
+# 
+# DBI::dbDisconnect(mdb_con)
+
+
+d_fram <- left_join(
+  framr::read_coho_mort(mdb, runs = 34:42) |> 
+    select(RunYear, StockID, FisheryID, FisheryName, TimeStep, LandedCatch, MSFLandedCatch, MSFNonRetention) |> 
+    mutate(RunYear = as.numeric(RunYear))
+  ,
+  framr::read_coho_fish_sclr(mdb, runs = 34:42) |> 
+    select(RunYear, FisheryID, TimeStep, MarkReleaseRate)
+  ,
+  #d_fram_mort, d_fram_fs,
+  by = c("RunYear","FisheryID","TimeStep")
+) |> #filter(FisheryID %in% 96:97) |> count(FisheryID, FisheryName)
+  mutate(
+    MarkStatus = if_else(StockID %% 2 == 0, "M", "UM"),
+    FisheryID = ifelse(FisheryID %in% Tpair, FisheryID-1, FisheryID),
+    Kept = LandedCatch + MSFLandedCatch,
+    Enc = LandedCatch + MSFLandedCatch + if_else(MarkReleaseRate>0,MSFNonRetention/MarkReleaseRate,0)
+  ) |> 
+  group_by(RunYear, FisheryID, MarkStatus, TimeStep)|>
+  summarize(across(Kept:Enc,sum),.groups = "drop")|>
+  pivot_wider(names_from = MarkStatus, values_from = c(Kept,Enc))|>
+  mutate(
+    mr_kept = Kept_M/(Kept_M+Kept_UM),
+    mr_enc = Enc_M/(Enc_M+Enc_UM)
+  ) |>
+  rename_at(vars(Kept_M:mr_enc), ~paste0(.,"_fram")) |> 
+  filter(!is.na(mr_enc_fram))
+```
+
+## RMIS
+
+```{r d_rmis}
+d_rmis <- read_csv(file.path(dir_proj, "Data for MR_R", "MR_RMIS.csv")) |> 
+  mutate(
+   FisheryID = ifelse(FishID %in% Tpair, FishID-1, FishID)
+  ) |> 
+  select(RunYear, FisheryID, TimeStep,
+         mr_rmis = MR_RMIS
+         ## no longer needed, identical to mr_enc_fram
+         #MR_Landed_FRAM
+         )
+```
+
+## Combined
+
+```{r mr_objects}
+#nothing in sampling dataset that isn't in fram dataset
+setdiff(unique(d_samp$FisheryID), unique(d_fram$FisheryID))
+#but lots of fram fisheries for which we don't have sampling obs...
+sort(setdiff(unique(d_fram$FisheryID), unique(d_samp$FisheryID)))
+
+d_fram <- left_join(
+  d_fram,
+    read_csv(file.path(dir_proj, "Data for MR_R", "Fishery.csv")) |>
+      select(FisheryID, FisheryName)
+    , by = "FisheryID"
+  ) |> 
+  select(RunYear, FisheryID, FisheryName, TimeStep, everything())
+
+
+#combine datasets
+#FRAM encounter-based MR vs sampling encounter-based MR
+mr_fram_samp <- full_join(
+  d_fram |> select(RunYear:TimeStep, mr_enc_fram),
+  d_samp |> select(RunYear:TimeStep, mr_enc_samp) |> 
+    filter(between(RunYear, 2010, 2018)), #only have pre-2010 from Karen K for PS Comm
+  by = c("RunYear", "FisheryID", "TimeStep")
+  ) |> 
+  mutate(d_fram_samp = mr_enc_fram - mr_enc_samp)
+
+#FRAM landed-based MR vs RMIS landed-based MR
+mr_fram_rmis <- full_join(
+  d_fram |> select(RunYear:TimeStep, mr_kept_fram),
+  d_rmis, #by definition landed-MR
+  by = c("RunYear", "FisheryID", "TimeStep")
+  ) |> 
+  mutate(d_fram_rmis = mr_kept_fram - mr_rmis)
+
+
+
+# #combine datasets
+# mr <- full_join(
+#   d_fram |> select(RunYear:TimeStep, mr_fram = mr_enc_fram) 
+#   ,
+#   d_samp |> select(RunYear:TimeStep, mr_samp = mr_enc_samp) |> 
+#     filter(between(RunYear, 2010, 2018)) #only have pre-2010 from Karen K for PS Comm
+#   ,
+#   by = c("RunYear", "FisheryID", "TimeStep")
+#   ) |> 
+#   #filter(is.na(mr_fram)) #14 year-timesteps with sampling but not FRAM??
+#   full_join(
+#     d_rmis #by definition landed-MR 
+#     ,
+#     by = c("RunYear", "FisheryID", "TimeStep")
+#   ) |> 
+#   #filter(!is.na(MR_Landed_FRAM))
+#   mutate(
+#    d_fram_samp = mr_fram - mr_samp,
+#    d_fram_rmis = mr_fram - mr_rmis
+#   ) |> 
+#   left_join(
+#     read_csv(file.path(dir_proj, "Data for MR_R", "Fishery.csv")) |>
+#       select(FisheryID, FisheryName)
+#     , by = "FisheryID"
+#   ) |> 
+#   select(RunYear, FisheryID, FisheryName, TimeStep, everything())
+
+
+```
+
+### not needed with split sampling and RMIS objects
+
+```{r mr_cutoff, eval=FALSE}
+# #examining upper limit for sampled MR to ensure
+# #we're excluding MSF commercial fisheries
+# mr |> 
+#   filter(!is.na(d_fram_samp) | !is.na(d_fram_rmis)) |>
+#   pluck("mr_samp") |> 
+#   plot.ecdf(ylim = c(0.8,1))
+# 
+# abline(v = seq(0.9, 0.95, by=0.01))  
+
+mr_samp_cutoff <- 0.9
+
+mr_cutoff <- mr |> 
+  #exclude cases with nothing to compare against FRAM
+  filter(!is.na(d_fram_samp) | !is.na(d_fram_rmis)) |>
+  #exclude cases with sampling MRs approaching 1 
+  #sampling that is only of landed commercial catch
+  #cannot be compared to FRAM encounter MR...e.g., MSF troll fisheries w/o release info
+  filter(mr_samp <= mr_samp_cutoff | mr_rmis <= mr_samp_cutoff) |> 
+  select(RunYear, FisheryID, FisheryName, TimeStep, starts_with("mr_")) |> 
+  pivot_longer(names_to = "type", values_to = "val", cols = starts_with("mr_")) |> 
+  filter(!is.na(val))
+
+```
+
+```{r mr_diffs, eval=FALSE}
+mr_cutoff_diff <- mr |>
+  filter(!is.na(d_fram_samp) | !is.na(d_fram_rmis)) |>
+  filter(mr_samp <= mr_samp_cutoff | mr_rmis <= mr_samp_cutoff) |>
+  select(RunYear, FisheryID, FisheryName, TimeStep, starts_with("d_")) |> 
+  pivot_longer(names_to = "type", values_to = "val", cols = starts_with("d_")) |> 
+  filter(!is.na(val)) 
+
+#mr_cutoff_diff |> count(type)
+```
+
+# Plots
+
+```{r}
+mr_fram_samp_long <- mr_fram_samp |> 
+  filter(
+    !is.na(d_fram_samp),
+    !str_detect(FisheryName, "Trl")
+    ) |>
+  select(RunYear, FisheryID, FisheryName, TimeStep, starts_with("mr_")) |> 
+  pivot_longer(names_to = "type", values_to = "val", cols = starts_with("mr_"))
+
+mr_fram_rmis_long <- mr_fram_rmis |> 
+  filter(!is.na(d_fram_rmis)) |>
+  select(RunYear, FisheryID, FisheryName, TimeStep, starts_with("mr_")) |> 
+  pivot_longer(names_to = "type", values_to = "val", cols = starts_with("mr_"))
+
+```
+
+## boxplots
+
+```{r}
+{mr_fram_samp |> 
+    filter(
+      !is.na(d_fram_samp),
+      !str_detect(FisheryName, "Trl")
+    ) |>
+    ggplot(aes(FisheryName, d_fram_samp)) +
+    coord_flip() +
+    geom_boxplot(color = "orange", fill = "orange", alpha = 0.5, outlier.shape = NA) +
+    geom_hline(yintercept = 0) +
+    scale_x_discrete("") +
+    scale_y_continuous("FRAM mark rate - Sampling mark rate") +
+    labs(subtitle = "Differences between post-season coho FRAM modeled mark rates and observations, 2010-18")
+} + {
+  mr_fram_rmis |> 
+    filter(!is.na(d_fram_rmis)) |>
+    filter(FisheryID %in% setdiff(mr_fram_rmis_long$FisheryID, mr_fram_samp_long$FisheryID)) |> 
+    ggplot(aes(FisheryName, d_fram_rmis)) +
+    coord_flip() +
+    geom_boxplot(color = "purple", fill = "purple", alpha = 0.5, outlier.shape = NA) +
+    geom_hline(yintercept = 0) +
+    scale_x_discrete("") +
+    scale_y_continuous("FRAM mark rate - RMIS mark rate") 
+  #+ labs(subtitle = "Differences between post-season coho FRAM modeled mark rates and observations, 2010-18")
+} +
+  plot_layout(ncol = 1)
+
+```
+
+## bars by timestep 
+
+```{r}
+# gg_mr_bar_ts <- function(ts) {
+#   filter(mr_fram_samp_long, TimeStep == ts) |> 
+#     ggplot(aes(RunYear, val, color = type, fill = type)) +
+#     geom_col(position = position_dodge()) +
+#     scale_x_continuous("") +
+#     scale_y_continuous("Mark rate", labels = scales::percent) +
+#     scale_color_manual(values = pal, aesthetics = c("color", "fill")) +
+#     facet_wrap(~TimeStep+FisheryID+FisheryName, labeller = label_wrap_gen(multi_line = F), ncol = 3) +
+#     theme(legend.position = "top")
+# }
+# 
+# gg_mr_bar_ts(2) + gg_mr_bar_ts(3)
+# 
+# wrap_plots(map(2:5, gg_mr_bar_ts), ncol = 2)
+```
+
+## bars by fisheryID
+
+```{r}
+gg_mr_bar_fishery <- function(fid) {
+  d <- filter(mr_fram_samp_long, FisheryID == fid)
+  
+  d |>   
+    ggplot(aes(RunYear, val, color = type, fill = type)) +
+    geom_col(position = position_dodge(), show.legend = T) +
+    scale_x_continuous("") +
+    scale_y_continuous("Mark rate", labels = scales::percent) +
+    scale_color_manual(values = pal, aesthetics = c("color", "fill")) +
+    facet_wrap(~TimeStep+FisheryID+FisheryName, labeller = label_wrap_gen(multi_line = F), nrow = 1) +
+    #labs(subtitle = d$FisheryName[1]) +
+    theme(legend.position = "top")
+}
+
+# #all fisheries...
+# sort(unique(mr_fram_samp_long$FisheryID)) |> 
+#   map(gg_mr_bar_fishery) |> 
+#   wrap_plots(ncol = 4)
+
+#gg_mr_bar_fishery(33) + gg_mr_bar_fishery(37) + gg_mr_bar_fishery(40) + gg_mr_bar_fishery(41)
+
+sort(unique(mr_fram_samp_long$FisheryID))[1:4] |>
+  map(gg_mr_bar_fishery) |>
+  wrap_plots(guides = "collect")
+
+gg_mr_bar_fishery(115)
+
+```
+
+
+
+## initial
+
+versions of MR and MR difference bars and boxes based on object joining all 3 datasets...
+
+```{r mr_cutoff_t3, eval=FALSE}
+mr_cutoff |> #count(type) 
+  filter(TimeStep == 3) |> 
+  ggplot(aes(RunYear, val, color = type, fill = type)) +
+  geom_col(position = position_dodge()) +
+  scale_color_manual(values = pal, aesthetics = c("color", "fill")) +
+  facet_wrap(~TimeStep+FisheryID+FisheryName, labeller = label_wrap_gen(multi_line = F), ncol = 3)
+
+```
+
+```{r mr_cutoff_t4, eval=FALSE}
+mr_cutoff |> #count(type) 
+  filter(TimeStep == 4) |> 
+  ggplot(aes(RunYear, val, color = type, fill = type)) +
+  geom_col(position = position_dodge()) +
+  scale_color_manual(values = pal, aesthetics = c("color", "fill")) +
+  facet_wrap(~TimeStep+FisheryID+FisheryName, labeller = label_wrap_gen(multi_line = F), ncol = 3)
+
+```
+
+```{r mr_cutoff_t5, eval=FALSE}
+mr_cutoff |> #count(type) 
+  filter(TimeStep == 5) |> 
+  ggplot(aes(RunYear, val, color = type, fill = type)) +
+  geom_col(position = position_dodge()) +
+  scale_color_manual(values = pal, aesthetics = c("color", "fill")) +
+  facet_wrap(~TimeStep+FisheryID+FisheryName, labeller = label_wrap_gen(multi_line = F), ncol = 3)
+
+```
+
+```{r mr_cutoff_diff_t4, eval=FALSE}
+#Sep
+mr_cutoff_diff |> 
+  filter(TimeStep == 4, type == "d_fram_samp") |> 
+  ggplot(aes(RunYear, val, fill = val > 0)) +
+  geom_col(position = position_dodge()) +
+  scale_fill_grey() +
+  facet_wrap(TimeStep~FisheryID+FisheryName, scales = "fixed", labeller = label_wrap_gen(multi_line = F), ncol = 4) +
+  labs(subtitle = "TimeStep 4 Sep")
+
+#A11 
+d_fram |> filter(FisheryID == 129, TimeStep == 4)
+d_samp |> filter(FisheryID == 129, TimeStep == 4)
+#A7
+d_fram |> filter(FisheryID == 93, TimeStep == 4)
+d_samp |> filter(FisheryID == 93, TimeStep == 4, between(RunYear, 2010, 2018))
+
+```
+
+```{r cutoff_diff_boxes, eval=FALSE}
+#distributions of differences ensure year-timestep matching
+#pool across timesteps and years
+mr_cutoff_diff |> 
+  ggplot(aes(FisheryName, val, color = type, fill = type)) +
+  coord_flip() +
+  geom_boxplot(alpha = 0.5, outlier.shape = NA) +
+  geom_hline(yintercept = 0) +
+  scale_color_manual(values = pal, aesthetics = c("color", "fill")) +
+  scale_y_continuous("FRAM mark rate - Sampling/RMIS mark rate") +
+  labs(subtitle = "Differences between post-season coho FRAM modeled mark rates and observations, 2010-18")
+
+```
+
+
