@@ -22,10 +22,9 @@ library("gt")
 library("odbc"); library("DBI")
 #library("ggridges")
 
-dir_proj <- "T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Projects/Coho FRAM MSM CWT analysis/"
+dir_proj <- "T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Projects/Coho FRAM MSM CWT analysis"
 
 fp <- list(
-  db_msm = "T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Projects/Coho FRAM MSM CWT analysis/MSMDB/MSM_98-2020- SF2019.mdb",
   rmis_recs = file.path(dir_proj, "rmis_coho_recoveries_86_2020.rds"),
   rmis_rel = file.path(dir_proj, "rmis_coho_releases_for_rec_86_2020.rds"),
   rmis_rec_rel = file.path(dir_proj, "rmis_coho_rec_rel_86_2020.rds")
@@ -34,17 +33,6 @@ fp <- list(
 rmis_rr <- readRDS(fp$rmis_rec_rel) |> 
   filter(!is.na(release_location_state)) |>  #drop 3 recent
   mutate(age = run_year - brood_year)
-
-lu <- list(
-  #CCT queried releases, QAQC'd and assigned to PR and PR_MU
-  cwt_stk = read_csv(file.path(dir_proj, "MSMDB/MSM_Stock_CWT2.csv")) |> 
-    mutate(run_year = Run_ID+1985) |> 
-    select(run_year, tag_code = CWT_Code, area = Area_Agg,
-           pr = PR_Number, pr_mu = PR_MU_Number, n_rel = Number_Released, everything()) |> 
-    filter(!is.na(pr), !is.na(pr_mu), pr_mu > 0) |> 
-    #exclude a double-mapped row
-    filter(!(run_year == 1996 & tag_code == "071544" & FRAMStkID == 166))
-)
 
 regions <- list(
   col_riv = c("CECR", "CRGN", "LOCR", "UPCR"),
@@ -56,6 +44,27 @@ rgns <- map_df(regions, ~paste0(.x, collapse =",")) |>
   pivot_longer(names_to = "rgn", values_to = "release_location_rmis_region", everything()) |> 
   separate_rows(release_location_rmis_region)
 
+
+
+lu <- list(
+  #CCT queried releases, QAQC'd and assigned to PR and PR_MU
+  cwt_stk = read_csv(file.path(dir_proj, "MSMDB/MSM_Stock_CWT2.csv")) |> 
+    mutate(run_year = Run_ID+1985) |> 
+    select(run_year, tag_code = CWT_Code, area = Area_Agg,
+           pr = PR_Number, pr_mu = PR_MU_Number, n_rel = Number_Released, everything()) |> 
+    filter(!is.na(pr), !is.na(pr_mu), pr_mu > 0) |> 
+    #exclude a double-mapped row
+    filter(!(run_year == 1996 & tag_code == "071544" & FRAMStkID == 166))
+  ,
+  #DA incomplete rel state/region/basin to pr/pr_mu/StockID
+  rmis_rgn_stkid = readxl::read_excel(file.path(dir_proj, "lu_rmis_rel_to_pr_prmu.xlsx"))
+)
+
+# #key dbs
+# "T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Projects/Coho FRAM MSM CWT analysis/MSMDB/MSM_86-91_Oct2006.mdb"
+# "T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Projects/Coho FRAM MSM CWT analysis/MSMDB/MSM_98-2020- SF2019.mdb"
+
+
 ```
 
 # Summary
@@ -64,7 +73,29 @@ This script analyzes coho coded wire tag (CWT) recoveries (and associated releas
 
 # Data
 
+## RMIS LUs
+
+```{r rmis_lu_downloads, eval=FALSE}
+# walk(
+#   c("https://www.rmpc.org/data/fishery.csv", "https://www.rmpc.org/data/gear.csv"), #others for various fields... 
+# ~.x |> download.file(destfile = paste0("T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Projects/Coho FRAM MSM CWT analysis/rmis_lu_", basename(.x)))
+# )
+
+#DA added into "rmis_loc_fram_fishery.xlsx"
+
+## All release locations, could be used to supplement CCT cwt_stk...
+# download.file(
+#   "https://www.rmpc.org/data/RL041_ALL_FULLSET.csv",
+#   "T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Projects/Coho FRAM MSM CWT analysis/rmis_lu_rel_loc_all.csv"
+#   )
+
+read_csv("T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Projects/Coho FRAM MSM CWT analysis/rmis_lu_rel_loc_all.csv")
+
+```
+
 ## RMIS wrangling
+
+These chunks preserve one-time operations to generate starting datasets from RMIS.
 
 ```{r read_in_rmis_recoveries, eval=FALSE}
 dir_rmis_recs <- "T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Projects/Coho FRAM MSM CWT analysis/ERAnalysis/RMISRecoveries/"
@@ -123,8 +154,7 @@ rmis_rel <- map_df(
       )
   )
 
-
-saveRDS(rmis_rel, "T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Projects/Coho FRAM MSM CWT analysis/rmis_coho_releases_for_rec_86_2020.rds")
+#saveRDS(rmis_rel, "T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Projects/Coho FRAM MSM CWT analysis/rmis_coho_releases_for_rec_86_2020.rds")
 
 ```
 
@@ -133,8 +163,10 @@ saveRDS(rmis_rel, "T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Proj
 left_join(
   readRDS(fp$rmis_recs) |> 
     mutate(
-      rec_loc_1 = str_sub(recovery_location_code,1,1),
-      rec_loc_2 = str_sub(recovery_location_code,2,2),
+      rl1 = str_sub(recovery_location_code, 1, 1),
+      rl2 = str_sub(recovery_location_code, 2, 2),
+      rl3 = str_sub(recovery_location_code, 3, 3),
+      rl45 = str_sub(recovery_location_code, 4, 5),
       f_type = case_when(
         between(fishery, 10, 19) ~ "troll",
         between(fishery, 20, 39) ~ "net",
@@ -145,39 +177,46 @@ left_join(
   ,
   readRDS(fp$rmis_rel) |> select(-contains("n_code")),
   by = c("tag_code" = "tag_code_or_release_id")
-  ) |> 
-  saveRDS(file.path(dir_proj, "rmis_coho_rec_rel_86_2020.rds"))
+  ) ##|> saveRDS(file.path(dir_proj, "rmis_coho_rec_rel_86_2020.rds"))
 
 ```
 
 # Mapping
 
-The following chunks show some incomplete and preliminary exploration of possible mapping options from tag codes to relevant stock/fishery units.
+## stocks
 
-```{r pull_msm_edit_distinct, eval=FALSE}
-#86-91, 92-97, 98-2020
+Exporting a format for the needed lookup from RMIS release location fields (state, region, basin) and the MSM/FRAM production region and management units (PR and PR_MU), and thence to FRAM StockID(s). Some of this is already available in, for example, the escapement compilation template sheet?
 
-db <- "C:/Users/auerbdaa/Downloads/MSM_98-2020- SF2019_cmpct.mdb"
-#db <- fp$db_msm
-db_con <- DBI::dbConnect(
-  drv = odbc::odbc(),
-  .connection_string = paste0("Driver={Microsoft Access Driver (*.mdb, *.accdb)};DBQ=", db, ";")
-  )
+The LU begun in from this first chunk was initiated but then paused due to existing CCT work in `lu$cwt_stk`
 
-msm_tbl_names <- c("Edit_Distinct")
+```{r lu_rmis_rel_to_pr_prmu_xlsx, eval=FALSE}
 
-msm_tbl <- map(set_names(msm_tbl_names), ~collect(tbl(db_con, .x)))
+# rmis_rr |> 
+#   distinct(release_location_state, release_location_rmis_region, release_location_rmis_basin) |> 
+#   arrange(release_location_state, release_location_rmis_region, release_location_rmis_basin) |> 
+#   mutate(pr = NA, pr_mu = NA, StockID = NA) |> 
+##Manually modified, do not overwrite:  #writexl::write_xlsx(file.path(dir_proj, "lu_rmis_rel_to_pr_prmu.xlsx"))
 
-msm_tbl$Edit_Distinct
 
-DBI::dbDisconnect(db_con)
+# #unused below...but considered in beginning of file.path(dir_proj, "lu_rmis_rel_to_pr_prmu.xlsx")
+# readxl::read_excel("T:/DFW-Salmon Mgmt Modeling Team - General/Escapement files/Coho/fram_coho_escapement_2022.xlsx", sheet = "year_template") |> 
+#   select(
+#     MSM_PR = ProductionRegionNumber, 
+#     MSM_PR_MU = ManagementUnitNumber,
+#     RRTerm_PR, RRTerm_PR_MU, 
+#     StockID, 
+#     StockLongName, 
+#     StockName
+#     )
 
 ```
 
 Examining `rmis_rr` against `lu$cwt_stk` mapping
 
 ```{r rmis_rr_cwt_stk, eval=FALSE}
-read_csv(file.path(dir_proj, "MSMDB/FishAggMap.csv"))
+
+#basically mapped for 1998 forward, presumably due to expectation that older are already mapped elsewhere in MSM?
+lu$cwt_stk |> count(run_year) |> print(n=100)
 
 distinct(rmis_rr, tag_code) #12936 releases
 distinct(lu$cwt_stk, tag_code) #5491 mapped
@@ -211,15 +250,187 @@ rmis_rr_cwt_stk |>
 
 ```
 
-Exporting a format for the needed lookup from RMIS release location fields (state, region, basin) and the MSM/FRAM production region and management units (PR and PR_MU), and thence to FRAM StockID(s). Some of this is already available in, for example, the escapement compilation template sheet?
 
-```{r lu_rmis_rel_to_pr_prmu_xlsx, eval=FALSE}
-rmis_rr |> 
-  distinct(release_location_state, release_location_rmis_region, release_location_rmis_basin) |> 
-  arrange(release_location_state, release_location_rmis_region, release_location_rmis_basin) |> 
-  mutate(pr = NA, pr_mu = NA, StockID = NA) |> 
-  writexl::write_xlsx(file.path(dir_proj, "lu_rmis_rel_to_pr_prmu.xlsx"))
+## fishery
+
+```{r pull_msm_edit_distinct, eval=FALSE}
+#86-91, 92-97, 98-2020
+
+db <- "C:/Users/auerbdaa/Downloads/MSM_98-2020- SF2019_cmpct.mdb"
+#db <- fp$db_msm
+db_con <- DBI::dbConnect(
+  drv = odbc::odbc(),
+  .connection_string = paste0("Driver={Microsoft Access Driver (*.mdb, *.accdb)};DBQ=", db, ";")
+  )
+
+msm_tbl_names <- c("Edit_Distinct")
+
+msm_tbl <- map(set_names(msm_tbl_names), ~collect(tbl(db_con, .x)))
+
+DBI::dbDisconnect(db_con)
+
+msm_tbl$Edit_Distinct
+
 ```
+
+```{r FishAggMap, eval=FALSE}
+#AHB very coarse mapping  
+read_csv(file.path(dir_proj, "MSMDB/FishAggMap.csv"))
+```
+
+```{r now_superseded_fram_fishery_rmis_loc, eval=FALSE}
+db_con <- DBI::dbConnect(
+  drv = odbc::odbc(),
+  .connection_string = paste0(
+    "Driver={Microsoft Access Driver (*.mdb, *.accdb)};DBQ=",
+    "O:/code/coho/fram_mdbs/PSC_CoTC_PostSeason_CohoFRAMDB_thru2020_021622.mdb",
+    ";")
+  )
+
+fram_fishery <- tbl(db_con, "Fishery") |> 
+  filter(Species == "COHO") |> 
+  select(FisheryID:FisheryTitle) |> 
+  collect()
+
+DBI::dbDisconnect(db_con)
+
+##Manually edited, no overwrite! writexl::write_xlsx(fram_fishery, "NOOVERWRITEfram_fishery_rmis_loc.xlsx")
+#this file/approach superseded by below "rmis_loc_fram_fishery.xlsx"
+```
+
+```{r rec_location_code_init_EDA, eval=FALSE}
+rmis_rr |> 
+  filter(
+    str_sub(recovery_location_code,1,3) == "6MO"
+  ) |> 
+  count(recovery_location_code) |> arrange(desc(n))
+
+#38 distinct, vast majority in first 22
+rmis_rr |> count(str_sub(recovery_location_code,1,3)) |> arrange(desc(n)) |> print(n=100)
+
+#4989 distinct but only first ~2K matter
+rmis_rr |> count(recovery_location_code) |> arrange(desc(n)) |> 
+  rowid_to_column() |> ggplot(aes(rowid, n)) + geom_col()
+
+#excluding escapement about ~4K, 
+#with ~2K having more than 5 recs 
+#and ~2.7K more than 5 incl escp
+rmis_rr |> 
+  filter(fishery < 50) |>
+  count(recovery_location_code) |> arrange(desc(n)) |> 
+  filter(n > 5) |> 
+  rowid_to_column() |> ggplot(aes(rowid, n)) + geom_col()
+```
+
+```{r write_starting_rmis_loc_fram_fishery, eval=FALSE}
+# rmis_rr |> 
+#   count(
+#     loc3 = str_sub(recovery_location_code,1,3),
+#     recovery_location_code,
+#     recovery_location_name,
+#     fishery, gear
+#     ) |> 
+#   arrange(desc(n)) 
+# ## DA began mapping to FRAM FisheryID
+# ##  writexl::write_xlsx("NOOVERWRITErmis_loc_fram_fishery")
+
+
+## DA began to build from PSC_V41_Specification.pdf, pg 49-60 
+## realized this must exist already, searched, DL'd and added into workbook
+# readxl::read_excel("rmis_loc_fram_fishery.xlsx", sheet = "rmis_lu_gear")
+
+
+rmis_rr |> 
+  count(rl1,rl2,rl3,rl45, fishery, gear, f_type) |> arrange(rl1, desc(n)) |> 
+  mutate(
+    rl1_desc = set_names(c("AK", "BC", "WA", "ID", "OR", "CA", "HS", "FR"),1:8)[rl1],
+    rl3_desc = case_when(
+      rl1 == "1" & rl3 == "1" ~ "Southeast AK",
+      rl1 == "1" & rl3 == "2" ~ "Southcentral AK",
+      rl1 == "1" & rl3 == "3" ~ "Arctic-Yukon",
+      rl1 == "1" & rl3 == "4" ~ "Westward AK",
+      rl1 == "2" & rl3 == "N" ~ "N of Cape Caution",
+      rl1 == "2" & rl3 == "S" ~ "S of Cape Caution",
+      rl1 == "3" & rl3 == "1" ~ "Puget Sound",
+      rl1 == "3" & rl3 == "2" ~ "Coastal",
+      rl1 == "3" & rl3 == "3" ~ "Ocean",
+      rl1 == "3" & rl3 == "4" ~ "Columbia",
+      rl1 == "5" & rl3 == "2" ~ "Coastal",
+      rl1 == "5" & rl3 == "3" ~ "Columbia",
+      rl1 == "6" & rl3 == "K" ~ "Klamath-Trinity",
+      rl1 == "6" & rl3 == "C" ~ "Central Valley",
+      rl1 == "6" & rl3 == "A" ~ "North Coastal",
+      rl1 == "6" & rl3 == "B" ~ "Central Coastal",
+      rl1 == "6" & rl3 == "D" ~ "Sout Coastal",
+      rl1 == "6" & rl3 == "O" ~ "Ocean",
+      rl1 == "6" & rl3 == "M" ~ "Mountain"
+    ) 
+    ##, f_g = paste0(fishery, "_", gear)
+  ) |> 
+  # left_join(
+  #   read_csv("T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Projects/Coho FRAM MSM CWT analysis/rmis_lu_fishery.csv") |> 
+  #     select(fishery, fishery_short_name),
+  #   by = c("fishery")
+  # )
+  left_join(
+    #the gear_name is non-distinct across agencies for some fishery-gear combos
+    #but duplications and differences in appear non-significant
+    #so preserving first version as distinct()
+    read_csv("T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Projects/Coho FRAM MSM CWT analysis/rmis_lu_gear.csv") |> 
+      #mutate(f_g = paste0(fishery,"_", gear)) |> count(f_g) |> arrange(desc(n)) |> filter(n > 1) |> print(n=100)
+      distinct(fishery, gear, .keep_all = T)
+    ,
+    by = c("fishery", "gear")
+  ) |> 
+  mutate(FisheryID = "", comment = "") |> #print(n=200)
+  write_csv("rmis_rec_loc_fishery_gear_init.csv", na = "")
+
+
+
+
+
+```
+
+
+```{r eval=FALSE}
+#AHB file...orig csv in "T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Projects/Coho FRAM MSM CWT analysis/ERAnalysis/FishMap.csv"
+ahb_fishmap <- readxl::read_excel("fram_fishery_rmis_loc.xlsx", sheet = "ahb_mapping")
+
+#!! Note confusion on AK fisheries
+#!! CoTC post-season only includes up to 198 in Fishery table
+#!! AHB mapping goes up to 205
+#!! but doesn't align with recovery_location_name and/or "T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Projects/Coho FRAM MSM CWT analysis/1989LocationsSchema.pdf"
+#!! for example, FRAM FID 198 is
+#!!   "SW AK NET" in AHB mapping, but "Southeast Alaska Net" in CoTC Fishery table
+#!!   and AHB mapping associates 198 to 1M1SW, but 1M1 is listed as Southeast in 1989 spec, with "NW" referring to the NW quadrant of SEAK
+#!! moreover, 
+rmis_rr |> filter(recovery_location_code == "1M1NW")
+ahb_fishmap |> filter(PSC_Code == "1M1NW")
+
+#~232K clean matches
+rmis_rr |> 
+  mutate(
+    #named "Gear" in AHB file...
+    fishery_single = floor(fishery/10)
+      ) |> 
+  inner_join(
+    fishmap, 
+    by = c(
+      "recovery_location_code" = "PSC_Code",
+      "fishery_single" = "Gear"
+      )) |> 
+#  filter(FRAM_Fish_ID > 0) |> 
+  filter(FRAM_Fish_ID > 0, fishery < 50) |> 
+  count(FRAM_Fish_ID, FRAM_Fish_Name, fishery, gear, recovery_location_code, recovery_location_name) |> 
+  arrange(desc(n))
+
+
+```
+
+
+
+
+## OLDER
 
 Starting to toy with a version of the *Edit Distinct* assignment logic based on number of characters. Unfinished, possibly not worth finishing.
 
@@ -242,8 +453,6 @@ split(msm_tbl$Edit_Distinct, msm_tbl$Edit_Distinct$Num_Chars)[1:2] |>
         left_join(df, by = "PSC_Code")
     }
   )
-  
-
 
 ```
 
@@ -411,8 +620,8 @@ rmis_rr |>
 
 rmis_rr |> 
   filter(release_location_rmis_basin == "LOFR", f_type == "sport") |> 
-  count(run_year, rec_loc_1) |> 
-  ggplot(aes(run_year, n, fill = rec_loc_1)) +
+  count(run_year, rl1) |> 
+  ggplot(aes(run_year, n, fill = rl1)) +
   geom_col(position = position_dodge())
 ```
 
