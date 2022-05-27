@@ -163,10 +163,13 @@ rmis_rel <- map_df(
 left_join(
   readRDS(fp$rmis_recs) |> 
     mutate(
-      rl1 = str_sub(recovery_location_code, 1, 1),
-      rl2 = str_sub(recovery_location_code, 2, 2),
-      rl3 = str_sub(recovery_location_code, 3, 3),
-      rl45 = str_sub(recovery_location_code, 4, 5),
+      rlsp = str_sub(recovery_location_code, 1, 1),
+      rlwtr = str_sub(recovery_location_code, 2, 2),
+      rlsctr = str_sub(recovery_location_code, 3, 3),
+      rlrgn = str_sub(recovery_location_code, 4, 5),
+      rlarea = str_sub(recovery_location_code, 6, 9),
+      rllocn = str_sub(recovery_location_code, 10, 16),
+      rlsubl = str_sub(recovery_location_code, 17, 19),
       f_type = case_when(
         between(fishery, 10, 19) ~ "troll",
         between(fishery, 20, 39) ~ "net",
@@ -339,39 +342,78 @@ rmis_rr |>
 ## realized this must exist already, searched, DL'd and added into workbook
 # readxl::read_excel("rmis_loc_fram_fishery.xlsx", sheet = "rmis_lu_gear")
 
-
 rmis_rr |> 
-  count(rl1,rl2,rl3,rl45, fishery, gear, f_type) |> arrange(rl1, desc(n)) |> 
+  count(
+    recovery_location_code, recovery_location_name,
+    rlsp, rlwtr, rlsctr, rlrgn, #chars 1,2,3,4:5
+    rlarea, rllocn, rlsubl, #chars 6:9,10:16,17:19 
+    fishery, gear, f_type) |> 
+  arrange(rlsp, desc(n)) |> 
   mutate(
-    rl1_desc = set_names(c("AK", "BC", "WA", "ID", "OR", "CA", "HS", "FR"),1:8)[rl1],
-    rl3_desc = case_when(
-      rl1 == "1" & rl3 == "1" ~ "Southeast AK",
-      rl1 == "1" & rl3 == "2" ~ "Southcentral AK",
-      rl1 == "1" & rl3 == "3" ~ "Arctic-Yukon",
-      rl1 == "1" & rl3 == "4" ~ "Westward AK",
-      rl1 == "2" & rl3 == "N" ~ "N of Cape Caution",
-      rl1 == "2" & rl3 == "S" ~ "S of Cape Caution",
-      rl1 == "3" & rl3 == "1" ~ "Puget Sound",
-      rl1 == "3" & rl3 == "2" ~ "Coastal",
-      rl1 == "3" & rl3 == "3" ~ "Ocean",
-      rl1 == "3" & rl3 == "4" ~ "Columbia",
-      rl1 == "5" & rl3 == "2" ~ "Coastal",
-      rl1 == "5" & rl3 == "3" ~ "Columbia",
-      rl1 == "6" & rl3 == "K" ~ "Klamath-Trinity",
-      rl1 == "6" & rl3 == "C" ~ "Central Valley",
-      rl1 == "6" & rl3 == "A" ~ "North Coastal",
-      rl1 == "6" & rl3 == "B" ~ "Central Coastal",
-      rl1 == "6" & rl3 == "D" ~ "Sout Coastal",
-      rl1 == "6" & rl3 == "O" ~ "Ocean",
-      rl1 == "6" & rl3 == "M" ~ "Mountain"
-    ) 
-    ##, f_g = paste0(fishery, "_", gear)
+    rlsp_desc = set_names(c("AK", "BC", "WA", "ID", "OR", "CA", "HS", "FR"),1:8)[rlsp],
+    rlwtr_desc = set_names(c("Marn", "Frsh"), c("M", "F"))[rlwtr],
+    rlsctr_desc = case_when(
+      rlsp == "1" & rlsctr == "1" ~ "Southeast AK",
+      rlsp == "1" & rlsctr == "2" ~ "Southcentral AK",
+      rlsp == "1" & rlsctr == "3" ~ "Arctic-Yukon",
+      rlsp == "1" & rlsctr == "4" ~ "Westward AK",
+      rlsp == "2" & rlsctr == "N" ~ "N of Cape Caution",
+      rlsp == "2" & rlsctr == "S" ~ "S of Cape Caution",
+      rlsp == "3" & rlsctr == "1" ~ "Puget Sound",
+      rlsp == "3" & rlsctr == "2" ~ "Coastal",
+      rlsp == "3" & rlsctr == "3" ~ "Ocean",
+      rlsp == "3" & rlsctr == "4" ~ "Columbia",
+      rlsp == "5" & rlsctr == "2" ~ "Coastal",
+      rlsp == "5" & rlsctr == "3" ~ "Columbia",
+      rlsp == "6" & rlsctr == "K" ~ "Klamath-Trinity",
+      rlsp == "6" & rlsctr == "C" ~ "Central Valley",
+      rlsp == "6" & rlsctr == "A" ~ "North Coastal",
+      rlsp == "6" & rlsctr == "B" ~ "Central Coastal",
+      rlsp == "6" & rlsctr == "D" ~ "Sout Coastal",
+      rlsp == "6" & rlsctr == "O" ~ "Ocean",
+      rlsp == "6" & rlsctr == "M" ~ "Mountain"
+    )
+    ,
+    rlrgn_desc = case_when(
+      rlsp == "3" & rlrgn == "01" ~ "Nooksack/Sam term comm",
+      rlsp == "3" & rlrgn == "02" ~ "Skagit term comm",
+      rlsp == "3" & rlrgn == "03" ~ "Stilly/Sno term comm",
+      rlsp == "3" & rlrgn == "04" ~ "Hood Canal term comm",
+      rlsp == "3" & rlrgn == "05" ~ "S Puget Sound term comm",
+      rlsp == "3" & rlrgn == "06" ~ "Domestic mixed comm",
+      rlsp == "3" & rlrgn == "07" ~ "Internat mixed comm",
+      rlsp == "3" & rlrgn == "08" ~ "Strait JDF term comm",
+      rlsp == "3" & rlrgn == "11" ~ "Internat mixed spt 5/6/7",
+      rlsp == "3" & rlrgn == "12" ~ "Skagit/Stilly/Sno term spt 8",
+      rlsp == "3" & rlrgn == "13" ~ "Domestic mixed spt 9",
+      rlsp == "3" & rlrgn == "14" ~ "S Puget Sound spt 10/11//13",
+      rlsp == "3" & rlrgn == "15" ~ "Hood Canal spt 12",
+      rlsp == "3" & rlrgn == "17" ~ "N Coast streams",
+      rlsp == "3" & rlrgn == "18" ~ "Grays Hbr & tribs",
+      rlsp == "3" & rlrgn == "19" ~ "Willapa Hbr & tribs",
+      rlsp == "3" & rlrgn == "20" ~ "Columbia",
+      rlsp == "3" & rlrgn == "21" ~ "MA1",
+      rlsp == "3" & rlrgn == "22" ~ "MA2",
+      rlsp == "3" & rlrgn == "23" ~ "MA3",
+      rlsp == "3" & rlrgn == "24" ~ "MA4",
+      rlsp == "3" & rlrgn == "25" ~ "MA5 troll only",
+      rlsp == "3" & rlrgn == "26" ~ "MA6 troll only",
+
+      rlsp == "5" & rlrgn == "21" ~ "Coast private",
+      rlsp == "5" & rlrgn == "22" ~ "Coast public",
+      rlsp == "5" & rlrgn == "31" ~ "WA below Bonn",
+      rlsp == "5" & rlrgn == "32" ~ "OR below Bonn",
+      rlsp == "5" & rlrgn == "33" ~ "Willamette",
+      rlsp == "5" & rlrgn == "34" ~ "Bonn to McNary",
+      rlsp == "5" & rlrgn == "35" ~ "Snake",
+      
+      rlsp == "6" & rlrgn == "FB" ~ "Fort Bragg", #appears unused in these codes
+      rlrgn == "" ~ ""
+    ),
+    # rlarea_desc = "",
+    # rllocn_desc = "",
+    # rlsubl_desc = ""
   ) |> 
-  # left_join(
-  #   read_csv("T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Projects/Coho FRAM MSM CWT analysis/rmis_lu_fishery.csv") |> 
-  #     select(fishery, fishery_short_name),
-  #   by = c("fishery")
-  # )
   left_join(
     #the gear_name is non-distinct across agencies for some fishery-gear combos
     #but duplications and differences in appear non-significant
@@ -382,12 +424,57 @@ rmis_rr |>
     ,
     by = c("fishery", "gear")
   ) |> 
-  mutate(FisheryID = "", comment = "") |> #print(n=200)
-  write_csv("rmis_rec_loc_fishery_gear_init.csv", na = "")
+  mutate(
+    FisheryID = case_when(
+      str_detect(rllocn, c("foo")) & f_type == "sport" ~ 3, #Ft Brg Spt
+      str_detect(rllocn, c("foo")) & f_type == "troll" ~ 4, #Ft Brg Trl
+      str_detect(rllocn, c("BGCB|OBBG|OBCB|OBFK")) & f_type == "sport" ~ 5, #Ca KMZ Spt, northernmost
+      str_detect(rllocn, c("BGCB|OBBG|OBCB|OBFK")) & f_type == "troll" ~ 6, #Ca KMZ Trl, northernmost
+      str_detect(rllocn, c("FRPP|FRPS|NHPS|PPPS|PSMB")) & f_type == "sport" ~ 7, #So Cal Spt
+      str_detect(rllocn, c("FRPP|FRPS|NHPS|PPPS|PSMB")) & f_type == "troll" ~ 8, #So Cal Trl
+      
+      #testing with a manageable target
+      rlsp == "3" & rlrgn == "23" & fishery == 10 & gear == 41 ~ 38, #MA3 troll NT
+      rlsp == "3" & rlrgn == "23" & fishery == 15 & gear == 40 ~ 39, #MA3 troll TR
+      rlsp == "3" & rlrgn == "23" & fishery %in% 40:42 ~ 40 #MA3 spt
+      
+    ),
+    comment = "") -> x
+
+x |> print(n=200)
+
+x |> drop_na(FisheryID)
+
+x |> 
+  filter(FisheryID==40) |> 
+  select(FisheryID, recovery_location_code) |> 
+  left_join(rmis_rr, by = "recovery_location_code") |> 
+  unite("rel_st_reg_bsn", c(release_location_state, release_location_rmis_region, release_location_rmis_basin)) |> 
+  count(run_year, rel_st_reg_bsn) |> 
+  #ggplot(aes(run_year, n, color = rel_st_reg_bsn)) + geom_line()
+  filter(n>5) |> 
+  ggplot(aes(run_year, rel_st_reg_bsn, fill = n)) + geom_tile()
 
 
+##older version: write_csv("rmis_rec_loc_fishery_gear_init.csv", na = "")
 
+read_csv("rmis_rec_loc_fishery_gear_init.csv")
+filter(rmis_rr, recovery_location_code == "1M1") |> select(1:8)
 
+#possible CA codes to assign...
+#https://wildlife.ca.gov/Fishing/Ocean/Regulations/Salmon
+#from N to S: KMZ-->Ft.Bragg-->San Fran-->Montery&South
+select(rmis_rr, 1:16) |> filter(rlsp=="6") |> count(recovery_location_code, recovery_location_name, rlrgn, rlarea, rllocn) |> print(n=100)
+
+#possible OR to assign
+#large majority are escapement
+#unclear how FRAM ColR fisheries combine/split OR/WA 
+select(rmis_rr, 1:16) |> filter(rlsp=="5") |> count(recovery_location_code, recovery_location_name, rlrgn, rlarea, rllocn, f_type) |> arrange(desc(n)) |>  print(n=100)
+
+#possible WA to assign
+select(rmis_rr, 1:16) |> filter(rlsp=="3") |> count(recovery_location_code, recovery_location_name, rlrgn, rlarea, rllocn, f_type) |> arrange(desc(n)) |>  print(n=100)
+#excluding escp/hatcheries
+select(rmis_rr, 1:16) |> filter(rlsp=="3", f_type != "escp") |> count(recovery_location_code, recovery_location_name, rlrgn, rlarea, rllocn, f_type) |> arrange(desc(n)) |>  print(n=100)
 
 ```
 
@@ -620,8 +707,8 @@ rmis_rr |>
 
 rmis_rr |> 
   filter(release_location_rmis_basin == "LOFR", f_type == "sport") |> 
-  count(run_year, rl1) |> 
-  ggplot(aes(run_year, n, fill = rl1)) +
+  count(run_year, rlsp) |> 
+  ggplot(aes(run_year, n, fill = rlsp)) +
   geom_col(position = position_dodge())
 ```
 
