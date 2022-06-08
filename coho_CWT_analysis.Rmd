@@ -184,9 +184,7 @@ left_join(
 
 ```
 
-# Mapping
-
-## stocks
+# Stock mapping
 
 Exporting a format for the needed lookup from RMIS release location fields (state, region, basin) and the MSM/FRAM production region and management units (PR and PR_MU), and thence to FRAM StockID(s). Some of this is already available in, for example, the escapement compilation template sheet?
 
@@ -253,8 +251,105 @@ rmis_rr_cwt_stk |>
 
 ```
 
+Question 5/31/22 - which programs have had the most stable/consistent releases?
 
-## fishery
+```{r big_beef_example}
+rmis_rr |> count(hatchery_location_name, stock_location_name)
+
+#rmis_rel <- readRDS(fp$rmis_rel)
+
+rmis_rr |> 
+  filter(f_type != "escp") |> 
+  group_by(stock_location_name, brood_year) |> 
+  summarise(
+    n_recs = n(),
+    cwt_1st_mark_count = min(cwt_1st_mark_count),
+    .groups = "drop"
+  ) |> 
+  ggplot(aes(factor(brood_year), stock_location_name, fill = cwt_1st_mark_count, color = cwt_1st_mark_count)) + geom_tile()
+
+#rmis_rr |> filter(f_type != "escp") |> pluck("brood_year") |> range() #1980:2018
+
+#programs with most years of fishery-recovered releases
+rmis_rr |> filter(f_type != "escp") |> 
+  distinct(stock_location_name, brood_year) |>
+  count(stock_location_name) |> 
+  filter(n > 34) |> 
+  arrange(desc(n))
+
+#explore with "BIG BEEF CR"
+## non-escapement recoveries & mark-counts by brood year
+## post-2004 see a clear drop in typical cwt_1st_mark_count without a big drop in n_recs
+## could be various factors, but perhaps interesting and definitely inflects other ideas
+rmis_rr |> 
+  filter(f_type != "escp") |> 
+  filter(str_detect(stock_location_name, "BIG BEEF CR")) |> 
+  group_by(stock_location_name, brood_year) |> 
+  summarise(
+    n_recs = n(),
+    cwt_1st_mark_count = min(cwt_1st_mark_count),
+    .groups = "drop"
+  ) |> 
+  pivot_longer(cols = c(n_recs, cwt_1st_mark_count), names_to = "var", values_to = "val") |> 
+  ggplot(aes(factor(brood_year), val)) + geom_col() + facet_wrap(~var, ncol = 1, scales = "free")
+
+## non-escapement recoveries by run_year and fishery
+rmis_rr |> 
+  filter(f_type != "escp") |> 
+  filter(str_detect(stock_location_name, "BIG BEEF CR")) |> 
+  group_by(stock_location_name, run_year, f_type) |> 
+  summarise(
+    n_recs = n(),
+    cwt_1st_mark_count = min(cwt_1st_mark_count),
+    .groups = "drop"
+  ) |> 
+  pivot_longer(cols = c(n_recs, cwt_1st_mark_count), names_to = "var", values_to = "val") |> 
+  ggplot(aes(factor(run_year), val, fill = f_type)) + geom_col() + facet_wrap(~var, ncol = 1, scales = "free")
+
+## same as above, starting to focus on fishery changes 
+rmis_rr |> 
+  filter(f_type != "escp") |> 
+  filter(str_detect(stock_location_name, "BIG BEEF CR")) |> 
+  group_by(stock_location_name, run_year, f_type) |> 
+  summarise(
+    n_recs = n(),
+    cwt_1st_mark_count = min(cwt_1st_mark_count),
+    .groups = "drop"
+  ) |> 
+  pivot_longer(cols = c(n_recs, cwt_1st_mark_count), names_to = "var", values_to = "val") |> 
+  filter(var == "n_recs") |> 
+  ggplot(aes(factor(run_year), val, fill = f_type)) + geom_col() + facet_wrap(~f_type, ncol = 1)
+
+## CCT FRAM stock mapping appears unhelpful?
+## is it simply not used? or is the mapping off?
+rmis_rr |> 
+  filter(f_type != "escp") |> 
+  filter(str_detect(stock_location_name, "BIG BEEF CR")) |> 
+  left_join(lu$cwt_stk, by = c("run_year", "tag_code")) |> 
+## 761 recs for 1998-2000 mapped to StockID 46 "Area 12/12B Wild Marked"
+  #count(FRAMStkID)
+  filter(!is.na(FRAMStkID)) |> count(run_year) |> print(n=50) 
+
+## looking ahead to fishery mapping work below...
+rmis_rr |> 
+  filter(f_type != "escp") |> 
+  filter(str_detect(stock_location_name, "BIG BEEF CR")) |> 
+  count(stock_location_name, run_year, rlsp, rlwtr, rlsctr, f_type) |> 
+  filter(rlsp == "3", rlsctr == "1") |> 
+  unite(col = "rlft", c(rlsp, rlwtr, rlsctr, f_type)) |> 
+  mutate(run_year = factor(run_year)) |> 
+  #ggplot(aes(run_year, rlft, fill=n)) + geom_tile() 
+  
+  ggplot(aes(run_year, n, fill=rlft)) + geom_col(position = "dodge") 
+
+
+
+```
+
+
+# Fishery mapping
+
+## misc initial
 
 ```{r pull_msm_edit_distinct, eval=FALSE}
 #86-91, 92-97, 98-2020
@@ -281,7 +376,7 @@ msm_tbl$Edit_Distinct
 read_csv(file.path(dir_proj, "MSMDB/FishAggMap.csv"))
 ```
 
-```{r now_superseded_fram_fishery_rmis_loc, eval=FALSE}
+```{r now_deprecated_fram_fishery_rmis_loc, eval=FALSE}
 db_con <- DBI::dbConnect(
   drv = odbc::odbc(),
   .connection_string = paste0(
@@ -337,12 +432,25 @@ rmis_rr |>
 # ## DA began mapping to FRAM FisheryID
 # ##  writexl::write_xlsx("NOOVERWRITErmis_loc_fram_fishery")
 
+# ##another older version: write_csv("rmis_rec_loc_fishery_gear_init.csv", na = "")
+# read_csv("rmis_rec_loc_fishery_gear_init.csv")
+# filter(rmis_rr, recovery_location_code == "1M1") |> select(1:8)
 
 ## DA began to build from PSC_V41_Specification.pdf, pg 49-60 
 ## realized this must exist already, searched, DL'd and added into workbook
 # readxl::read_excel("rmis_loc_fram_fishery.xlsx", sheet = "rmis_lu_gear")
+```
 
-rmis_rr |> 
+## rmis_rr_lu
+
+Attempt to build lookup from RMIS recovery location codes to FRAM FisheryIDs
+
+This first chunk distinguishes the unique *recovery_location_codes* and builds new fields by character position, following the RMIS schema (PSC_V41_Specification_Nov2021.pdf).
+
+In addition, the RMIS "gear" lookup is joined, providing *gear_name* strings. 
+
+```{r build_starting_lu_rmis_loc_fram_fishery, eval=FALSE}
+rmis_rr_lu <- rmis_rr |> 
   count(
     recovery_location_code, recovery_location_name,
     rlsp, rlwtr, rlsctr, rlrgn, #chars 1,2,3,4:5
@@ -351,7 +459,7 @@ rmis_rr |>
   arrange(rlsp, desc(n)) |> 
   mutate(
     rlsp_desc = set_names(c("AK", "BC", "WA", "ID", "OR", "CA", "HS", "FR"),1:8)[rlsp],
-    rlwtr_desc = set_names(c("Marn", "Frsh"), c("M", "F"))[rlwtr],
+    rlwtr_desc = set_names(c("Marine", "Freshw"), c("M", "F"))[rlwtr],
     rlsctr_desc = case_when(
       rlsp == "1" & rlsctr == "1" ~ "Southeast AK",
       rlsp == "1" & rlsctr == "2" ~ "Southcentral AK",
@@ -375,6 +483,9 @@ rmis_rr |>
     )
     ,
     rlrgn_desc = case_when(
+      rlsp == "2" & rlwtr == "M" & rlsctr == "S" & rlrgn == "01" ~ "NW Van Isl troll",
+      rlsp == "2" & rlwtr == "M" & rlsctr == "S" & rlrgn == "02" ~ "SW Van Isl troll",      
+      
       rlsp == "3" & rlrgn == "01" ~ "Nooksack/Sam term comm",
       rlsp == "3" & rlrgn == "02" ~ "Skagit term comm",
       rlsp == "3" & rlrgn == "03" ~ "Stilly/Sno term comm",
@@ -416,37 +527,226 @@ rmis_rr |>
   ) |> 
   left_join(
     #the gear_name is non-distinct across agencies for some fishery-gear combos
-    #but duplications and differences in appear non-significant
+    #but duplication and differences in appear non-significant
     #so preserving first version as distinct()
     read_csv("T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Projects/Coho FRAM MSM CWT analysis/rmis_lu_gear.csv") |> 
       #mutate(f_g = paste0(fishery,"_", gear)) |> count(f_g) |> arrange(desc(n)) |> filter(n > 1) |> print(n=100)
       distinct(fishery, gear, .keep_all = T)
     ,
     by = c("fishery", "gear")
-  ) |> 
+  )
+```
+
+The (incomplete) chunks below begin FisheryID assignment by state/region.
+
+```{r rmis_rr_lu_CA, eval=FALSE}
+#possible CA codes to assign...
+#https://wildlife.ca.gov/Fishing/Ocean/Regulations/Salmon
+#from N to S: KMZ-->Ft.Bragg-->San Fran-->Montery&South
+select(rmis_rr, 1:16) |> filter(rlsp=="6") |> count(recovery_location_code, recovery_location_name, rlrgn, rlarea, rllocn) |> print(n=100)
+
+rmis_rr_lu |> 
   mutate(
     FisheryID = case_when(
-      str_detect(rllocn, c("foo")) & f_type == "sport" ~ 3, #Ft Brg Spt
-      str_detect(rllocn, c("foo")) & f_type == "troll" ~ 4, #Ft Brg Trl
+      #str_detect(rllocn, c("")) & f_type == "sport" ~ 3, #Ft Brg Spt
+      #str_detect(rllocn, c("")) & f_type == "troll" ~ 4, #Ft Brg Trl
       str_detect(rllocn, c("BGCB|OBBG|OBCB|OBFK")) & f_type == "sport" ~ 5, #Ca KMZ Spt, northernmost
       str_detect(rllocn, c("BGCB|OBBG|OBCB|OBFK")) & f_type == "troll" ~ 6, #Ca KMZ Trl, northernmost
       str_detect(rllocn, c("FRPP|FRPS|NHPS|PPPS|PSMB")) & f_type == "sport" ~ 7, #So Cal Spt
-      str_detect(rllocn, c("FRPP|FRPS|NHPS|PPPS|PSMB")) & f_type == "troll" ~ 8, #So Cal Trl
-      
-      #testing with a manageable target
-      rlsp == "3" & rlrgn == "23" & fishery == 10 & gear == 41 ~ 38, #MA3 troll NT
-      rlsp == "3" & rlrgn == "23" & fishery == 15 & gear == 40 ~ 39, #MA3 troll TR
-      rlsp == "3" & rlrgn == "23" & fishery %in% 40:42 ~ 40 #MA3 spt
-      
+      str_detect(rllocn, c("FRPP|FRPS|NHPS|PPPS|PSMB")) & f_type == "troll" ~ 8 #So Cal Trl
+
     ),
-    comment = "") -> x
+    comment = "")
+```
 
-x |> print(n=200)
+```{r rmis_rr_lu_OR, eval=FALSE}
+#possible OR to assign
+#large majority are escapement
+#unclear how FRAM ColR fisheries combine/split OR/WA 
+select(rmis_rr, 1:16) |> filter(rlsp=="5") |> count(recovery_location_code, recovery_location_name, rlrgn, rlarea, rllocn, f_type) |> arrange(desc(n)) |>  print(n=100)
 
-x |> drop_na(FisheryID)
+```
 
-x |> 
-  filter(FisheryID==40) |> 
+```{r rmis_rr_lu_WA, eval=FALSE}
+#possible WA to assign
+select(rmis_rr, 1:16) |> filter(rlsp=="3") |> count(recovery_location_code, recovery_location_name, rlrgn, rlarea, rllocn, f_type) |> arrange(desc(n)) |>  print(n=100)
+#excluding escp/hatcheries
+select(rmis_rr, 1:16) |> filter(rlsp=="3", f_type != "escp") |> 
+  count(recovery_location_code, recovery_location_name, rlsp, rlwtr, rlsctr, rlrgn, rlarea, rllocn, f_type) |> arrange(desc(n)) |>  print(n=100)
+
+rmis_rr_lu |> filter(rlsp=="3" & rlwtr=="M" & rlsctr=="2") |> count(rlrgn)
+rmis_rr_lu |> filter(rlsp=="3" & rlwtr=="F" & rlsctr=="2" & rlrgn == "19") 
+
+rmis_rr_lu |> 
+  mutate(
+    FisheryID = case_when(
+# 30	LCRWaT Spt	Col. Rvr. Wash Trib Spt
+# 31	UpColR Spt	Col. Rvr. Sport Above Bonneville
+# 32	UpColR Net	Col. Rvr. Net Above Bonneville
+      rlsp=="3" & rlwtr=="M" & rlsctr=="3" & rlrgn=="21" & fishery %in% 40:49 ~ 33, #A1-Ast Spt	WA Area 1 & Astoria Sport
+      rlsp=="3" & rlwtr=="M" & rlsctr=="3" & rlrgn=="21" & fishery %in% 10:19 ~ 34, #A1-Ast Trl	WA Area 1 & Astoria Troll
+      rlsp=="3" & rlwtr=="M" & rlsctr=="3" & rlrgn=="22" & fishery==10 & gear==41 ~ 35, #Area2Trl NT	WA Area 2 Non-Treaty Troll
+      rlsp=="3" & rlwtr=="M" & rlsctr=="3" & rlrgn=="22" & fishery==15 & gear==40 ~ 36, #Area2TrlTR	WA Area 2 Treaty Troll
+      rlsp=="3" & rlwtr=="M" & rlsctr=="3" & rlrgn=="22" & fishery %in% 40:49 ~ 37, #Area 2 Spt	WA Area 2 Sport
+      rlsp=="3" & rlwtr=="M" & rlsctr=="3" & rlrgn=="23" & fishery==10 & gear==41 ~ 38, #WA Area 3 Non-Treaty troll
+      rlsp=="3" & rlwtr=="M" & rlsctr=="3" & rlrgn=="23" & fishery==15 & gear==40 ~ 39, #WA Area 3 Treaty troll
+      rlsp=="3" & rlwtr=="M" & rlsctr=="3" & rlrgn=="23" & fishery %in% 40:49 ~ 40, #WA Area 3 Sport
+
+      rlsp=="3" & rlwtr=="M" & rlsctr=="3" & rlrgn=="24" & str_sub(rlarea,1,2)=="04" & fishery %in% 40:49 ~ 41,	#Area 4 Spt	WA Area 4 Sport
+      rlsp=="3" & rlwtr=="M" & rlsctr=="3" & rlrgn=="24" & rlarea=="04" & fishery==10 & gear==41 ~ 42,	#A4/4BTrlNT	WA Area 4/4B Non-Treaty Troll
+      rlsp=="3" & rlwtr=="M" & rlsctr=="3" & rlrgn=="24" & rlarea=="04" & fishery==15 & gear==40 ~ 43	#A4/4BTrlTR	WA Area 4/4B Treaty Troll
+
+# 44	A 5-6C Trl	WA Area 5-6-6C Troll
+
+      rlsp=="3" & rlwtr=="M" & rlsctr=="2" & rlrgn=="19" & fishery %in% 40:49 ~ 45, #Willpa Spt	Willapa Bay Sport (2.1)
+      rlsp=="3" & rlwtr=="F" & rlsctr=="2" & rlrgn=="19" & fishery %in% 40:49 ~ 46	#Wlp Tb Spt	Willapa Tributary Sport
+      rlsp=="3" & rlwtr=="M" & rlsctr=="2" & rlrgn=="19" & fishery %in% 20:29 ~ 47, #WlpaBT Net	Willapa Bay & FW Trib Net; all 22-14, Non-treaty Drift Gillnet
+
+# 48	GryHbr Spt	Grays Harbor Sport (2.2)
+# 49	SGryHb Spt	South Grays Harbor Sport
+# 50	GryHbr Net	Grays Harbor Estuary Net
+# 51	Hump R Spt	Humptulips R Sport
+# 52	LwCheh Net	Lower Chehalis R Net
+# 53	Hump R C&S	Humptulips R C&S
+# 54	Chehal Spt	Chehalis R Sport
+# 55	Hump R Net	Humptulips R Net
+# 56	UpCheh Net	Upper Chehalis R Net
+# 57	Chehal C&S	Chehalis R C&S
+# 58	Wynoch Spt	Wynochee R Sport
+# 59	Hoquam Spt	Hoquiam R Sport
+# 60	Wishkh Spt	Wishkah R Sport
+# 61	Satsop Spt	Satsop R Sport
+# 62	Quin R Spt	Quinault R Sport
+# 63	Quin R Net	Quinault R Net
+# 64	Quin R C&S	Quinault R C&S
+# 65	Queets Spt	Queets R Sport
+# 66	Clrwtr Spt	Clearwater R Sport
+# 67	Salm R Spt	Salmon R Sport (Queets)
+# 68	Queets Net	Queets R Net
+# 69	Queets C&S	Queets R C&S
+# 70	Quilly Spt	Quillayute R Sport
+# 71	Quilly Net	Quillayute R Net
+# 72	Quilly C&S	Quillayute R C&S
+# 73	Hoh R  Spt	Hoh R Sport
+# 74	Hoh R  Net	Hoh R Net
+# 75	Hoh R  C&S	Hoh R C&S
+# 76	Mak FW Spt	Makah Tributary Sport
+# 77	Mak FW Net	Makah Freshwater Net
+# 78	Makah  C&S	Makah C&S
+# 79	A 4-4A Net	WA Area 4-4A Net
+# 80	A4B6CNetNT	WA Area 4B-5-6C Non-Treaty Net
+# 81	A4B6CNetTR	WA Area 4B-5-6C Treaty Net
+# 82	Ar6D NetNT	6D Non-Treaty Net (Dungeness Bay & R)
+# 83	Ar6D NetTR	6D Treaty Net (Dungeness Bay & R)
+# 84	Elwha  Net	Elwha R Net
+# 85	WJDF T Net	West JDF Straits Trib Net
+# 86	EJDF T Net	East JDF Straits Trib Net
+# 87	A6-7ANetNT	WA Area 7-7A Non-Treaty Net
+# 88	A6-7ANetTR	WA Area 7-7A Treaty Net
+# 89	EJDF FWSpt	East JDF Straits Trib Sport
+# 90	WJDF FWSpt	West JDF Straits Trib Sport
+# 91	Area 5 Spt	WA Area 5 Sport (Sekiu)
+# 92	Area 6 Spt	WA Area 6 Sport (Port Angeles)
+# 93	Area 7 Spt	WA Area 7 Sport (San Juan Islands)
+# 94	Dung R Spt	Dungeness R Sport
+# 95	ElwhaR Spt	Elwha R Sport
+# 96	A7BCDNetNT	WA Area 7B-7C-7D Non-Treaty Net
+# 97	A7BCDNetTR	WA Area 7B-7C-7D Treaty Net
+# 98	Nook R Net	Nooksack R Net
+# 99	Nook R Spt	Nooksack R Sport
+# 100	Samh R Spt	Samish R Sport
+# 101	Ar 8 NetNT	WA Area 8 Non-Treaty Net (Skagit)
+# 102	Ar 8 NetTR	WA Area 8 Treaty Net (Skagit)
+# 103	Skag R Net	Skagit R Net
+# 104	SkgR TsNet	Skagit River Test Net
+# 105	SwinCh Net	Swinomish Channel Net
+# 106	Ar 8-1 Spt	WA Area 8.1 Sport (Skagit Bay)
+# 107	Area 9 Spt	WA Area 9 Sport (Admirality Inlet)
+# 108	Skag R Spt	Skagit R Sport
+# 109	Ar8A NetNT	WA Area 8A Non-Treaty Net
+# 110	Ar8A NetTR	WA Area 8A Treaty Net
+# 111	Ar8D NetNT	WA Area 8D Non-Treaty Net (Tulalip Bay)
+# 112	Ar8D NetTR	WA Area 8D Treaty Net (Tulalip Bay)
+# 113	Stil R Net	Stillaguamish R Net
+# 114	Snoh R Net	Snohomish R Net
+# 115	Ar 8-2 Spt	WA Area 8.2 Sport (Everett)
+# 116	Stil R Spt	Stillaguamish R Sport
+# 117	Snoh R Spt	Snohomish R Sport
+# 118	Ar 10  Spt	WA Area 10 Sport (Seattle)
+# 119	Ar10 NetNT	WA Area 10 Non-Treaty Net (Seattle)
+# 120	Ar10 NetTR	WA Area 10 Treaty Net (Seattle)
+# 121	Ar10ANetNT	WA Area 10A Non-Treaty Net (Elliott Bay)
+# 122	Ar10ANetTR	WA Area 10A Treaty Net (Elliott Bay)
+# 123	Ar10ENetNT	WA Area 10E Non-Treaty Net (East Kitsap)
+# 124	Ar10ENetTR	WA Area 10E Treaty Net (East Kitsap)
+# 125	10F-G  Net	WA Area 10F-G Treaty Net (Lake Union)
+# 126	Duwm R Net	Green/Duwamish R Net
+# 127	Duwm R Spt	Green/Duwamish R Sport
+# 128	L WaSm Spt	Lk Wash/Sammamish/Tribs Spt
+# 129	Ar 11  Spt	WA Area 11 Sport (Tacoma)
+# 130	Ar11 NetNT	WA Area 11 Non-Treaty Net (E/W Pass)
+# 131	Ar11 NetTR	WA Area 11 Treaty Net (E/W Pass)
+# 132	Ar11ANetNT	WA Area 11A Non-Treaty Net (Comm. Bay)
+# 133	Ar11ANetTR	WA Area 11A Treaty Net (Comm. Bay)
+# 134	Puyl R Net	Puyallup R Net
+# 135	Puyl R Spt	Puyallup R Sport
+# 136	Ar 13  Spt	WAArea 13 Marine Sport
+# 137	Ar13 NetNT	Area 13 Non-Treaty Net (So Puget Sound)
+# 138	Ar13 NetTR	Area 13 Treaty Net (So Puget Sound)
+# 139	Ar13CNetNT	Area 13C Non-Treaty Net (Chambers Bay)
+# 140	Ar13CNetTR	Area 13C Treaty Net (Chambers Bay)
+# 141	Ar13ANetNT	Area 13A Non-Treaty Net (Carr Inlet)
+# 142	Ar13ANetTR	Area 13A Treaty Net (Carr Inlet)
+# 143	Ar13DNetNT	Area 13D Non-Treaty Net
+# 144	Ar13DNetTR	Area 13D Treaty Net
+# 145	A13FKNetNT	Area 13F-13K Non-Treaty Net
+# 146	A13FKNetTR	Area 13F-13K Treaty Net
+# 147	Nisq R Net	Nisqually R Net
+# 148	McAlls Net	McAllister Creek Net
+# 149	13D-K TSpt	13D-13K Trib Sport
+# 150	Nisq R Spt	Nisqually R Sport
+# 151	Desc R Spt	Deschutes R Sport
+# 152	Ar 12  Spt	Area 12 Marine Sport
+# 153	1212BNetNT	Area 12-12B Hood Canal Non-Treaty Net
+# 154	1212BNetTR	Area 12-12B Hood Canal Treaty Net
+# 155	A9-9ANetNT	Area 9/9A Non-Treaty Net
+# 156	A9-9ANetTR	Area 9/9A Treaty Net (On Res)
+# 157	Ar12ANetNT	Area 12A Non-Treaty Net (Quilcene Bay)
+# 158	Ar12ANetTR	Area 12A Treaty Net (Quilcene Bay)
+# 159	A12CDNetNT	Area 12C-12D Non-Treaty Net (SE Hood Canal)
+# 160	A12CDNetTR	Area 12C-12D Treaty Net (SE Hood Canal)
+# 161	Skok R Net	Skokomish R Net
+# 162	Quilcn Net	Quilcene R Net
+# 163	1212B TSpt	12, 12B Trib FW Sport
+# 164	12A Tb Spt	12A Trib FW Sport
+# 165	12C-D TSpt	12C, 12D Trib FW Sport
+# 166	Skok R Spt	Skokomish R Sport
+
+    ),
+    comment = "")
+```
+
+
+```{r rmis_rr_lu_BC, eval=FALSE}
+#possible BC to assign
+select(rmis_rr, 1:16) |> filter(rlsp=="2") |> count(recovery_location_code, recovery_location_name, rlrgn, rlarea, rllocn, f_type) |> arrange(desc(n)) |>  print(n=100)
+select(rmis_rr, 1:16) |> filter(rlsp=="2", f_type != "escp") |> count(recovery_location_code, recovery_location_name, rlrgn, rlarea, rllocn, f_type) |> arrange(desc(n)) |>  print(n=100)
+
+rmis_rr_lu |> 
+  mutate(
+    FisheryID = case_when(
+      rlsp == "2" & rlwtr == "M" & rlsctr == "S" & rlrgn == "01" & f_type == "troll" ~ 174, #NW VI Trl
+      rlsp == "2" & rlwtr == "M" & rlsctr == "S" & rlrgn == "02" & f_type == "troll" ~ 175 #SW VI Trl
+
+    ),
+    comment = "")
+```
+
+
+```{r }
+rmis_rr_lu |> 
+  #filter(FisheryID==40) |> 
+  filter(FisheryID==175) |> 
   select(FisheryID, recovery_location_code) |> 
   left_join(rmis_rr, by = "recovery_location_code") |> 
   unite("rel_st_reg_bsn", c(release_location_state, release_location_rmis_region, release_location_rmis_basin)) |> 
@@ -455,26 +755,6 @@ x |>
   filter(n>5) |> 
   ggplot(aes(run_year, rel_st_reg_bsn, fill = n)) + geom_tile()
 
-
-##older version: write_csv("rmis_rec_loc_fishery_gear_init.csv", na = "")
-
-read_csv("rmis_rec_loc_fishery_gear_init.csv")
-filter(rmis_rr, recovery_location_code == "1M1") |> select(1:8)
-
-#possible CA codes to assign...
-#https://wildlife.ca.gov/Fishing/Ocean/Regulations/Salmon
-#from N to S: KMZ-->Ft.Bragg-->San Fran-->Montery&South
-select(rmis_rr, 1:16) |> filter(rlsp=="6") |> count(recovery_location_code, recovery_location_name, rlrgn, rlarea, rllocn) |> print(n=100)
-
-#possible OR to assign
-#large majority are escapement
-#unclear how FRAM ColR fisheries combine/split OR/WA 
-select(rmis_rr, 1:16) |> filter(rlsp=="5") |> count(recovery_location_code, recovery_location_name, rlrgn, rlarea, rllocn, f_type) |> arrange(desc(n)) |>  print(n=100)
-
-#possible WA to assign
-select(rmis_rr, 1:16) |> filter(rlsp=="3") |> count(recovery_location_code, recovery_location_name, rlrgn, rlarea, rllocn, f_type) |> arrange(desc(n)) |>  print(n=100)
-#excluding escp/hatcheries
-select(rmis_rr, 1:16) |> filter(rlsp=="3", f_type != "escp") |> count(recovery_location_code, recovery_location_name, rlrgn, rlarea, rllocn, f_type) |> arrange(desc(n)) |>  print(n=100)
 
 ```
 
