@@ -19,6 +19,7 @@ knitr::opts_chunk$set(echo = TRUE, results = FALSE, warning = FALSE, message = F
 
 library("tidyverse")
 library("gt")
+library("patchwork")
 library("odbc"); library("DBI")
 #library("ggridges")
 
@@ -574,8 +575,11 @@ select(rmis_rr, 1:16) |> filter(rlsp=="3") |> count(recovery_location_code, reco
 select(rmis_rr, 1:16) |> filter(rlsp=="3", f_type != "escp") |> 
   count(recovery_location_code, recovery_location_name, rlsp, rlwtr, rlsctr, rlrgn, rlarea, rllocn, f_type) |> arrange(desc(n)) |>  print(n=100)
 
-rmis_rr_lu |> filter(rlsp=="3" & rlwtr=="M" & rlsctr=="2") |> count(rlrgn)
-rmis_rr_lu |> filter(rlsp=="3" & rlwtr=="F" & rlsctr=="2" & rlrgn == "19") 
+#working scratch
+rmis_rr_lu |> filter(str_detect(recovery_location_name, "HOKO"))
+
+rmis_rr_lu |> filter(rlsp=="3" & rlwtr=="M" & rlsctr=="1" & rlrgn=="11" & rlarea=="06  ") |> print(n=50)
+
 
 rmis_rr_lu |> 
   mutate(
@@ -583,7 +587,7 @@ rmis_rr_lu |>
 # 30	LCRWaT Spt	Col. Rvr. Wash Trib Spt
 # 31	UpColR Spt	Col. Rvr. Sport Above Bonneville
 # 32	UpColR Net	Col. Rvr. Net Above Bonneville
-      rlsp=="3" & rlwtr=="M" & rlsctr=="3" & rlrgn=="21" & fishery %in% 40:49 ~ 33, #A1-Ast Spt	WA Area 1 & Astoria Sport
+      rlsp=="3" & rlwtr=="M" & rlsctr=="3" & rlrgn=="21" & fishery %in% 40:49 ~ 33, #A1-Ast Spt	WA Area 1 & Astoria Sport; this includes various older "OCEAN SPORT AREA 71/81/91"...
       rlsp=="3" & rlwtr=="M" & rlsctr=="3" & rlrgn=="21" & fishery %in% 10:19 ~ 34, #A1-Ast Trl	WA Area 1 & Astoria Troll
       rlsp=="3" & rlwtr=="M" & rlsctr=="3" & rlrgn=="22" & fishery==10 & gear==41 ~ 35, #Area2Trl NT	WA Area 2 Non-Treaty Troll
       rlsp=="3" & rlwtr=="M" & rlsctr=="3" & rlrgn=="22" & fishery==15 & gear==40 ~ 36, #Area2TrlTR	WA Area 2 Treaty Troll
@@ -591,65 +595,69 @@ rmis_rr_lu |>
       rlsp=="3" & rlwtr=="M" & rlsctr=="3" & rlrgn=="23" & fishery==10 & gear==41 ~ 38, #WA Area 3 Non-Treaty troll
       rlsp=="3" & rlwtr=="M" & rlsctr=="3" & rlrgn=="23" & fishery==15 & gear==40 ~ 39, #WA Area 3 Treaty troll
       rlsp=="3" & rlwtr=="M" & rlsctr=="3" & rlrgn=="23" & fishery %in% 40:49 ~ 40, #WA Area 3 Sport
-
-      rlsp=="3" & rlwtr=="M" & rlsctr=="3" & rlrgn=="24" & str_sub(rlarea,1,2)=="04" & fishery %in% 40:49 ~ 41,	#Area 4 Spt	WA Area 4 Sport
-      rlsp=="3" & rlwtr=="M" & rlsctr=="3" & rlrgn=="24" & rlarea=="04" & fishery==10 & gear==41 ~ 42,	#A4/4BTrlNT	WA Area 4/4B Non-Treaty Troll
-      rlsp=="3" & rlwtr=="M" & rlsctr=="3" & rlrgn=="24" & rlarea=="04" & fishery==15 & gear==40 ~ 43	#A4/4BTrlTR	WA Area 4/4B Treaty Troll
-
-# 44	A 5-6C Trl	WA Area 5-6-6C Troll
+      rlsp=="3" & rlwtr=="M" & rlsctr=="3" & rlrgn=="24" & fishery %in% 40:49 ~ 41,	#Area 4 Spt	WA Area 4 Sport
+      rlsp=="3" & rlwtr=="M" & rlsctr=="3" & rlrgn=="24" & fishery==10 & gear==41 ~ 42,	#A4/4BTrlNT	WA Area 4/4B Non-Treaty Troll
+      rlsp=="3" & rlwtr=="M" & rlsctr=="3" & rlrgn=="24" & fishery==15 & gear==40 ~ 43,	#A4/4BTrlTR	WA Area 4/4B Treaty Troll
+      rlsp=="3" & rlwtr=="M" & rlsctr=="3" & rlrgn %in% c("25","26") & fishery==15 ~ 44, #A5-6C Trl	WA Area 5-6-6C Troll; all Treaty troll
 
       rlsp=="3" & rlwtr=="M" & rlsctr=="2" & rlrgn=="19" & fishery %in% 40:49 ~ 45, #Willpa Spt	Willapa Bay Sport (2.1)
-      rlsp=="3" & rlwtr=="F" & rlsctr=="2" & rlrgn=="19" & fishery %in% 40:49 ~ 46	#Wlp Tb Spt	Willapa Tributary Sport
+      rlsp=="3" & rlwtr=="F" & rlsctr=="2" & rlrgn=="19" & fishery==46 ~ 46,	#Wlp Tb Spt	Willapa Tributary Sport
       rlsp=="3" & rlwtr=="M" & rlsctr=="2" & rlrgn=="19" & fishery %in% 20:29 ~ 47, #WlpaBT Net	Willapa Bay & FW Trib Net; all 22-14, Non-treaty Drift Gillnet
 
-# 48	GryHbr Spt	Grays Harbor Sport (2.2)
-# 49	SGryHb Spt	South Grays Harbor Sport
-# 50	GryHbr Net	Grays Harbor Estuary Net
-# 51	Hump R Spt	Humptulips R Sport
-# 52	LwCheh Net	Lower Chehalis R Net
-# 53	Hump R C&S	Humptulips R C&S
-# 54	Chehal Spt	Chehalis R Sport
-# 55	Hump R Net	Humptulips R Net
-# 56	UpCheh Net	Upper Chehalis R Net
-# 57	Chehal C&S	Chehalis R C&S
-# 58	Wynoch Spt	Wynochee R Sport
-# 59	Hoquam Spt	Hoquiam R Sport
-# 60	Wishkh Spt	Wishkah R Sport
-# 61	Satsop Spt	Satsop R Sport
-# 62	Quin R Spt	Quinault R Sport
-# 63	Quin R Net	Quinault R Net
-# 64	Quin R C&S	Quinault R C&S
-# 65	Queets Spt	Queets R Sport
-# 66	Clrwtr Spt	Clearwater R Sport
-# 67	Salm R Spt	Salmon R Sport (Queets)
-# 68	Queets Net	Queets R Net
-# 69	Queets C&S	Queets R C&S
-# 70	Quilly Spt	Quillayute R Sport
-# 71	Quilly Net	Quillayute R Net
-# 72	Quilly C&S	Quillayute R C&S
-# 73	Hoh R  Spt	Hoh R Sport
-# 74	Hoh R  Net	Hoh R Net
-# 75	Hoh R  C&S	Hoh R C&S
-# 76	Mak FW Spt	Makah Tributary Sport
-# 77	Mak FW Net	Makah Freshwater Net
-# 78	Makah  C&S	Makah C&S
+      rlsp=="3" & rlwtr=="M" & rlsctr=="2" & rlrgn=="18" & fishery %in% 40:49 ~ 48, #GryHbr Spt	Grays Harbor Sport (2.2)
+#!!unclear how to split out from above? # 49	SGryHb Spt	South Grays Harbor Sport
+      rlsp=="3" & rlwtr=="M" & rlsctr=="2" & rlrgn=="18" & fishery %in% 20:29 ~ 50, #GryHbr Net	Grays Harbor Estuary Net; all NT drift gillnet
+
+      recovery_location_code=="3F21802  220004 R" & fishery==46 ~ 51, #Hump R Spt	Humptulips R Sport
+#!!need info to split NT/TR on gear and other fields: recovery_location_code=="3F21802  220190 R" & fishery==22 ~ 52, #LwCheh Net	Lower Chehalis R Net
+#!!would this have reported recoveries? 53	Hump R C&S	Humptulips R C&S
+      recovery_location_code=="3F21802  220190 R" & fishery==46 ~ 54, #Chehal Spt	Chehalis R Sport
+      recovery_location_code=="3F21802  220004 R" & fishery==22 ~ 55, #Hump R Net	Humptulips R Net
+#!!need info to split NT/TR on gear and other fields: recovery_location_code=="3F21802  220190 R" & fishery==22 ~ 56, #UpCheh Net	Upper Chehalis R Net
+#!!would this have reported recoveries? 57	Chehal C&S	Chehalis R C&S
+#!!no recoveries? 58	Wynoch Spt	Wynochee R Sport
+#!!no recoveries? 59	Hoquam Spt	Hoquiam R Sport
+#!!no recoveries? 60	Wishkh Spt	Wishkah R Sport
+      recovery_location_code %in% c("3F21802  220360 R", "3F21802  220360 R02", "3F21802  220462 R", "3F21802  220414 R") & fishery==46 ~ 61, #Satsop Spt	Satsop R Sport
+#!!no recoveries? 62	Quin R Spt	Quinault R Sport
+      recovery_location_code=="3F21702  210398 R" & fishery==22 ~ 63, #Quin R Net	Quinault R Net
+#!!would this have reported recoveries? 64	Quin R C&S	Quinault R C&S
+      recovery_location_code=="3F21703  210016 R" & fishery==46 ~ 65, #Queets Spt	Queets R Sport
+      recovery_location_code=="3F21703  210024 R" & fishery==46 ~ 66, #Clrwtr Spt	Clearwater R Sport
+#!!no recoveries? 67	Salm R Spt	Salmon R Sport (Queets)
+      recovery_location_code=="3F21703  210016 R" & fishery==22 ~ 68, #Queets Net	Queets R Net
+#!!would this have reported recoveries? 69	Queets C&S	Queets R C&S
+      recovery_location_code=="3F21703  200096 R" & fishery==46 ~ 70, #Quilly Spt	Quillayute R Sport; should this also get the couple of Sol Duc R spt recs?
+      recovery_location_code=="3F21703  200096 R" & fishery %in% 20:29 ~ 71, #Quilly Net	Quillayute R Net; should this get the 770 Sol Duc R recs?
+#!!would this have reported recoveries? 72	Quilly C&S	Quillayute R C&S
+      recovery_location_code=="3F21703  200422 R" & fishery==46 ~ 73, #Hoh R  Spt	Hoh R Sport
+      recovery_location_code=="3F21703  200422 R" & fishery %in% 20:29 ~ 74, #Hoh R  Net	Hoh R Net
+#!!would this have reported recoveries? 75	Hoh R  C&S	Hoh R C&S
+
+      recovery_location_code %in% c("3F21704  200015 R", "3F21704  200005 R") & fishery==46 ~ 76, #Mak FW Spt	Makah Tributary Sport
+      recovery_location_code %in% c("3F21704  200015 R", "3F21704  200005 R") & fishery %in% 20:29 ~ 77, #Mak FW Net	Makah Freshwater Net
+#!!would this have reported recoveries? 78	Makah  C&S	Makah C&S
 # 79	A 4-4A Net	WA Area 4-4A Net
-# 80	A4B6CNetNT	WA Area 4B-5-6C Non-Treaty Net
-# 81	A4B6CNetTR	WA Area 4B-5-6C Treaty Net
-# 82	Ar6D NetNT	6D Non-Treaty Net (Dungeness Bay & R)
-# 83	Ar6D NetTR	6D Treaty Net (Dungeness Bay & R)
-# 84	Elwha  Net	Elwha R Net
-# 85	WJDF T Net	West JDF Straits Trib Net
-# 86	EJDF T Net	East JDF Straits Trib Net
-# 87	A6-7ANetNT	WA Area 7-7A Non-Treaty Net
-# 88	A6-7ANetTR	WA Area 7-7A Treaty Net
-# 89	EJDF FWSpt	East JDF Straits Trib Sport
-# 90	WJDF FWSpt	West JDF Straits Trib Sport
-# 91	Area 5 Spt	WA Area 5 Sport (Sekiu)
-# 92	Area 6 Spt	WA Area 6 Sport (Port Angeles)
-# 93	Area 7 Spt	WA Area 7 Sport (San Juan Islands)
-# 94	Dung R Spt	Dungeness R Sport
-# 95	ElwhaR Spt	Elwha R Sport
+      rlsp=="3" & rlwtr=="M" & rlsctr=="1" & rlrgn=="07" & rlarea %in% c("04  ","45X1","05","06  ") & fishery==23 & gear=="14" ~ 80, #A4B6CNetNT	WA Area 4B-5-6C Non-Treaty Net; not assigned 23-16 Set Gillnet, 23-52 Mixed Net
+      rlsp=="3" & rlwtr=="M" & rlsctr=="1" & rlrgn=="07" & rlarea %in% c("04  ","45X1","05","06  ") & fishery==23 & gear!="14" ~ 81, #A4B6CNetTR	WA Area 4B-5-6C Treaty Net; assigned 23-16 Set Gillnet, 23-52 Mixed Net
+      rlsp=="3" & rlwtr=="M" & rlsctr=="1" & rlrgn=="08" & rlarea =="06  " & rllocn=="D" & fishery==23 & gear=="14" ~ 82, #Ar6D NetNT	6D Non-Treaty Net (Dungeness Bay & R); no FW net recs with "DUNGENESS" in name
+      rlsp=="3" & rlwtr=="M" & rlsctr=="1" & rlrgn=="08" & rlarea =="06  " & rllocn=="D" & fishery==23 & gear!="14" ~ 83, #Ar6D NetTR	6D Treaty Net (Dungeness Bay & R); no FW net recs with "DUNGENESS" in name
+      
+      recovery_location_code=="3F10806  180272 R" & fishery==23 ~ 84, #Elwha  Net	Elwha R Net
+#!!no recoveries? # 85	WJDF T Net	West JDF Straits Trib Net
+#!!which rivers are these? # 86	EJDF T Net	East JDF Straits Trib Net
+      rlsp=="3" & rlwtr=="M" & rlsctr=="1" & rlrgn=="07" & rlarea %in% c("07", "07  ", "07x1") & rllocn!="E" & fishery==23 & gear %in% c("14","19") ~ 87, #A6-7ANetNT	WA Area 7-7A Non-Treaty Net
+      rlsp=="3" & rlwtr=="M" & rlsctr=="1" & rlrgn=="07" & rlarea %in% c("07", "07  ", "07x1") & rllocn!="E" & fishery==23 & gear %in% c("12","16","17","20","29","49","52") ~ 88, #A6-7ANetTR	WA Area 7-7A Treaty Net
+#!!which rivers are these?# 89	EJDF FWSpt	East JDF Straits Trib Sport
+#!! next is NOT including 3M11105 currently in A5 that could go here? HOKO R & MOUTH, SEKIU R & MOUTH, etc
+      recovery_location_code %in% c("3F10805  190148 R", "3F10805  190113 R") & fishery %in% 40:49 ~ 90, #WJDF FWSpt	West JDF Straits Trib Sport; HOKO & PYSHT FW   
+      rlsp=="3" & rlwtr=="M" & rlsctr=="1" & rlrgn=="11" & rlarea=="05  " ~ 91, #Area 5 Spt	WA Area 5 Sport (Sekiu); includes various terminal zones that perhaps could/should assign elsewhere
+      rlsp=="3" & rlwtr=="M" & rlsctr=="1" & rlrgn=="11" & rlarea=="06  " ~ 92, #Area 6 Spt	WA Area 6 Sport (Port Angeles); includes various terminal zones that perhaps could/should assign elsewhere
+      rlsp=="3" & rlwtr=="M" & rlsctr=="1" & rlrgn=="11" & rlarea=="07  " ~ 93, #Area 7 Spt	WA Area 7 Sport (San Juan Islands)
+#!! next is NOT including 3M11106 DUNGENESS BAY & SPIT sport recs in A6: "3M11106  872132","3M11106  872134", "3M11106  872133"
+      recovery_location_code %in% c("3F10806  180018 R") & fishery %in%40:49 ~ 94, #Dung R Spt	Dungeness R Sport
+      recovery_location_code=="3F10806  180272 R" & fishery %in% 40:49 ~ 95,	#ElwhaR Spt	Elwha R Sport
+
 # 96	A7BCDNetNT	WA Area 7B-7C-7D Non-Treaty Net
 # 97	A7BCDNetTR	WA Area 7B-7C-7D Treaty Net
 # 98	Nook R Net	Nooksack R Net
@@ -723,7 +731,9 @@ rmis_rr_lu |>
 # 166	Skok R Spt	Skokomish R Sport
 
     ),
-    comment = "")
+    comment = "") |> 
+  drop_na(FisheryID) -> x
+
 ```
 
 
@@ -744,18 +754,99 @@ rmis_rr_lu |>
 
 
 ```{r }
-rmis_rr_lu |> 
-  #filter(FisheryID==40) |> 
-  filter(FisheryID==175) |> 
-  select(FisheryID, recovery_location_code) |> 
-  left_join(rmis_rr, by = "recovery_location_code") |> 
+#currently mapped FRAM fishery recoveries
+y <- inner_join(
+  x |> select(FisheryID, recovery_location_code),
+  rmis_rr, by = "recovery_location_code"
+)
+
+y |> count(FisheryID) |> ggplot(aes(FisheryID, n)) + geom_col()
+
+y |> count(FisheryID, release_location_rmis_region) |> ggplot(aes(FisheryID, n, fill = release_location_rmis_region)) + geom_col()
+
+y |> 
   unite("rel_st_reg_bsn", c(release_location_state, release_location_rmis_region, release_location_rmis_basin)) |> 
-  count(run_year, rel_st_reg_bsn) |> 
-  #ggplot(aes(run_year, n, color = rel_st_reg_bsn)) + geom_line()
-  filter(n>5) |> 
-  ggplot(aes(run_year, rel_st_reg_bsn, fill = n)) + geom_tile()
+  count(FisheryID, run_year, rel_st_reg_bsn) |> 
+  filter(FisheryID %in% c(91), n > 5) |> 
+  ggplot(aes(run_year, n, color = rel_st_reg_bsn, fill = rel_st_reg_bsn)) + 
+  geom_col() +
+  facet_wrap(~FisheryID, scales = "free_y")
 
+#check for linear declines in number of recoveries by release region
+#this is probably not helpful, see below for normalized to pct of recoveries within fishery by year
+#also probably statistically dubious to OLS regress a count response on year...
+y_lm_yr <- y |> 
+  unite("rel_st_reg", c(release_location_state, release_location_rmis_region)) |> 
+  count(FisheryID, run_year, rel_st_reg) |> 
+  filter(FisheryID %in% c(91)) |> 
+  filter(n > 4) |> 
+  nest_by(FisheryID, rel_st_reg) |>
+  filter(nrow(data) > 2) |> 
+  mutate(lm = list(lm(n ~ run_year, data = data))) |> 
+  summarise(broom::tidy(lm)) |>
+  filter(term=="run_year") |> 
+  mutate(p.value = round(p.value, 4)) |> 
+  arrange(p.value)
 
+y_lm_yr |> filter(p.value < 0.15)
+y_lm_yr |> filter(estimate > 0)
+
+y |> 
+  unite("rel_st_reg", c(release_location_state, release_location_rmis_region)) |> 
+  count(FisheryID, run_year, rel_st_reg) |> 
+  filter(FisheryID %in% c(91)) |> 
+  filter(n > 4) |> 
+  filter(rel_st_reg %in% (y_lm_yr |> filter(p.value < 0.15) |> pluck("rel_st_reg"))) |> 
+  ggplot(aes(run_year, n, color = rel_st_reg, fill = rel_st_reg)) + 
+  geom_col(show.legend = F) +
+  geom_smooth(color=1, se=F, method = "lm", show.legend = F) +
+  #geom_text(aes(label=paste("lm pval =", p.value)), data = y_lm_yr, x = 1998, y = 400, color = 1) +
+  geom_text(aes(label=paste("lm pval =", p.value)), data = y_lm_yr |> filter(p.value < 0.15), x = 1998, y = 400, color = 1) +
+  facet_wrap(~FisheryID+rel_st_reg, scales = "fixed", labeller = label_wrap_gen(multi_line = F))
+  
+#better: normalize to percentage of recoveries within year
+
+ypct <- y |> 
+  unite("rel_st_reg", c(release_location_state, release_location_rmis_region)) |> 
+  count(FisheryID, run_year, rel_st_reg) |> 
+  group_by(FisheryID, run_year) |> 
+  mutate(n_pct = n / sum(n)) |> 
+  ungroup()
+
+ypct_lm_yr <- ypct |> 
+#  filter(n > 4) |> #min recs per regions per year per fishery
+  filter(FisheryID %in% c(91)) |> 
+  nest_by(FisheryID, rel_st_reg) |>
+  filter(nrow(data) > 2) |> #min years with some recoveries
+  mutate(lm = list(lm(n_pct ~ run_year, data = data))) |> 
+  summarise(broom::tidy(lm)) |>
+  filter(term=="run_year") |> 
+  mutate(p.value = round(p.value, 4)) |> 
+  arrange(p.value)
+
+(
+  ypct |>   
+    filter(FisheryID %in% c(91)) |> 
+    group_by(FisheryID, run_year) |> 
+    summarise(total_recoveries = sum(n), .groups = "drop") |> 
+    ggplot(aes(run_year, total_recoveries)) + geom_col() +
+    labs(title = "Coho FRAM FisheryID 91: WA MA5")
+) + (
+  ypct |>   
+    filter(FisheryID %in% c(91)) |> 
+    filter(rel_st_reg %in% (ypct_lm_yr |> filter(p.value < 0.15) |> pluck("rel_st_reg"))) |> 
+    ggplot(aes(run_year, n_pct, color = rel_st_reg, fill = rel_st_reg)) + 
+    geom_col(show.legend = F) +
+    geom_smooth(color=1, se=F, method = "lm", show.legend = F) +
+    scale_y_continuous("per-year % of recoveries in fishery", labels = scales::percent) +
+    #geom_text(aes(label=paste("lm pval =", p.value)), data = ypct_lm_yr, x = 1998, y = 400, color = 1) +
+    geom_text(aes(label=paste("lm pval =", p.value)), data = ypct_lm_yr |> filter(p.value < 0.15), x = 1998, y = 0.5, color = 1) +
+    facet_wrap(~FisheryID+rel_st_reg, scales = "fixed", labeller = label_wrap_gen(multi_line = F)) +
+    labs(
+      title = "Change in annual percentage of fishery recoveries by RMIS release region", 
+      subtitle = "showing regions with significant OLS linear regression: pct ~ run_year"
+    )
+) + plot_layout(nrow = 2, heights = c(1,4))
 ```
 
 
