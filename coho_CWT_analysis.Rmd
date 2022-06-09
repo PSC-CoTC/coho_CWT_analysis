@@ -21,6 +21,7 @@ library("tidyverse")
 library("gt")
 library("patchwork")
 library("odbc"); library("DBI")
+theme_set(theme_light())
 #library("ggridges")
 
 dir_proj <- "T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Projects/Coho FRAM MSM CWT analysis"
@@ -350,6 +351,25 @@ rmis_rr |>
 
 # Fishery mapping
 
+```{r fram_fishery, eval=FALSE}
+#same: readxl::read_excel("rmis_loc_fram_fishery.xlsx", sheet = "tbl_fishery_cotc_post")
+
+db_con <- DBI::dbConnect(
+  drv = odbc::odbc(),
+  .connection_string = paste0(
+    "Driver={Microsoft Access Driver (*.mdb, *.accdb)};DBQ=",
+    "O:/code/coho/fram_mdbs/PSC_CoTC_PostSeason_CohoFRAMDB_thru2020_021622.mdb",
+    ";")
+  )
+
+fram_fishery <- tbl(db_con, "Fishery") |> 
+  filter(Species == "COHO") |> 
+  select(FisheryID:FisheryTitle) |> 
+  collect()
+
+DBI::dbDisconnect(db_con)
+```
+
 ## misc initial
 
 ```{r pull_msm_edit_distinct, eval=FALSE}
@@ -375,26 +395,6 @@ msm_tbl$Edit_Distinct
 ```{r FishAggMap, eval=FALSE}
 #AHB very coarse mapping  
 read_csv(file.path(dir_proj, "MSMDB/FishAggMap.csv"))
-```
-
-```{r now_deprecated_fram_fishery_rmis_loc, eval=FALSE}
-db_con <- DBI::dbConnect(
-  drv = odbc::odbc(),
-  .connection_string = paste0(
-    "Driver={Microsoft Access Driver (*.mdb, *.accdb)};DBQ=",
-    "O:/code/coho/fram_mdbs/PSC_CoTC_PostSeason_CohoFRAMDB_thru2020_021622.mdb",
-    ";")
-  )
-
-fram_fishery <- tbl(db_con, "Fishery") |> 
-  filter(Species == "COHO") |> 
-  select(FisheryID:FisheryTitle) |> 
-  collect()
-
-DBI::dbDisconnect(db_con)
-
-##Manually edited, no overwrite! writexl::write_xlsx(fram_fishery, "NOOVERWRITEfram_fishery_rmis_loc.xlsx")
-#this file/approach superseded by below "rmis_loc_fram_fishery.xlsx"
 ```
 
 ```{r rec_location_code_init_EDA, eval=FALSE}
@@ -758,15 +758,16 @@ rmis_rr_lu |>
 y <- inner_join(
   x |> select(FisheryID, recovery_location_code),
   rmis_rr, by = "recovery_location_code"
-)
+) |> left_join(fram_fishery, by = "FisheryID")
 
-y |> count(FisheryID) |> ggplot(aes(FisheryID, n)) + geom_col()
+y |> count(FisheryID, FisheryName) |> ggplot(aes(paste(FisheryID, FisheryName, sep = ":"), n)) + geom_col() + coord_flip()
 
-y |> count(FisheryID, release_location_rmis_region) |> ggplot(aes(FisheryID, n, fill = release_location_rmis_region)) + geom_col()
+y |> count(FisheryID, FisheryName, release_location_rmis_region) |> 
+  ggplot(aes(paste(FisheryID, FisheryName, sep = ":"), n, fill = release_location_rmis_region)) + geom_col() + coord_flip()
 
 y |> 
   unite("rel_st_reg_bsn", c(release_location_state, release_location_rmis_region, release_location_rmis_basin)) |> 
-  count(FisheryID, run_year, rel_st_reg_bsn) |> 
+  count(FisheryID, FisheryName, run_year, rel_st_reg_bsn) |> 
   filter(FisheryID %in% c(91), n > 5) |> 
   ggplot(aes(run_year, n, color = rel_st_reg_bsn, fill = rel_st_reg_bsn)) + 
   geom_col() +
@@ -777,10 +778,10 @@ y |>
 #also probably statistically dubious to OLS regress a count response on year...
 y_lm_yr <- y |> 
   unite("rel_st_reg", c(release_location_state, release_location_rmis_region)) |> 
-  count(FisheryID, run_year, rel_st_reg) |> 
+  count(FisheryID, FisheryName, run_year, rel_st_reg) |> 
   filter(FisheryID %in% c(91)) |> 
   filter(n > 4) |> 
-  nest_by(FisheryID, rel_st_reg) |>
+  nest_by(FisheryID, FisheryName, rel_st_reg) |>
   filter(nrow(data) > 2) |> 
   mutate(lm = list(lm(n ~ run_year, data = data))) |> 
   summarise(broom::tidy(lm)) |>
@@ -793,7 +794,7 @@ y_lm_yr |> filter(estimate > 0)
 
 y |> 
   unite("rel_st_reg", c(release_location_state, release_location_rmis_region)) |> 
-  count(FisheryID, run_year, rel_st_reg) |> 
+  count(FisheryID, FisheryName, run_year, rel_st_reg) |> 
   filter(FisheryID %in% c(91)) |> 
   filter(n > 4) |> 
   filter(rel_st_reg %in% (y_lm_yr |> filter(p.value < 0.15) |> pluck("rel_st_reg"))) |> 
@@ -802,24 +803,24 @@ y |>
   geom_smooth(color=1, se=F, method = "lm", show.legend = F) +
   #geom_text(aes(label=paste("lm pval =", p.value)), data = y_lm_yr, x = 1998, y = 400, color = 1) +
   geom_text(aes(label=paste("lm pval =", p.value)), data = y_lm_yr |> filter(p.value < 0.15), x = 1998, y = 400, color = 1) +
-  facet_wrap(~FisheryID+rel_st_reg, scales = "fixed", labeller = label_wrap_gen(multi_line = F))
+  facet_wrap(~FisheryID+FisheryName+rel_st_reg, scales = "fixed", labeller = label_wrap_gen(multi_line = F))
   
 #better: normalize to percentage of recoveries within year
 
 ypct <- y |> 
   unite("rel_st_reg", c(release_location_state, release_location_rmis_region)) |> 
-  count(FisheryID, run_year, rel_st_reg) |> 
+  count(FisheryID, FisheryName, run_year, rel_st_reg) |> 
   group_by(FisheryID, run_year) |> 
   mutate(n_pct = n / sum(n)) |> 
   ungroup()
 
 ypct_lm_yr <- ypct |> 
-#  filter(n > 4) |> #min recs per regions per year per fishery
-  filter(FisheryID %in% c(91)) |> 
-  nest_by(FisheryID, rel_st_reg) |>
+# #  filter(n > 4) |> #min recs per regions per year per fishery
+#   filter(FisheryID %in% c(91)) |> 
+  nest_by(FisheryID, FisheryName, rel_st_reg) |>
   filter(nrow(data) > 2) |> #min years with some recoveries
   mutate(lm = list(lm(n_pct ~ run_year, data = data))) |> 
-  summarise(broom::tidy(lm)) |>
+  summarise(broom::tidy(lm), .groups = "drop") |>
   filter(term=="run_year") |> 
   mutate(p.value = round(p.value, 4)) |> 
   arrange(p.value)
@@ -827,26 +828,42 @@ ypct_lm_yr <- ypct |>
 (
   ypct |>   
     filter(FisheryID %in% c(91)) |> 
-    group_by(FisheryID, run_year) |> 
-    summarise(total_recoveries = sum(n), .groups = "drop") |> 
-    ggplot(aes(run_year, total_recoveries)) + geom_col() +
-    labs(title = "Coho FRAM FisheryID 91: WA MA5")
+    group_by(FisheryID, FisheryName, run_year) |> 
+    summarise(total_recoveries = sum(n), .groups = "drop") %>% 
+    {
+    ggplot(., aes(run_year, total_recoveries)) + geom_col() +
+    labs(title = paste("Coho FRAM", .$FisheryID[1], .$FisheryName[1]))
+    }
 ) + (
   ypct |>   
     filter(FisheryID %in% c(91)) |> 
-    filter(rel_st_reg %in% (ypct_lm_yr |> filter(p.value < 0.15) |> pluck("rel_st_reg"))) |> 
+    filter(rel_st_reg %in% (ypct_lm_yr |> filter(FisheryID %in% c(91)) |> filter(p.value < 0.15) |> pluck("rel_st_reg"))) |> 
     ggplot(aes(run_year, n_pct, color = rel_st_reg, fill = rel_st_reg)) + 
     geom_col(show.legend = F) +
     geom_smooth(color=1, se=F, method = "lm", show.legend = F) +
     scale_y_continuous("per-year % of recoveries in fishery", labels = scales::percent) +
     #geom_text(aes(label=paste("lm pval =", p.value)), data = ypct_lm_yr, x = 1998, y = 400, color = 1) +
-    geom_text(aes(label=paste("lm pval =", p.value)), data = ypct_lm_yr |> filter(p.value < 0.15), x = 1998, y = 0.5, color = 1) +
+    geom_text(aes(label=paste("lm pval =", p.value)), data = ypct_lm_yr |> filter(FisheryID %in% c(91)) |> filter(p.value < 0.15), x = 1998, y = 0.5, color = 1) +
     facet_wrap(~FisheryID+rel_st_reg, scales = "fixed", labeller = label_wrap_gen(multi_line = F)) +
     labs(
       title = "Change in annual percentage of fishery recoveries by RMIS release region", 
       subtitle = "showing regions with significant OLS linear regression: pct ~ run_year"
     )
 ) + plot_layout(nrow = 2, heights = c(1,4))
+
+#on an all-FisheryID version of the object...
+ypct_lm_yr |> 
+  filter(p.value < 0.15) |> 
+  filter(FisheryID %in% c(33, 37, 40, 41, 48, 91, 92, 93)) |> 
+  ggplot(aes(rel_st_reg, estimate, color = estimate > 0)) +
+  geom_point(show.legend = F) + 
+  geom_linerange(aes(ymin = estimate - std.error, ymax = estimate + std.error), show.legend = F) +
+  geom_hline(yintercept = 0) +
+  scale_x_discrete(guide = guide_axis(n.dodge = 2)) +
+  scale_y_continuous("lm reg slope estimate: pct ~ year") +
+  scale_color_manual(values = c("gold", "purple")) +
+  facet_wrap(~FisheryID+FisheryName, scales = "free", labeller = label_wrap_gen(multi_line = F), ncol = 2)
+
 ```
 
 
