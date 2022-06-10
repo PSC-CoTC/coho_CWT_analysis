@@ -931,8 +931,79 @@ split(msm_tbl$Edit_Distinct, msm_tbl$Edit_Distinct$Num_Chars)[1:2] |>
 
 ```
 
+# Task Overview Apr22
 
-# Recovery patterns
+## compare escapement ratios
+
+escp:catch or escp/abund in BKFRAM vs escp:catch in RMIS
+
+
+## missing Canadian escapements
+
+assess utility of 2022-02-23 StAD Escapement Report_Coho_EPAD.xlsx
+
+```{r}
+stad <- readxl::read_xlsx(
+  "T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Projects/Coho FRAM MSM CWT analysis/ERAnalysis/2022-02-23 StAD Escapement Report_Coho_EPAD.xlsx",
+  #sheet = "Observed Tagcodes"
+  sheet = "Obs-Est-Exp"
+  )
+
+distinct(rmis_rr, tag_code) #12936
+
+# ## for sheet "Observed Tagcodes"
+# #distinct(stad, TAGCODE) #365 for
+# length(intersect(rmis_rr$tag_code, stad$TAGCODE)) / 365
+# inner_join(
+#   rmis_rr, 
+#   stad |> select(tag_code = TAGCODE), 
+#   by = c("tag_code")
+#   ) |> 
+#   count(f_type)
+
+## for sheet "Obs-Est-Exp"
+#distinct(stad, Tagcode) #385
+length(intersect(rmis_rr$tag_code, stad$Tagcode)) / 385
+
+inner_join(
+  rmis_rr, 
+  stad |> select(tag_code = Tagcode, recovery_location_code = `PSC Location Code`), 
+  #by = c("tag_code") #~59K 
+  by = c("tag_code", "recovery_location_code") #0 rows where a shared tag_code also shared the rec_loc_code
+  ) |> 
+  count(f_type)
+
+#next is to add 3yo for shared tag_codes
+#need to continue cross-referencing fields 
+rmis_rr |> 
+  bind_rows(
+    stad |> 
+      mutate(age = `Recovery Year` - `Brood Year`) |> #count(age)
+      filter(
+        age == 3,
+        Tagcode %in% unique(rmis_rr$tag_code)
+      ) |>
+      mutate(
+        fishery = 50
+      ) |> 
+      select(
+        tag_code = Tagcode, 
+        recovery_location_code = `PSC Location Code`,
+        run_year = `Recovery Year`,
+        brood_year = `Brood Year`,
+        fishery
+        #etc....
+      )
+  )
+    
+
+```
+
+## Impute missing freshwater sport recoveries
+
+calculate based on FRAM info
+
+# Initial look at recovery patterns in RMIS-based units
 
 ## Recoveries by release state
 
