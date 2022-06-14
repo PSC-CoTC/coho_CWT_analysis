@@ -29,12 +29,19 @@ dir_proj <- "T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Projects/C
 fp <- list(
   rmis_recs = file.path(dir_proj, "rmis_coho_recoveries_86_2020.rds"),
   rmis_rel = file.path(dir_proj, "rmis_coho_releases_for_rec_86_2020.rds"),
-  rmis_rec_rel = file.path(dir_proj, "rmis_coho_rec_rel_86_2020.rds")
+  rmis_rec_rel = file.path(dir_proj, "rmis_coho_rec_rel_86_2020.rds"),
+  
+  mdb_pre = "O:/code/coho/fram_mdbs/US_PFMC_NOF_FinalCohoFRAM_MultiYr.mdb",
+  mdb_pst = "O:/code/coho/fram_mdbs/PSC_CoTC_PostSeason_CohoFRAMDB_thru2020_021622.mdb"
+
+  # "T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Projects/Coho FRAM MSM CWT analysis/MSMDB/MSM_86-91_Oct2006.mdb"
+  # "T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Projects/Coho FRAM MSM CWT analysis/MSMDB/MSM_98-2020- SF2019.mdb"
   )
 
 rmis_rr <- readRDS(fp$rmis_rec_rel) |> 
   filter(!is.na(release_location_state)) |>  #drop 3 recent
-  mutate(age = run_year - brood_year)
+  mutate(age = run_year - brood_year) |> 
+  rowid_to_column("uid")
 
 regions <- list(
   col_riv = c("CECR", "CRGN", "LOCR", "UPCR"),
@@ -47,25 +54,43 @@ rgns <- map_df(regions, ~paste0(.x, collapse =",")) |>
   separate_rows(release_location_rmis_region)
 
 
-
 lu <- list(
   #CCT queried releases, QAQC'd and assigned to PR and PR_MU
   cwt_stk = read_csv(file.path(dir_proj, "MSMDB/MSM_Stock_CWT2.csv")) |> 
     mutate(run_year = Run_ID+1985) |> 
     select(run_year, tag_code = CWT_Code, area = Area_Agg,
-           pr = PR_Number, pr_mu = PR_MU_Number, n_rel = Number_Released, everything()) |> 
+           pr = PR_Number, pr_mu = PR_MU_Number, n_rel = Number_Released,
+           StockID = FRAMStkID, everything()) |> 
     filter(!is.na(pr), !is.na(pr_mu), pr_mu > 0) |> 
     #exclude a double-mapped row
-    filter(!(run_year == 1996 & tag_code == "071544" & FRAMStkID == 166))
+    filter(!(run_year == 1996 & tag_code == "071544" & StockID == 166))
+  ,
+  #AHB file...orig csv in "T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Projects/Coho FRAM MSM CWT analysis/ERAnalysis/FishMap.csv"
+  ahb_fishmap = readxl::read_excel("rmis_loc_fram_fishery.xlsx", sheet = "ahb_mapping") |> 
+    filter(FRAM_Fish_ID > 0) |> 
+    select(FisheryID = FRAM_Fish_ID, FisheryName = FRAM_Fish_Name, fishery_single = Gear, Num_Chars, PSC_Code)
   ,
   #DA incomplete rel state/region/basin to pr/pr_mu/StockID
   rmis_rgn_stkid = readxl::read_excel(file.path(dir_proj, "lu_rmis_rel_to_pr_prmu.xlsx"))
 )
 
-# #key dbs
-# "T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Projects/Coho FRAM MSM CWT analysis/MSMDB/MSM_86-91_Oct2006.mdb"
-# "T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Projects/Coho FRAM MSM CWT analysis/MSMDB/MSM_98-2020- SF2019.mdb"
 
+
+#same: readxl::read_excel("rmis_loc_fram_fishery.xlsx", sheet = "tbl_fishery_cotc_post")
+db_con <- DBI::dbConnect(
+  drv = odbc::odbc(),
+  .connection_string = paste0(
+    "Driver={Microsoft Access Driver (*.mdb, *.accdb)};DBQ=",
+    "O:/code/coho/fram_mdbs/PSC_CoTC_PostSeason_CohoFRAMDB_thru2020_021622.mdb",
+    ";")
+  )
+
+fram_fishery <- tbl(db_con, "Fishery") |> 
+  filter(Species == "COHO") |> 
+  select(FisheryID:FisheryTitle) |> 
+  collect()
+
+DBI::dbDisconnect(db_con)
 
 ```
 
@@ -188,9 +213,9 @@ left_join(
 
 # Stock mapping
 
-Exporting a format for the needed lookup from RMIS release location fields (state, region, basin) and the MSM/FRAM production region and management units (PR and PR_MU), and thence to FRAM StockID(s). Some of this is already available in, for example, the escapement compilation template sheet?
+The LU begun from this first chunk was initiated but then paused due to existing CCT work in `lu$cwt_stk`
 
-The LU begun in from this first chunk was initiated but then paused due to existing CCT work in `lu$cwt_stk`
+Exporting a format for the needed lookup from RMIS release location fields (state, region, basin) and the MSM/FRAM production region and management units (PR and PR_MU), and thence to FRAM StockID(s). Some of this is already available in, for example, the escapement compilation template sheet?
 
 ```{r lu_rmis_rel_to_pr_prmu_xlsx, eval=FALSE}
 
@@ -342,33 +367,11 @@ rmis_rr |>
   mutate(run_year = factor(run_year)) |> 
   #ggplot(aes(run_year, rlft, fill=n)) + geom_tile() 
   
-  ggplot(aes(run_year, n, fill=rlft)) + geom_col(position = "dodge") 
-
-
-
+  ggplot(aes(run_year, n, fill=rlft)) + geom_col(position = "dodge")
 ```
 
 
 # Fishery mapping
-
-```{r fram_fishery, eval=FALSE}
-#same: readxl::read_excel("rmis_loc_fram_fishery.xlsx", sheet = "tbl_fishery_cotc_post")
-
-db_con <- DBI::dbConnect(
-  drv = odbc::odbc(),
-  .connection_string = paste0(
-    "Driver={Microsoft Access Driver (*.mdb, *.accdb)};DBQ=",
-    "O:/code/coho/fram_mdbs/PSC_CoTC_PostSeason_CohoFRAMDB_thru2020_021622.mdb",
-    ";")
-  )
-
-fram_fishery <- tbl(db_con, "Fishery") |> 
-  filter(Species == "COHO") |> 
-  select(FisheryID:FisheryTitle) |> 
-  collect()
-
-DBI::dbDisconnect(db_con)
-```
 
 ## misc initial
 
@@ -540,6 +543,8 @@ rmis_rr_lu <- rmis_rr |>
 
 The (incomplete) chunks below begin FisheryID assignment by state/region.
 
+### California 
+
 ```{r rmis_rr_lu_CA, eval=FALSE}
 #possible CA codes to assign...
 #https://wildlife.ca.gov/Fishing/Ocean/Regulations/Salmon
@@ -560,6 +565,8 @@ rmis_rr_lu |>
     comment = "")
 ```
 
+### Oregon
+
 ```{r rmis_rr_lu_OR, eval=FALSE}
 #possible OR to assign
 #large majority are escapement
@@ -568,11 +575,13 @@ select(rmis_rr, 1:16) |> filter(rlsp=="5") |> count(recovery_location_code, reco
 
 ```
 
+### Washington
+
 ```{r rmis_rr_lu_WA, eval=FALSE}
 #possible WA to assign
-select(rmis_rr, 1:16) |> filter(rlsp=="3") |> count(recovery_location_code, recovery_location_name, rlrgn, rlarea, rllocn, f_type) |> arrange(desc(n)) |>  print(n=100)
+select(rmis_rr, 1:20) |> filter(rlsp=="3") |> count(recovery_location_code, recovery_location_name, rlrgn, rlarea, rllocn, f_type) |> arrange(desc(n)) |>  print(n=100)
 #excluding escp/hatcheries
-select(rmis_rr, 1:16) |> filter(rlsp=="3", f_type != "escp") |> 
+select(rmis_rr, 1:20) |> filter(rlsp=="3", f_type != "escp") |> 
   count(recovery_location_code, recovery_location_name, rlsp, rlwtr, rlsctr, rlrgn, rlarea, rllocn, f_type) |> arrange(desc(n)) |>  print(n=100)
 
 #working scratch
@@ -581,7 +590,7 @@ rmis_rr_lu |> filter(str_detect(recovery_location_name, "HOKO"))
 rmis_rr_lu |> filter(rlsp=="3" & rlwtr=="M" & rlsctr=="1" & rlrgn=="11" & rlarea=="06  ") |> print(n=50)
 
 
-rmis_rr_lu |> 
+rmis_rr_lu_wa <- rmis_rr_lu |> 
   mutate(
     FisheryID = case_when(
 # 30	LCRWaT Spt	Col. Rvr. Wash Trib Spt
@@ -732,10 +741,11 @@ rmis_rr_lu |>
 
     ),
     comment = "") |> 
-  drop_na(FisheryID) -> x
+  drop_na(FisheryID)
 
 ```
 
+### British Columbia
 
 ```{r rmis_rr_lu_BC, eval=FALSE}
 #possible BC to assign
@@ -752,12 +762,16 @@ rmis_rr_lu |>
     comment = "")
 ```
 
+### Alaska
+
+## testing
 
 ```{r }
 #currently mapped FRAM fishery recoveries
 y <- inner_join(
-  x |> select(FisheryID, recovery_location_code),
-  rmis_rr, by = "recovery_location_code"
+  rmis_rr_lu_wa |> select(FisheryID, recovery_location_code, rlsp:gear),
+  rmis_rr |> select(1:25, FisheryID_ahb = FisheryID, FisheryName_ahb = FisheryName), 
+  by = c('recovery_location_code', 'rlsp', 'rlwtr', 'rlsctr', 'rlrgn', 'rlarea', 'rllocn', 'rlsubl', 'fishery', 'gear')
 ) |> left_join(fram_fishery, by = "FisheryID")
 
 y |> count(FisheryID, FisheryName) |> ggplot(aes(paste(FisheryID, FisheryName, sep = ":"), n)) + geom_col() + coord_flip()
@@ -773,37 +787,37 @@ y |>
   geom_col() +
   facet_wrap(~FisheryID, scales = "free_y")
 
-#check for linear declines in number of recoveries by release region
-#this is probably not helpful, see below for normalized to pct of recoveries within fishery by year
-#also probably statistically dubious to OLS regress a count response on year...
-y_lm_yr <- y |> 
-  unite("rel_st_reg", c(release_location_state, release_location_rmis_region)) |> 
-  count(FisheryID, FisheryName, run_year, rel_st_reg) |> 
-  filter(FisheryID %in% c(91)) |> 
-  filter(n > 4) |> 
-  nest_by(FisheryID, FisheryName, rel_st_reg) |>
-  filter(nrow(data) > 2) |> 
-  mutate(lm = list(lm(n ~ run_year, data = data))) |> 
-  summarise(broom::tidy(lm)) |>
-  filter(term=="run_year") |> 
-  mutate(p.value = round(p.value, 4)) |> 
-  arrange(p.value)
-
-y_lm_yr |> filter(p.value < 0.15)
-y_lm_yr |> filter(estimate > 0)
-
-y |> 
-  unite("rel_st_reg", c(release_location_state, release_location_rmis_region)) |> 
-  count(FisheryID, FisheryName, run_year, rel_st_reg) |> 
-  filter(FisheryID %in% c(91)) |> 
-  filter(n > 4) |> 
-  filter(rel_st_reg %in% (y_lm_yr |> filter(p.value < 0.15) |> pluck("rel_st_reg"))) |> 
-  ggplot(aes(run_year, n, color = rel_st_reg, fill = rel_st_reg)) + 
-  geom_col(show.legend = F) +
-  geom_smooth(color=1, se=F, method = "lm", show.legend = F) +
-  #geom_text(aes(label=paste("lm pval =", p.value)), data = y_lm_yr, x = 1998, y = 400, color = 1) +
-  geom_text(aes(label=paste("lm pval =", p.value)), data = y_lm_yr |> filter(p.value < 0.15), x = 1998, y = 400, color = 1) +
-  facet_wrap(~FisheryID+FisheryName+rel_st_reg, scales = "fixed", labeller = label_wrap_gen(multi_line = F))
+# #check for linear declines in number of recoveries by release region
+# #this is probably not helpful, see below for normalized to pct of recoveries within fishery by year
+# #also probably statistically dubious to OLS regress a count response on year...
+# y_lm_yr <- y |> 
+#   unite("rel_st_reg", c(release_location_state, release_location_rmis_region)) |> 
+#   count(FisheryID, FisheryName, run_year, rel_st_reg) |> 
+#   filter(FisheryID %in% c(91)) |> 
+#   filter(n > 4) |> 
+#   nest_by(FisheryID, FisheryName, rel_st_reg) |>
+#   filter(nrow(data) > 2) |> 
+#   mutate(lm = list(lm(n ~ run_year, data = data))) |> 
+#   summarise(broom::tidy(lm)) |>
+#   filter(term=="run_year") |> 
+#   mutate(p.value = round(p.value, 4)) |> 
+#   arrange(p.value)
+# 
+# y_lm_yr |> filter(p.value < 0.15)
+# y_lm_yr |> filter(estimate > 0)
+# 
+# y |> 
+#   unite("rel_st_reg", c(release_location_state, release_location_rmis_region)) |> 
+#   count(FisheryID, FisheryName, run_year, rel_st_reg) |> 
+#   filter(FisheryID %in% c(91)) |> 
+#   filter(n > 4) |> 
+#   filter(rel_st_reg %in% (y_lm_yr |> filter(p.value < 0.15) |> pluck("rel_st_reg"))) |> 
+#   ggplot(aes(run_year, n, color = rel_st_reg, fill = rel_st_reg)) + 
+#   geom_col(show.legend = F) +
+#   geom_smooth(color=1, se=F, method = "lm", show.legend = F) +
+#   #geom_text(aes(label=paste("lm pval =", p.value)), data = y_lm_yr, x = 1998, y = 400, color = 1) +
+#   geom_text(aes(label=paste("lm pval =", p.value)), data = y_lm_yr |> filter(p.value < 0.15), x = 1998, y = 400, color = 1) +
+#   facet_wrap(~FisheryID+FisheryName+rel_st_reg, scales = "fixed", labeller = label_wrap_gen(multi_line = F))
   
 #better: normalize to percentage of recoveries within year
 
@@ -866,10 +880,9 @@ ypct_lm_yr |>
 
 ```
 
+# AHB fishmap
 
-```{r eval=FALSE}
-#AHB file...orig csv in "T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Projects/Coho FRAM MSM CWT analysis/ERAnalysis/FishMap.csv"
-ahb_fishmap <- readxl::read_excel("fram_fishery_rmis_loc.xlsx", sheet = "ahb_mapping")
+```{r}
 
 #!! Note confusion on AK fisheries
 #!! CoTC post-season only includes up to 198 in Fishery table
@@ -878,58 +891,254 @@ ahb_fishmap <- readxl::read_excel("fram_fishery_rmis_loc.xlsx", sheet = "ahb_map
 #!! for example, FRAM FID 198 is
 #!!   "SW AK NET" in AHB mapping, but "Southeast Alaska Net" in CoTC Fishery table
 #!!   and AHB mapping associates 198 to 1M1SW, but 1M1 is listed as Southeast in 1989 spec, with "NW" referring to the NW quadrant of SEAK
-#!! moreover, 
-rmis_rr |> filter(recovery_location_code == "1M1NW")
-ahb_fishmap |> filter(PSC_Code == "1M1NW")
+#!! rmis_rr |> filter(recovery_location_code == "1M1NW")
+#!! lu$ahb_fishmap |> filter(PSC_Code == "1M1NW")
 
-#~232K clean matches
-rmis_rr |> 
-  mutate(
-    #named "Gear" in AHB file...
-    fishery_single = floor(fishery/10)
-      ) |> 
-  inner_join(
-    fishmap, 
-    by = c(
-      "recovery_location_code" = "PSC_Code",
-      "fishery_single" = "Gear"
-      )) |> 
-#  filter(FRAM_Fish_ID > 0) |> 
-  filter(FRAM_Fish_ID > 0, fishery < 50) |> 
-  count(FRAM_Fish_ID, FRAM_Fish_Name, fishery, gear, recovery_location_code, recovery_location_name) |> 
-  arrange(desc(n))
+#some direct matches, but cannot directly join on PSC_Code...have to use the Num_Chars field
+#and/but that means using many possible lengths of recovery_location_code
 
+#iterator over Num_chars...seems crazy inefficient? but it runs...
+#and addition of uid in setup allows recombination
+#BUT turns out it double maps ~5K rows
 
-```
+rmis_rr_ahb_map <- rmis_rr |> 
+  select(uid, recovery_location_code, fishery) |> 
+  mutate(fishery_single = floor(fishery/10)) 
 
-
-
-
-## OLDER
-
-Starting to toy with a version of the *Edit Distinct* assignment logic based on number of characters. Unfinished, possibly not worth finishing.
-
-```{r not_run_nchar_edit_distinct, eval=FALSE}
-#Edit_Distinct.Gear == first character of RMIS fishery
-#approx logic: check match of Edit_Distinct.PSC_Code against corresponding Num_Chars of recovery_location_code
-#Edit_Distinct.Fishery_Number is a PSC fishery code, which then needs further mapping to FRAM
-
-msm_tbl$Edit_Distinct |> count(Num_Chars)
-
-
-split(msm_tbl$Edit_Distinct, msm_tbl$Edit_Distinct$Num_Chars)[1:2] |> 
-  map(
-    function(df){
-      nc = df$Num_Chars[1]
-      rmis_recs |> 
-        mutate(
-          PSC_Code = str_sub(recovery_location_code, 1, nc)
-        ) |> 
-        left_join(df, by = "PSC_Code")
-    }
+rmis_rr_ahb_map <- map_df(
+  sort(unique(lu$ahb_fishmap$Num_Chars)),
+  ~inner_join(
+    rmis_rr_ahb_map |> 
+      mutate(PSC_Code = str_sub(recovery_location_code, 1, .x))
+    ,
+    lu$ahb_fishmap |> filter(Num_Chars == .x)
+    ,
+    by = c("PSC_Code", "fishery_single")
   )
+)
+
+overmapped <- rmis_rr_ahb_map |> count(uid) |> filter(n>1) |> select(uid)
+
+#now rejoin to full dataset, after making FisheryID distinct per UID
+rmis_rr <- left_join(
+  rmis_rr, 
+  #split out multiple-mapped, make distinct per UID and rebind
+  bind_rows(
+    anti_join(rmis_rr_ahb_map, overmapped, by = "uid") |> 
+      select(uid, FisheryID)
+    ,
+    semi_join(rmis_rr_ahb_map, overmapped, by = "uid") |> 
+      group_by(uid) |> 
+      slice_max(Num_Chars, n = 1, with_ties = F) |> 
+      ungroup() |> 
+      select(uid, FisheryID) #|> count(uid) |> filter(n>1)
+  )
+  ,
+  by = "uid") |> 
+  left_join(fram_fishery, by = "FisheryID")
+
+
+# rmis_rr |> filter(FisheryID %in% 91:93) |> count(FisheryID)
+# #exact match?!?!
+# y |> filter(FisheryID %in% 91:93) |> count(FisheryID)
+# 
+# left_join(
+#   y |> count(FisheryID),
+#   rmis_rr_ahb_map |> count(FisheryID),
+#   by = "FisheryID"
+#   ) |> print(n=100)
 
 ```
+
+
+
+# Skagit
+
+```{r skagit}
+#95 tag codes associated with "SKAGIT R     03.0176"
+#all release_location_name "CASCADE R    03.1411"
+lu$cwt_stk |> filter(StockID %in% 17:24) |> count(StockID, Hatchery_Name, Stock_Name, Release_Name)
+
+#mapped 1998-2020, order of magnitude more in 2003-2005, fairly consistent 2010-2020
+rmis_rr |> 
+#  filter(f_type != "escp") |> 
+  filter(str_detect(stock_location_name, "SKAGIT R     03.0176")) |> #~77K recoveries, 22K fishery 55K escp
+  left_join(lu$cwt_stk, by = c("run_year", "tag_code")) |> 
+  #count(StockID) #~42K of 77K recoveries mapped, 11K non-escp
+  drop_na(StockID) |> count(run_year) |> print(n=50) 
+
+#could skip mapping and just use stock_location_name
+#especially if focused on later years with all CASCADE R as release_location_name
+#unassigned release_location_names appear to be pre-1998
+rmis_rr |> 
+#  filter(f_type != "escp") |> 
+  filter(str_detect(stock_location_name, "SKAGIT R     03.0176")) |>
+  filter(between(run_year, 1998, 2020)) |> 
+  count(release_location_name) |> arrange(desc(n)) |> print(n=50)
+  
+rmis_rr |> filter(str_detect(release_location_name, "SKAGIT R TRIBS"))
+```
+
+Prototype using AHB fishery mapping and CCT stock mapping
+
+```{r}
+#now add StockIDs to dataset with FisheryID added above in "AHB fishmap"
+rmis_rr <- rmis_rr |> 
+  left_join(lu$cwt_stk, by = c("run_year", "tag_code"))
+```
+
+```{r}
+#first is all rows, not using CCT StockID
+rmis_rr_skagit <- rmis_rr |> 
+  filter(
+    str_detect(stock_location_name, "SKAGIT R     03.0176"),
+    age == 3,
+    !str_detect(release_location_name, "BAKER")
+    ) |> 
+  #count(StockID, f_type)
+  #count(FisheryID) |> arrange(desc(n)) |> print(n=100)
+  drop_na(estimated_number) |>  #only drops a few from 75849 to 75715
+  group_by(
+    run_year,
+    #starts_with("release_location_"),
+    #starts_with("recovery_location_"), 
+    stock_location_name,
+    f_type, FisheryID, FisheryName
+    ) |> 
+  summarise(across(estimated_number, sum), .groups = "drop") |> 
+  group_by(run_year, stock_location_name) |> 
+  mutate(abund = sum(estimated_number)) |> 
+  ungroup() |> 
+  mutate(er = estimated_number / abund)
+
+#limited to only those assigned by CCT
+rmis_rr_skagit_cct <- rmis_rr |> 
+  filter(
+    str_detect(stock_location_name, "SKAGIT R     03.0176"),
+    age == 3,
+    !str_detect(release_location_name, "BAKER")
+    ) |> 
+  drop_na(estimated_number, StockID) |>
+  group_by(run_year, StockID, f_type, FisheryID, FisheryName) |> 
+  summarise(across(estimated_number, sum), .groups = "drop") |> 
+  group_by(run_year, StockID) |> 
+  mutate(abund = sum(estimated_number)) |> 
+  ungroup() |> 
+  mutate(er = estimated_number / abund)
+
+```
+
+```{r}
+fram <- list()
+focal_run_ids <- 34:44 #2010:2020
+focal_stock_ids <- 17:20
+fram$escp <- framr::read_coho_escp(fp$mdb_pst, runs = focal_run_ids, stocks = focal_stock_ids)
+fram$mort <- framr::read_coho_mort(fp$mdb_pst, runs = focal_run_ids, stocks = focal_stock_ids)
+
+#initially focusing on landed mort only
+fram_lc_er_skagit <- left_join(
+  fram$mort |>
+    group_by(RunYear, StockID, StockLongName, FisheryID, FisheryName) |> 
+    summarise(
+      across(c(LandedCatch, MSFLandedCatch), sum),
+      lc_yr = LandedCatch + MSFLandedCatch, .groups = "drop") |> 
+    group_by(RunYear, StockID, StockLongName) |> 
+    mutate(across(lc_yr, list(sum = sum), .names = "{.col}_{.fn}")) |> 
+    ungroup()
+  ,
+  fram$escp |> 
+    group_by(RunYear, StockID) |> 
+    summarise(across(escp, sum), .groups = "drop") 
+  ,
+  by = c("RunYear", "StockID")
+) |>
+  mutate(
+    run_year = as.integer(RunYear), RunYear = NULL,
+    abund = lc_yr_sum + escp,
+    across(c(lc_yr, lc_yr_sum), list(er = ~.x/abund))
+  ) |> 
+  select(run_year, everything())
+
+```
+
+```{r}
+# #if preserving stock_location_name & StockID in initial group_by, duplication from StockID being both assigned (to 18) and NA for many post-1998 run_year-FisheryID combinations
+# rmis_rr_skagit |> count(stock_location_name, f_type, FisheryID, FisheryName, run_year) |> filter(n > 1L) 
+# rmis_rr_skagit |> filter(is.na(FisheryID), run_year == 1998) #example with NA FisheryID
+# rmis_rr_skagit |> filter(FisheryID==81, run_year == 2001) #
+
+#rmis_rr_skagit |> 
+rmis_rr_skagit_cct |> 
+  select(run_year, StockID, f_type, FisheryID, FisheryName, er) |> 
+  pivot_wider(names_from = run_year, values_from = er) |> arrange(FisheryID) |> print(n=100)
+
+
+#only StockID 18 wild marked in CCT mapping
+#which is not present in CoTC FRAM, so compare to hatchery marked? StockID 20
+#differencing convention is positive when FRAM-based LC ER > RMIS-based [fishery recs]/[fishery + escapement recs]  
+fram_rmis <- left_join(
+  fram_lc_er_skagit |> filter(StockID==20),
+  rmis_rr_skagit_cct |> 
+    select(run_year, StockID, f_type, FisheryID, FisheryName, er) |> 
+    mutate(StockID=20),
+  by = c("run_year", "StockID", "FisheryID", "FisheryName")
+) |> 
+  mutate(
+    fram_rmis = lc_yr_er - er
+  ) 
+
+fram_rmis |> count(FisheryID)
+fram_rmis |> count(is.na(fram_rmis))
+
+fram_rmis |>
+  drop_na(er) |> 
+  ggplot(aes(fct_reorder(paste(FisheryID, FisheryName), fram_rmis), fram_rmis)) +
+  geom_boxplot(outlier.shape = NA) +
+  geom_text(aes(label = run_year), size = 2, position = "jitter", alpha = 0.4) +
+  coord_flip()
+
+fram_rmis |> 
+  drop_na(er) |> 
+  filter(FisheryID %in% c(91, 103, 108)) |> 
+  ggplot(aes(factor(run_year), fram_rmis)) +
+  geom_col() +
+  facet_wrap(~FisheryID+FisheryName, labeller = label_wrap_gen(multi_line = F))
+
+
+fram_rmis |> drop_na(er) |> filter(run_year==2019) |> arrange(desc(fram_rmis))
+fram_rmis |> filter(run_year==2019) |> arrange(desc(lc_yr_er))
+fram_lc_er_skagit |> 
+  group_by(StockID, FisheryID, FisheryName) |> 
+  summarise(across(lc_yr_er, mean), .groups = "drop") |> 
+  pivot_wider(names_from = StockID, values_from = lc_yr_er) |> 
+  arrange(desc(`20`)) |> print(n=20)
+
+#above ypct_lm in "testing" indicates releases from WA_SKAG make up signif lower % of recs in A5
+#would seem to suggest that FRAM impacts could be over-estimated? (since more Skagit tags during BP years)
+#but on avg 2010-2019 appears that RMIS rate is higher in this very rough/prelim comparison between {post-season LC/(LC+escp)} and {fishery/(fishery+escapement)}
+fram_rmis |> 
+  filter(FisheryID %in% c(91, 103, 108, 190)) |> 
+  select(run_year, FisheryID, FisheryName, fram = lc_yr_er, rmis = er) |> pivot_longer(cols = c(fram, rmis)) |> 
+  ggplot(aes(run_year, value, color = name, fill = name)) +
+  geom_col(position = "dodge") +
+  scale_x_continuous(breaks = 2010:2020) +
+  stat_smooth(method="lm", formula=y~1, se=FALSE) +
+  facet_wrap(~FisheryID+FisheryName, labeller = label_wrap_gen(multi_line = F))
+
+
+#could/should compare using all recoveries from Skagit stock rather than only those CCT mapped?
+fram_rmis <- left_join(
+  fram_lc_er_skagit |> filter(StockID==20),
+  rmis_rr_skagit |> 
+    select(run_year, stock_location_name, f_type, FisheryID, FisheryName, er) |> 
+    mutate(StockID=20),
+  by = c("run_year", "StockID", "FisheryID", "FisheryName")
+  ) |> 
+  mutate(fram_rmis = lc_yr_er - er) 
+
+
+```
+
 
 # Task Overview Apr22
 
