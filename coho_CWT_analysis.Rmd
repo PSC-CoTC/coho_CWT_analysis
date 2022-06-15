@@ -56,6 +56,8 @@ rgns <- map_df(regions, ~paste0(.x, collapse =",")) |>
 
 lu <- list(
   #CCT queried releases, QAQC'd and assigned to PR and PR_MU
+  #these are assigned to FRAM marked wild StockIDs
+  #and are limited to ONLY tag_codes for MARKED releases
   cwt_stk = read_csv(file.path(dir_proj, "MSMDB/MSM_Stock_CWT2.csv")) |> 
     mutate(run_year = Run_ID+1985) |> 
     select(run_year, tag_code = CWT_Code, area = Area_Agg,
@@ -68,7 +70,8 @@ lu <- list(
   #AHB file...orig csv in "T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Projects/Coho FRAM MSM CWT analysis/ERAnalysis/FishMap.csv"
   ahb_fishmap = readxl::read_excel("rmis_loc_fram_fishery.xlsx", sheet = "ahb_mapping") |> 
     filter(FRAM_Fish_ID > 0) |> 
-    select(FisheryID = FRAM_Fish_ID, FisheryName = FRAM_Fish_Name, fishery_single = Gear, Num_Chars, PSC_Code)
+    select(FisheryID = FRAM_Fish_ID, FisheryName = FRAM_Fish_Name, fishery_single = Gear, Num_Chars, PSC_Code) |> 
+    distinct(FisheryID, FisheryName, fishery_single, Num_Chars, PSC_Code) #drop identical duplicate rows
   ,
   #DA incomplete rel state/region/basin to pr/pr_mu/StockID
   rmis_rgn_stkid = readxl::read_excel(file.path(dir_proj, "lu_rmis_rel_to_pr_prmu.xlsx"))
@@ -917,7 +920,13 @@ rmis_rr_ahb_map <- map_df(
   )
 )
 
+#some cases of same fishery from different n-chars being considered on same recovery_location_code
+#some cases initially from simple row duplication in lookup, now fixed on read-in
 overmapped <- rmis_rr_ahb_map |> count(uid) |> filter(n>1) |> select(uid)
+
+# semi_join(rmis_rr_ahb_map, overmapped, by = "uid") |> 
+#   count(recovery_location_code, fishery, fishery_single, PSC_Code, FisheryID, FisheryName, Num_Chars) |> 
+#   writexl::write_xlsx("T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Projects/Coho FRAM MSM CWT analysis/lu_ahb_fishmap_overmapped_qaqc.xlsx")
 
 #now rejoin to full dataset, after making FisheryID distinct per UID
 rmis_rr <- left_join(
@@ -929,7 +938,7 @@ rmis_rr <- left_join(
     ,
     semi_join(rmis_rr_ahb_map, overmapped, by = "uid") |> 
       group_by(uid) |> 
-      slice_max(Num_Chars, n = 1, with_ties = F) |> 
+      slice_min(Num_Chars, n = 1, with_ties = F) |> 
       ungroup() |> 
       select(uid, FisheryID) #|> count(uid) |> filter(n>1)
   )
@@ -950,11 +959,11 @@ rmis_rr <- left_join(
 
 ```
 
+# Preliminary psuedo-ER comparison
 
+## Skagit test case
 
-# Skagit
-
-```{r skagit}
+```{r skagit_stock_mapping_eda}
 #95 tag codes associated with "SKAGIT R     03.0176"
 #all release_location_name "CASCADE R    03.1411"
 lu$cwt_stk |> filter(StockID %in% 17:24) |> count(StockID, Hatchery_Name, Stock_Name, Release_Name)
@@ -989,12 +998,14 @@ rmis_rr <- rmis_rr |>
 
 ```{r}
 #first is all rows, not using CCT StockID
+#THIS UNMARKED RELEASE GROUPS cwt_1st_mark == "0000"
 rmis_rr_skagit <- rmis_rr |> 
   filter(
     str_detect(stock_location_name, "SKAGIT R     03.0176"),
     age == 3,
     !str_detect(release_location_name, "BAKER")
     ) |> 
+  #count(stock_location_name, f_type)
   #count(StockID, f_type)
   #count(FisheryID) |> arrange(desc(n)) |> print(n=100)
   drop_na(estimated_number) |>  #only drops a few from 75849 to 75715
@@ -1007,11 +1018,12 @@ rmis_rr_skagit <- rmis_rr |>
     ) |> 
   summarise(across(estimated_number, sum), .groups = "drop") |> 
   group_by(run_year, stock_location_name) |> 
-  mutate(abund = sum(estimated_number)) |> 
-  ungroup() |> 
-  mutate(er = estimated_number / abund)
+  mutate(est_num_tot_yr = sum(estimated_number)) |> ungroup() |> 
+  mutate(er = estimated_number / est_num_tot_yr)
 
 #limited to only those assigned by CCT
+#mostly marked releases, but looks to still be a few with cwt_1st_mark == "0000"
+#possibly due to CCT analysis of mark rates on releases external to RMIS
 rmis_rr_skagit_cct <- rmis_rr |> 
   filter(
     str_detect(stock_location_name, "SKAGIT R     03.0176"),
@@ -1022,9 +1034,13 @@ rmis_rr_skagit_cct <- rmis_rr |>
   group_by(run_year, StockID, f_type, FisheryID, FisheryName) |> 
   summarise(across(estimated_number, sum), .groups = "drop") |> 
   group_by(run_year, StockID) |> 
-  mutate(abund = sum(estimated_number)) |> 
+  mutate(est_num_tot_yr = sum(estimated_number)) |> 
   ungroup() |> 
-  mutate(er = estimated_number / abund)
+  mutate(er = estimated_number / est_num_tot_yr)
+
+
+# rmis_rr_skagit |> filter(f_type=="escp") |> print(n=50)
+# rmis_rr_skagit_cct |> filter(f_type=="escp")
 
 ```
 
@@ -1067,7 +1083,22 @@ fram_lc_er_skagit <- left_join(
 # rmis_rr_skagit |> filter(is.na(FisheryID), run_year == 1998) #example with NA FisheryID
 # rmis_rr_skagit |> filter(FisheryID==81, run_year == 2001) #
 
-#rmis_rr_skagit |> 
+rmis_rr_skagit |> 
+  select(run_year, stock_location_name, f_type, FisheryID, FisheryName, er) |> 
+  # #pivot_wider(names_from = run_year, values_from = er) |> arrange(FisheryID) |> print(n=100)
+  ## "quasi ER by recovery type"
+  # group_by(run_year, stock_location_name, f_type) |> summarise(across(er, sum), .groups = "drop") |> 
+  # ggplot(aes(run_year, f_type, fill = er)) +
+  # geom_tile()
+  
+  drop_na(f_type) |> #filter(is.na(f_type)) #drop a few insignificant year-recovery groups with RMIS fishery outside f_type ranges
+  mutate(
+    FisheryID = if_else(f_type=="escp", 0, FisheryID),
+    fidnm = paste(FisheryID, FisheryName, sep = ":") |> fct_reorder(.x = FisheryID, .fun = min)
+    ) |> 
+  ggplot(aes(run_year, fidnm, fill = er)) +
+  geom_tile() 
+
 rmis_rr_skagit_cct |> 
   select(run_year, StockID, f_type, FisheryID, FisheryName, er) |> 
   pivot_wider(names_from = run_year, values_from = er) |> arrange(FisheryID) |> print(n=100)
