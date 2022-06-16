@@ -885,7 +885,7 @@ ypct_lm_yr |>
 
 # AHB fishmap
 
-```{r}
+```{r rmis_rr_ahb_map}
 
 #!! Note confusion on AK fisheries
 #!! CoTC post-season only includes up to 198 in Fishery table
@@ -990,13 +990,12 @@ rmis_rr |> filter(str_detect(release_location_name, "SKAGIT R TRIBS"))
 
 Prototype using AHB fishery mapping and CCT stock mapping
 
-```{r}
+```{r add_cct_stockID}
 #now add StockIDs to dataset with FisheryID added above in "AHB fishmap"
-rmis_rr <- rmis_rr |> 
-  left_join(lu$cwt_stk, by = c("run_year", "tag_code"))
+rmis_rr <- rmis_rr |> left_join(lu$cwt_stk, by = c("run_year", "tag_code"))
 ```
 
-```{r}
+```{r calc_rmis_pseudo_er}
 #first is all rows, not using CCT StockID
 #THIS UNMARKED RELEASE GROUPS cwt_1st_mark == "0000"
 rmis_rr_skagit <- rmis_rr |> 
@@ -1044,7 +1043,7 @@ rmis_rr_skagit_cct <- rmis_rr |>
 
 ```
 
-```{r}
+```{r calc_postseason_fram_pseudo_er}
 fram <- list()
 focal_run_ids <- 34:44 #2010:2020
 focal_stock_ids <- 17:20
@@ -1114,9 +1113,7 @@ fram_rmis <- left_join(
     mutate(StockID=20),
   by = c("run_year", "StockID", "FisheryID", "FisheryName")
 ) |> 
-  mutate(
-    fram_rmis = lc_yr_er - er
-  ) 
+  mutate(fram_rmis = lc_yr_er - er) 
 
 fram_rmis |> count(FisheryID)
 fram_rmis |> count(is.na(fram_rmis))
@@ -1167,6 +1164,126 @@ fram_rmis <- left_join(
   ) |> 
   mutate(fram_rmis = lc_yr_er - er) 
 
+
+```
+
+## Multistock
+
+Generalizing above to a few more well-represented units
+
+```{r fram_lc_er}
+#rmis_rr |> drop_na(StockID) |> count(StockID) |> arrange(desc(n))
+
+fram <- list()
+focal_run_ids <- 34:44 #2010:2020
+focal_stock_ids <- c(20, 96, 164, 166, 176) #Skagit, Green, Willapa, Columbia Early, Columbia Late
+fram$escp <- framr::read_coho_escp(fp$mdb_pst, runs = focal_run_ids, stocks = focal_stock_ids)
+fram$mort <- framr::read_coho_mort(fp$mdb_pst, runs = focal_run_ids, stocks = focal_stock_ids)
+
+#initially focusing on landed mort only
+fram_lc_er <- left_join(
+  fram$mort |>
+    group_by(RunYear, StockID, StockLongName, FisheryID, FisheryName) |> 
+    summarise(
+      across(c(LandedCatch, MSFLandedCatch), sum),
+      lc_yr = LandedCatch + MSFLandedCatch, .groups = "drop") |> 
+    group_by(RunYear, StockID, StockLongName) |> 
+    mutate(across(lc_yr, list(sum = sum), .names = "{.col}_{.fn}")) |> 
+    ungroup()
+  ,
+  fram$escp |> 
+    group_by(RunYear, StockID) |> 
+    summarise(across(escp, sum), .groups = "drop") 
+  ,
+  by = c("RunYear", "StockID")
+) |>
+  mutate(
+    run_year = as.integer(RunYear), RunYear = NULL,
+    abund = lc_yr_sum + escp,
+    across(c(lc_yr, lc_yr_sum), list(er = ~.x/abund))
+  ) |> 
+  select(run_year, everything())
+```
+
+```{r fram_rmis}
+#fram object has many more year-stock-fishery levels present than rmis
+#this does not yet drop repeat cols of year-stock total landed catch, escapement, abundance and total er
+#important cols are 
+# - lc_yr: per year-stock, the sum over timesteps and NS/MSF landed catch for a FRAM fishery
+# - lc_yr_er: the fishery-specific FRAM "landed ER"
+# - pseudo_er: the fishery-specific RMIS "pseudo-ER" of (fishery recoveries)/(all recoveries incl escapement)
+# - fram_rmis: the difference of FRAM - RMIS
+
+fram_rmis <- left_join(
+  fram_lc_er
+  ,
+  rmis_rr |> 
+    filter(age == 3) |> 
+    drop_na(estimated_number, StockID) |>
+    mutate(StockID = if_else(StockID == 18, 20, StockID)) |> 
+    group_by(run_year, StockID, f_type, FisheryID, FisheryName) |> 
+    summarise(across(estimated_number, sum), .groups = "drop") |> 
+    group_by(run_year, StockID) |> 
+    mutate(est_num_tot_yr = sum(estimated_number)) |> ungroup() |> 
+    mutate(pseudo_er = estimated_number / est_num_tot_yr) |> 
+    select(run_year, StockID, f_type, FisheryID, FisheryName, pseudo_er)
+  ,
+  by = c("run_year", "StockID", "FisheryID", "FisheryName")
+) |> 
+  mutate(fram_rmis = lc_yr_er - pseudo_er) 
+
+```
+
+```{r fram_rmis_diff_boxplots}
+fram_rmis |> 
+  drop_na(pseudo_er) |> 
+  mutate(fidnm = paste(FisheryID, FisheryName, sep = ":") |> fct_reorder(.x = FisheryID, .fun = min)) |> 
+  ggplot(aes(fidnm, fram_rmis)) +
+  geom_boxplot(outlier.shape = NA) +
+  geom_text(aes(label = run_year), size = 2, position = "jitter", alpha = 0.4) +
+  coord_flip() +
+  facet_wrap(~StockID+StockLongName, scales = "free_y", labeller = label_wrap_gen(multi_line = F), ncol = 1)
+
+```
+
+```{r}
+fram_rmis |> 
+  drop_na(pseudo_er) |> 
+  mutate(
+    fidnm = paste(FisheryID, FisheryName, sep = ":") |> fct_reorder(.x = FisheryID, .fun = min),
+    sidnm = paste(StockID, StockLongName, sep = ":") |> fct_reorder(.x = StockID, .fun = min)
+    ) |> 
+  group_by(sidnm, fidnm) |> 
+  summarise(across(c(lc_yr_er, pseudo_er, fram_rmis), list(mean=mean)), .groups = "drop") |> 
+  filter(abs(fram_rmis_mean)> 0.01) |> 
+  ggplot(aes(fidnm, fram_rmis_mean, fill = fram_rmis_mean > 0)) +
+  geom_col(show.legend = F) +
+  scale_fill_manual(values = c("purple", "gold")) +
+  facet_wrap(~sidnm, scales = "free_x", ncol=1) +
+  labs(
+    title = "Mean 2010-2020 CoTC post-season FRAM - RMIS pseudo ERs",
+    subtitle = "gold/above 0: FRAM landed/(landed+escp) > RMIS fishery/(fishery+escp)"
+    
+  )
+
+```
+
+```{r}
+fram_rmis |> 
+  drop_na(pseudo_er) |> 
+  mutate(
+    fidnm = paste(FisheryID, FisheryName, sep = ":") |> fct_reorder(.x = FisheryID, .fun = min),
+    sidnm = paste(StockID, StockLongName, sep = ":") |> fct_reorder(.x = StockID, .fun = min)
+    ) |> 
+  group_by(sidnm) |> 
+  slice_min(order_by = fram_rmis, n = 5, with_ties = F) |> ungroup() |> 
+#  filter(FisheryID %in% c(91, 103, 108, 190)) |> 
+  select(run_year, sidnm, fidnm, fram = lc_yr_er, rmis = pseudo_er) |> pivot_longer(cols = c(fram, rmis)) |> 
+  ggplot(aes(run_year, value, color = name, fill = name)) +
+  geom_col(position = "dodge") +
+  scale_x_continuous(breaks = 2010:2020) +
+  stat_smooth(method="lm", formula=y~1, se=FALSE) +
+  facet_grid(rows = vars(fidnm), cols = vars(sidnm), labeller = label_wrap_gen(multi_line = F))
 
 ```
 
