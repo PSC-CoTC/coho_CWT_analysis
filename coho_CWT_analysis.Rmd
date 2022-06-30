@@ -63,11 +63,16 @@ lu <- list(
     #exclude a double-mapped row
     filter(!(run_year == 1996 & tag_code == "071544" & StockID == 166))
   ,
-  #AHB file...orig csv in "T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Projects/Coho FRAM MSM CWT analysis/ERAnalysis/FishMap.csv"; several additional csv iterations copied into workbook
-  ahb_fishmap = readxl::read_excel("rmis_loc_fram_fishery.xlsx", sheet = "ahb_mapping") |> 
-    #filter(FRAM_Fish_ID > 0) |> 
-    select(FisheryID = FRAM_Fish_ID, FisheryName = FRAM_Fish_Name, fishery_single = Gear, Num_Chars, PSC_Code) |> 
-    distinct(FisheryID, FisheryName, fishery_single, Num_Chars, PSC_Code) #drop identical duplicate rows
+  #AHB file...
+  ahb_fishmap = readr::read_csv("T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Projects/Coho FRAM MSM CWT analysis/FishMapJun29_2022.csv") |> 
+    select(FisheryID, FisheryName, fishery_single = Gear, Num_Chars, PSC_Code) |>
+    distinct(FisheryID, FisheryName, fishery_single, Num_Chars, PSC_Code)
+
+  # #orig csv in "T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Projects/Coho FRAM MSM CWT analysis/ERAnalysis/FishMap.csv"; several additional csv iterations copied into workbook
+  # ahb_fishmap = readxl::read_excel("rmis_loc_fram_fishery.xlsx", sheet = "ahb_mapping") |> 
+  #   #filter(FRAM_Fish_ID > 0) |> 
+  #   select(FisheryID = FRAM_Fish_ID, FisheryName = FRAM_Fish_Name, fishery_single = Gear, Num_Chars, PSC_Code) |> 
+  #   distinct(FisheryID, FisheryName, fishery_single, Num_Chars, PSC_Code) #drop identical duplicate rows
   # ,
   # #DA incomplete rel state/region/basin to pr/pr_mu/StockID
   # rmis_rgn_stkid = readxl::read_excel(file.path(dir_proj, "lu_rmis_rel_to_pr_prmu.xlsx"))
@@ -137,15 +142,16 @@ These chunks preserve one-time operations to generate starting datasets from RMI
 ```{r read_in_rmis_recoveries, eval=FALSE}
 dir_rmis_recs <- "T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Projects/Coho FRAM MSM CWT analysis/ERAnalysis/RMISRecoveries/"
 
-focal_cols_recs <- c("recovery_id", "tag_code", "run_year", "recovery_location_code", "recovery_location_name", "fishery", "gear", "estimated_number")
+focal_cols_recs <- c("recovery_id", "tag_code", "run_year", "recovery_location_code", "recovery_location_name", "fishery", "gear", "estimated_number", "recorded_mark")
 
-# rmis_recs <- purrr::map_dfr(
-#   list.files(dir_rmis_recs, full.names = T)
-#   ,
-#   ~readr::read_csv(.x, col_select = all_of(focal_cols_recs))
-#   )
-# 
-# saveRDS(rmis_recs, "T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Projects/Coho FRAM MSM CWT analysis/rmis_coho_recoveries_86_2020.rds")
+rmis_recs <- purrr::map_dfr(
+  list.files(dir_rmis_recs, pattern = ".TXT", full.names = T)
+  ,
+  ~readr::read_csv(.x, col_select = all_of(focal_cols_recs)) |> 
+    dplyr::mutate(recorded_mark = as.character(recorded_mark))
+  )
+
+saveRDS(rmis_recs, "T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Projects/Coho FRAM MSM CWT analysis/rmis_coho_recoveries_86_2020.rds")
 
 ```
 
@@ -196,7 +202,6 @@ rmis_rel <- map_df(
 ```
 
 ```{r build_rec_rel, eval=FALSE}
-
 left_join(
   readRDS(fp$rmis_recs) |> 
     mutate(
@@ -217,7 +222,7 @@ left_join(
   ,
   readRDS(fp$rmis_rel) |> select(-contains("n_code")),
   by = c("tag_code" = "tag_code_or_release_id")
-  ) ##|> saveRDS(file.path(dir_proj, "rmis_coho_rec_rel_86_2020.rds"))
+  ) #|> saveRDS(file.path(dir_proj, "rmis_coho_rec_rel_86_2020.rds"))
 
 ```
 
@@ -459,7 +464,7 @@ rmis_rr |>
 
 Attempt to build lookup from RMIS recovery location codes to FRAM FisheryIDs
 
-This first chunk distinguishes the unique *recovery_location_codes* and builds new fields by character position, following the RMIS schema (PSC_V41_Specification_Nov2021.pdf).
+This first chunk distinguishes the unique *recovery_location_codes* along with new fields by character position, following the RMIS schema (PSC_V41_Specification_Nov2021.pdf).
 
 In addition, the RMIS "gear" lookup is joined, providing *gear_name* strings. 
 
@@ -955,7 +960,7 @@ rmis_rr <- left_join(
   by = "uid") |> 
   left_join(fram_fishery, by = "FisheryID")
 
-rm(rmis_rr_ahb_map)
+rm(rmis_rr_ahb_map, overmapped)
 
 # rmis_rr |> filter(FisheryID %in% 91:93) |> count(FisheryID)
 # #exact match?!?!
@@ -1271,10 +1276,13 @@ rmis_rr |>
 ## Construct RMIS estimates paralleling FRAM
 
 ```{r er_rmis}
+#filter logic excludes RMIS fishery values > 59 
+#these evaluate f_type==NA and fail both f_type=="escp" and f_type!="escp"
 er_rmis <- full_join(
+  #analogous to FRAM mortality table
   rmis_rr |> 
-    drop_na(estimated_number, StockID) |>
-    filter(age == 3, f_type != "escp") |> 
+    drop_na(estimated_number, StockID) |> #1096098 only 3s, 1117270 including more than 3s
+    filter(age == 3, f_type != "escp") |> #548455
     mutate(StockID = if_else(StockID == 18, 20, StockID)) |> 
     group_by(run_year, StockID, f_type, FisheryID, FisheryName) |> 
     summarise(rmis_est_num_yr = sum(estimated_number), .groups = "drop") |> 
@@ -1282,9 +1290,10 @@ er_rmis <- full_join(
     mutate(rmis_est_num_yr_sum = sum(rmis_est_num_yr)) |> 
     ungroup()
   ,
+  #analogous to FRAM escapement table
   rmis_rr |> 
-    drop_na(estimated_number, StockID) |>
-    filter(age == 3, f_type == "escp") |> 
+    drop_na(estimated_number, StockID) |> #1096098 only 3s, 1117270 including more than 3s
+    filter(age == 3, f_type == "escp") |> #531353
     mutate(StockID = if_else(StockID == 18, 20, StockID)) |> 
     group_by(run_year, StockID) |> 
     summarise(rmis_escp = sum(estimated_number), .groups = "drop")
@@ -1632,6 +1641,8 @@ map(
 
 
 ### Excluding FW sport
+
+from RMIS, 
 
 ```{r}
 fram_fishery |> 
