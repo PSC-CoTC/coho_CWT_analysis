@@ -67,36 +67,37 @@ lu <- list(
   ahb_fishmap = readr::read_csv("T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Projects/Coho FRAM MSM CWT analysis/FishMapJun29_2022.csv") |> 
     select(FisheryID, FisheryName, fishery_single = Gear, Num_Chars, PSC_Code) |>
     distinct(FisheryID, FisheryName, fishery_single, Num_Chars, PSC_Code)
-
-  # #orig csv in "T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Projects/Coho FRAM MSM CWT analysis/ERAnalysis/FishMap.csv"; several additional csv iterations copied into workbook
-  # ahb_fishmap = readxl::read_excel("rmis_loc_fram_fishery.xlsx", sheet = "ahb_mapping") |> 
-  #   #filter(FRAM_Fish_ID > 0) |> 
-  #   select(FisheryID = FRAM_Fish_ID, FisheryName = FRAM_Fish_Name, fishery_single = Gear, Num_Chars, PSC_Code) |> 
-  #   distinct(FisheryID, FisheryName, fishery_single, Num_Chars, PSC_Code) #drop identical duplicate rows
-  # ,
-  # #DA incomplete rel state/region/basin to pr/pr_mu/StockID
-  # rmis_rgn_stkid = readxl::read_excel(file.path(dir_proj, "lu_rmis_rel_to_pr_prmu.xlsx"))
 )
 
 
+fram <- list()
 
 #same: readxl::read_excel("rmis_loc_fram_fishery.xlsx", sheet = "tbl_fishery_cotc_post")
 db_con <- DBI::dbConnect(
   drv = odbc::odbc(),
   .connection_string = paste0(
     "Driver={Microsoft Access Driver (*.mdb, *.accdb)};DBQ=",
-    "O:/code/coho/fram_mdbs/PSC_CoTC_PostSeason_CohoFRAMDB_thru2020_021622.mdb",
-    ";")
+    fp$mdb_pst, ";")
   )
 
-fram_fishery <- tbl(db_con, "Fishery") |> 
+fram$fishery <- tbl(db_con, "Fishery") |> 
   filter(Species == "COHO") |> 
   select(FisheryID:FisheryTitle) |> 
   collect()
 
 DBI::dbDisconnect(db_con)
 
+# fram$fishery |> 
+#   filter(str_detect(FisheryTitle, "Sport|Spt")) |> 
+#   print(n=nrow(fram$fishery))
+fram_fishery_fw_spt <- c(
+  27,28,29,30,31,46,51,54,58,59,60,61,62,65,66,67,70,73,
+  76,89,90,94,95,99,100,108,116,117,127,128,135,149,150,151,
+  163,164,165,166,169
+  )
 
+
+#primary dataset, construction below
 rmis_rr <- readRDS(fp$rmis_rec_rel) |> 
   filter(!is.na(release_location_state)) |>  #drop 3 recent
   mutate(age = run_year - brood_year) |> 
@@ -787,7 +788,7 @@ y <- inner_join(
   rmis_rr_lu_wa |> select(FisheryID, recovery_location_code, rlsp:gear),
   rmis_rr |> select(1:25, FisheryID_ahb = FisheryID, FisheryName_ahb = FisheryName), 
   by = c('recovery_location_code', 'rlsp', 'rlwtr', 'rlsctr', 'rlrgn', 'rlarea', 'rllocn', 'rlsubl', 'fishery', 'gear')
-) |> left_join(fram_fishery, by = "FisheryID")
+) |> left_join(fram$fishery, by = "FisheryID")
 
 y |> count(FisheryID, FisheryName) |> ggplot(aes(paste(FisheryID, FisheryName, sep = ":"), n)) + geom_col() + coord_flip()
 
@@ -909,7 +910,7 @@ ypct_lm_yr |>
 #!! rmis_rr |> filter(recovery_location_code == "1M1NW")
 #!! lu$ahb_fishmap |> filter(PSC_Code == "1M1NW")
 
-#some direct matches, but cannot directly join on PSC_Code...have to use the Num_Chars field
+#cannot directly join on 'PSC_Code'...have to use the Num_Chars field
 #and/but that means using many possible lengths of recovery_location_code
 #iterator over Num_chars...seems crazy inefficient? but it runs...
 #and addition of uid in setup allows recombination
@@ -958,7 +959,7 @@ rmis_rr <- left_join(
   )
   ,
   by = "uid") |> 
-  left_join(fram_fishery, by = "FisheryID")
+  left_join(fram$fishery, by = "FisheryID")
 
 rm(rmis_rr_ahb_map, overmapped)
 
@@ -973,7 +974,6 @@ rm(rmis_rr_ahb_map, overmapped)
 #   ) |> print(n=100)
 
 ```
-
 
 # Skagit test of preliminary psuedo-ER comparison
 
@@ -1188,7 +1188,6 @@ fram_rmis <- left_join(
 #Sno: rmis_rr |> drop_na(StockID) |> filter(StockID %in% 35:38) |> count(StockID, Stock_Name, pr, pr_mu) |> arrange(desc(n)) |> print(n=30)
 
 
-fram <- list()
 focal_run_ids <- 34:44 #2010:2020
 #Skagit, Sno, Green, Willapa, Columbia Early, Columbia Late, Fraser Lower, Fraser Upper
 focal_stock_ids <- c(20, 38, 96, 164, 166, 176, 226, 230) 
@@ -1198,6 +1197,36 @@ fram$mort <- framr::read_coho_mort(fp$mdb_pst, runs = focal_run_ids, stocks = fo
 #initially focusing on landed mort only
 er_fram <- full_join(
   fram$mort |>
+    group_by(RunYear, StockID, StockLongName, FisheryID, FisheryName) |> 
+    summarise(
+      across(c(LandedCatch, MSFLandedCatch), sum),
+      fram_landed_yr = LandedCatch + MSFLandedCatch, .groups = "drop") |> 
+    group_by(RunYear, StockID, StockLongName) |> 
+    mutate(
+      LandedCatch = NULL, MSFLandedCatch = NULL,
+      across(fram_landed_yr, list(sum = sum), .names = "{.col}_{.fn}")
+      ) |> 
+    ungroup()
+  ,
+  fram$escp |> 
+    rename(fram_escp = escp) |> 
+    group_by(RunYear, StockID) |> 
+    summarise(across(fram_escp, sum), .groups = "drop") 
+  ,
+  by = c("RunYear", "StockID")
+) |>
+  mutate(
+    run_year = as.integer(RunYear), RunYear = NULL,
+    fram_abund = fram_landed_yr_sum + fram_escp,
+    fram_er_fishery = fram_landed_yr / fram_abund,
+    fram_er = fram_landed_yr_sum / fram_abund
+    #across(c(fram_landed_yr, fram_landed_yr_sum), list(fram_er = ~.x/fram_abund))
+  ) |> 
+  select(run_year, everything())
+
+er_fram_no_fwspt <- full_join(
+  fram$mort |>
+    filter(!(FisheryID %in% fram_fishery_fw_spt)) |> 
     group_by(RunYear, StockID, StockLongName, FisheryID, FisheryName) |> 
     summarise(
       across(c(LandedCatch, MSFLandedCatch), sum),
@@ -1235,10 +1264,11 @@ er_fram <- full_join(
 #   writexl::write_xlsx("T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Projects/Coho FRAM MSM CWT analysis/qaqc_AHB_mapped_FisheryID_rec_loc_code.xlsx")
 
 # #added as sheet "cct_mapped_stockID_3s_no_escp"
-# rmis_rr |> 
+# #then again as "cct_stockID_3s_noescp_Jun29"
+# rmis_rr |>
 #   drop_na(estimated_number, StockID) |>
-#   filter(age == 3, f_type != "escp", between(run_year, 2010, 2020)) |> 
-#   count(FisheryID, FisheryName, recovery_location_code, fishery, gear, recovery_location_name) |> 
+#   filter(age == 3, f_type != "escp", between(run_year, 2010, 2020)) |>
+#   count(FisheryID, FisheryName, recovery_location_code, fishery, gear, recovery_location_name) |>
 #   writexl::write_xlsx("C:/Users/auerbdaa/Downloads/temp.xlsx")
 
 # rmis_rr |> 
@@ -1307,7 +1337,48 @@ er_rmis <- full_join(
     rmis_er = rmis_est_num_yr_sum / rmis_abund
   )
 
+#need additional/alternative filter criteria?
+#large majority of records are Buoy10 and Lwr ColR, with appreciable Fraser & Chehalis Spt
+er_rmis_no_fwspt <- full_join(
+  #analogous to FRAM mortality table
+  rmis_rr |> 
+    drop_na(estimated_number, StockID) |> #1096098 only 3s, 1117270 including more than 3s
+    filter(age == 3, f_type != "escp") |> #548455
+    filter(!(f_type == "sport" & rlwtr == "F")) |> 
+    mutate(StockID = if_else(StockID == 18, 20, StockID)) |> 
+    group_by(run_year, StockID, f_type, FisheryID, FisheryName) |> 
+    summarise(rmis_est_num_yr = sum(estimated_number), .groups = "drop") |> 
+    group_by(run_year, StockID) |> 
+    mutate(rmis_est_num_yr_sum = sum(rmis_est_num_yr)) |> 
+    ungroup()
+  ,
+  #analogous to FRAM escapement table
+  rmis_rr |> 
+    drop_na(estimated_number, StockID) |> #1096098 only 3s, 1117270 including more than 3s
+    filter(age == 3, f_type == "escp") |> #531353
+    mutate(StockID = if_else(StockID == 18, 20, StockID)) |> 
+    group_by(run_year, StockID) |> 
+    summarise(rmis_escp = sum(estimated_number), .groups = "drop")
+  ,
+  by = c("run_year", "StockID")
+  ) |> 
+  mutate(
+    run_year = as.integer(run_year),
+    rmis_abund = rmis_est_num_yr_sum + rmis_escp,
+    rmis_er_fishery = rmis_est_num_yr / rmis_abund,
+    rmis_er = rmis_est_num_yr_sum / rmis_abund
+  )
+
+```
+
+```{r er_rmis_focal}
 er_rmis_focal <- er_rmis |> 
+  filter(
+    StockID %in% unique(er_fram$StockID),
+    between(run_year, min(er_fram$run_year), max(er_fram$run_year))
+  )
+
+er_rmis_focal_no_fwspt <- er_rmis_no_fwspt |> 
   filter(
     StockID %in% unique(er_fram$StockID),
     between(run_year, min(er_fram$run_year), max(er_fram$run_year))
@@ -1352,6 +1423,22 @@ er_fram_rmis <- full_join(
     d_er_fram_rmis_fishery = fram_er_fishery - rmis_er_fishery,
     d_er_fram_rmis = fram_er - rmis_er
     )
+
+er_fram_rmis_no_fwspt <- full_join(
+  er_fram_no_fwspt,
+  er_rmis_focal_no_fwspt,
+  by = c("run_year", "StockID", "FisheryID", "FisheryName")
+) |> 
+  mutate(
+    fidnm = paste(FisheryID, FisheryName, sep = ":") |> fct_reorder(.x = FisheryID, .fun = min),
+    sidnm = paste(StockID, StockLongName, sep = ":") |> fct_reorder(.x = StockID, .fun = min),
+    d_landed_est_num_yr = fram_landed_yr - rmis_est_num_yr,
+    d_landed_est_num_yr_sum = fram_landed_yr_sum - rmis_est_num_yr_sum,
+    d_escp_fram_rmis = fram_escp - rmis_escp,
+    d_er_fram_rmis_fishery = fram_er_fishery - rmis_er_fishery,
+    d_er_fram_rmis = fram_er - rmis_er
+    )
+
 ```
 
 ## Summed mortality of year-stock-fishery levels in FRAM, missing in RMIS
@@ -1519,8 +1606,118 @@ er_fram_rmis |>
 
 ```
 
-#!DA START HERE!
+## ER comparison excluding FW sport
 
+```{r gt_total_er_mean_no_fwspt}
+er_fram_rmis_no_fwspt |> 
+  drop_na(fram_er, rmis_er) |>
+  group_by(sidnm) |> 
+  distinct(sidnm, run_year, fram_er, rmis_er, d_er_fram_rmis) |> #arrange(sidnm) |> print(n=50)
+  summarise(across(c(fram_er, rmis_er, d_er_fram_rmis), mean)) |> 
+  gt() |> 
+  fmt_percent(contains("_er"))
+```
+
+```{r gg_total_er_mean_no_fwspt}
+er_fram_rmis_no_fwspt |> 
+  drop_na(fram_er, rmis_er) |>
+  group_by(sidnm) |> 
+  distinct(sidnm, run_year, fram_er, rmis_er, d_er_fram_rmis) |> #arrange(sidnm) |> print(n=50)
+  summarise(across(c(fram_er, rmis_er), mean)) |> 
+  pivot_longer(-sidnm) |> 
+  ggplot(aes(sidnm, value, fill = name)) + 
+  geom_col(position = position_dodge()) +
+  geom_text(aes(y = -0.07, label = scales::percent(round(value, 3))), position = position_dodge2(width = 0.7)) +
+  scale_x_discrete("") +
+  scale_y_continuous("Pseudo-ER", limits = c(-0.1, 1),labels = scales::percent) +
+  coord_flip() +
+  scale_fill_grey("") +
+  theme(legend.position = "top") +
+  labs(
+    title = "Mean 2010-2020 total pseudo-ER, FRAM - RMIS"
+  )
+
+```
+
+```{r gt_total_er_annual_no_fwspt}
+er_fram_rmis_no_fwspt |> 
+  drop_na(fram_er, rmis_er) |>
+  group_by(sidnm) |> 
+  distinct(sidnm, run_year, fram_er, rmis_er, d_er_fram_rmis) |>
+  ungroup() |>
+  gt(groupname_col = "sidnm", rowname_col = "run_year") |> 
+  fmt_percent(contains("_er"))
+```
+
+```{r gg_total_er_annual_diff_no_fwspt}
+#same as preceding table, as plot
+er_fram_rmis_no_fwspt |> 
+  drop_na(fram_er, rmis_er) |>
+  group_by(sidnm) |> 
+  distinct(sidnm, run_year, fram_er, rmis_er, d_er_fram_rmis) |>
+  ungroup() |>
+  ggplot(aes(run_year, d_er_fram_rmis)) + 
+  geom_col() +
+  scale_y_continuous("", labels = scales::percent) +
+  facet_wrap(~sidnm, scales = "free_y", labeller = label_wrap_gen(multi_line = F), ncol = 1) +
+  labs(
+    title = "Differences in annual total pseudo-ER, FRAM - RMIS"
+  )
+```
+
+```{r gg_total_er_annual_bars_no_fwspt}
+er_fram_rmis_no_fwspt |> 
+  drop_na(fram_er, rmis_er) |>
+  group_by(sidnm) |> 
+  distinct(sidnm, run_year, fram_er, rmis_er) |>
+  ungroup() |>
+  pivot_longer(-c(sidnm, run_year)) |> 
+  ggplot(aes(run_year, value, fill = name)) + 
+  geom_col(position = position_dodge()) +
+  scale_fill_grey("") +
+  facet_wrap(~sidnm, scales = "free", ncol = 2)
+    
+```
+
+```{r gg_fishery_er_diff_boxplots_no_fwspt}
+min_diff_er <- 0.01 #annual, per-fishery
+
+#for stock-fishery-year levels with both sources present...
+er_fram_rmis_no_fwspt |> 
+  drop_na(fram_er, rmis_er) |> 
+  filter(abs(d_er_fram_rmis_fishery) >= min_diff_er) |> 
+  ggplot(aes(fidnm, d_er_fram_rmis_fishery)) +
+  geom_boxplot(outlier.shape = NA) +
+  geom_text(aes(label = run_year), size = 2, position = "jitter", alpha = 0.4) +
+  geom_hline(yintercept = 0) +
+  coord_flip() +
+  facet_wrap(~sidnm, scales = "free_y", labeller = label_wrap_gen(multi_line = F), ncol = 1) +
+  labs(
+    title = "Differences in annual per-fishery pseudo-ER, FRAM - RMIS",
+    subtitle = paste("Minimum difference >=", min_diff_er)
+  )
+
+```
+
+```{r gg_fishery_er_diff_means_no_fwspt}
+er_fram_rmis_no_fwspt |> 
+  drop_na(fram_er, rmis_er) |> 
+  group_by(sidnm, fidnm) |> 
+  summarise(across(c(fram_er_fishery, rmis_er_fishery, d_er_fram_rmis_fishery), list(mean=mean)), .groups = "drop") |> 
+  filter(abs(d_er_fram_rmis_fishery_mean) >= min_diff_er) |> 
+  ggplot(aes(fidnm, d_er_fram_rmis_fishery_mean, fill = d_er_fram_rmis_fishery_mean > 0)) +
+  geom_col(show.legend = F) +
+  scale_fill_manual(values = c("purple", "gold")) +
+  facet_wrap(~sidnm, scales = "free_x", ncol=1) +
+  labs(
+    title = "Mean 2010-2020 difference FRAM - RMIS pseudo ERs",
+    subtitle = "gold/above 0: FRAM landed/(landed+escp) > RMIS fishery/(fishery+escp)"
+  )
+
+```
+
+
+#!DA START HERE!
 
 
 ```{r}
@@ -1640,18 +1837,6 @@ map(
 ```
 
 
-### Excluding FW sport
-
-from RMIS, 
-
-```{r}
-fram_fishery |> 
-  filter(str_detect(FisheryTitle, "Sport|Spt")) |> 
-  print(n=nrow(fram_fishery))
-
-fram_fishery_fw <-
-
-```
 
 
 
