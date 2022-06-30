@@ -969,9 +969,8 @@ rm(rmis_rr_ahb_map)
 
 ```
 
-# Preliminary psuedo-ER comparison
 
-## Skagit test case
+# Skagit test of preliminary psuedo-ER comparison
 
 ```{r skagit_stock_mapping_eda}
 #95 tag codes associated with "SKAGIT R     03.0176"
@@ -1000,7 +999,7 @@ rmis_rr |> filter(str_detect(release_location_name, "SKAGIT R TRIBS"))
 
 Prototype using AHB fishery mapping and CCT stock mapping
 
-```{r calc_rmis_pseudo_er}
+```{r skagit_calc_rmis_pseudo_er}
 #first is all rows, not using CCT StockID
 #THIS UNMARKED RELEASE GROUPS cwt_1st_mark == "0000"
 rmis_rr_skagit <- rmis_rr |> 
@@ -1048,7 +1047,7 @@ rmis_rr_skagit_cct <- rmis_rr |>
 
 ```
 
-```{r calc_postseason_fram_pseudo_er}
+```{r skagit_calc_postseason_fram_pseudo_er}
 fram <- list()
 focal_run_ids <- 34:44 #2010:2020
 focal_stock_ids <- 17:20
@@ -1081,7 +1080,7 @@ fram_lc_er_skagit <- left_join(
 
 ```
 
-```{r}
+```{r skagit_eda}
 # #if preserving stock_location_name & StockID in initial group_by, duplication from StockID being both assigned (to 18) and NA for many post-1998 run_year-FisheryID combinations
 # rmis_rr_skagit |> count(stock_location_name, f_type, FisheryID, FisheryName, run_year) |> filter(n > 1L) 
 # rmis_rr_skagit |> filter(is.na(FisheryID), run_year == 1998) #example with NA FisheryID
@@ -1172,17 +1171,16 @@ fram_rmis <- left_join(
 
 ```
 
-## Multistock
 
-Revising and generalizing to additional stock units
+
+# FRAM-RMIS comparison
+
+## Extract CoTC post-season FRAM estimates
 
 ```{r er_fram}
 #rmis_rr |> drop_na(StockID) |> count(StockID, Stock_Name, pr, pr_mu) |> arrange(desc(n)) |> print(n=30)
 #Stilly: rmis_rr |> drop_na(StockID) |> filter(StockID %in% 29:32) |> count(StockID, Stock_Name, pr, pr_mu) |> arrange(desc(n)) |> print(n=30)
 #Sno: rmis_rr |> drop_na(StockID) |> filter(StockID %in% 35:38) |> count(StockID, Stock_Name, pr, pr_mu) |> arrange(desc(n)) |> print(n=30)
-
-# rmis_rr |> drop_na(StockID) |> count(StockID, run_year) |> pivot_wider(names_from = run_year, values_from = n) 
-# # |> writexl::write_xlsx("T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Projects/Coho FRAM MSM CWT analysis/temp_CCT_mapped_stockID_by_year.xlsx")
 
 
 fram <- list()
@@ -1224,7 +1222,9 @@ er_fram <- full_join(
 
 ```
 
-```{r rmis_fishmap_qaqc}
+## RMIS QAQC exports
+
+```{r rmis_qaqc}
 # rmis_rr |> 
 #   count(FisheryID, FisheryName, recovery_location_code, fishery, gear, recovery_location_name) |>
 #   writexl::write_xlsx("T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Projects/Coho FRAM MSM CWT analysis/qaqc_AHB_mapped_FisheryID_rec_loc_code.xlsx")
@@ -1236,16 +1236,41 @@ er_fram <- full_join(
 #   count(FisheryID, FisheryName, recovery_location_code, fishery, gear, recovery_location_name) |> 
 #   writexl::write_xlsx("C:/Users/auerbdaa/Downloads/temp.xlsx")
 
-```
+# rmis_rr |> 
+#   filter(age == 3, f_type != "escp", between(run_year, 2010, 2020)) |> 
+#   filter(is.na(StockID)) |> 
+#   filter(cwt_1st_mark %in% c("5000", "5500")) |> 
+#   count(release_location_state, release_location_rmis_region, release_location_rmis_basin,
+#         release_location_name, hatchery_location_name, stock_location_name, 
+#         cwt_1st_mark, cwt_2nd_mark,
+#         tag_code) |> 
+#   arrange(desc(n)) |> #print(n=30)
+#   writexl::write_xlsx("T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Projects/Coho FRAM MSM CWT analysis/qaqc_CCT_unmapped.xlsx")
 
-```{r er_rmis}
+# #first export was including escp as temp_CCT_mapped_stockID_by_year.xlsx
+# writexl::write_xlsx(
+#   x = list(
+#     no_escp = rmis_rr |> drop_na(StockID) |> 
+#       filter(f_type != "escp") |> 
+#       count(StockID, run_year) |> pivot_wider(names_from = run_year, values_from = n) ,
+#     with_escp = rmis_rr |> drop_na(StockID) |> 
+#       count(StockID, run_year) |> pivot_wider(names_from = run_year, values_from = n) 
+#   ), 
+#   path = "T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Projects/Coho FRAM MSM CWT analysis/qaqc_CCT_mapped_stockID_by_year.xlsx"
+#   )
+
 #unmapped fishery recoveries post-2010 appear relatively inconsequential?
 rmis_rr |> 
-  drop_na(estimated_number, StockID) |>
   filter(age == 3, f_type != "escp", between(run_year, 2010, 2020)) |> 
+  drop_na(StockID) |>
+  drop_na(estimated_number) |> 
   filter(is.na(FisheryID)) |> arrange(desc(estimated_number))
 
-#parallel the FRAM object structure, joining escapement as a col
+```
+
+## Construct RMIS estimates paralleling FRAM
+
+```{r er_rmis}
 er_rmis <- full_join(
   rmis_rr |> 
     drop_na(estimated_number, StockID) |>
@@ -1281,22 +1306,26 @@ er_rmis_focal <- er_rmis |>
 
 ```
 
-```{r er_rmis_eda_qaqc}
+### RMIS ER EDA
 
+```{r er_rmis_eda_qaqc}
+#simple time series of annually summed fishery and escapement estimated_number values
 er_rmis_focal |> 
   distinct(run_year, StockID, rmis_est_num_yr_sum, rmis_escp) |> 
   pivot_longer(-c(run_year, StockID)) |> 
-  ggplot(aes(run_year, value, fill = name)) + geom_col() + facet_wrap(~StockID, scales = "free")
-
+  ggplot(aes(run_year, value, fill = name)) + geom_col() + scale_fill_grey() + facet_wrap(~StockID, scales = "free")
+#simple time series of annual "ER" of fishery est_num / (fishery + escapement est num)
 er_rmis_focal |> 
   distinct(run_year, StockID, rmis_er) |> 
   ggplot(aes(run_year, rmis_er)) + geom_col() + facet_wrap(~StockID, scales = "free")
-
+#same, showing pattern by key fishery types
 er_rmis_focal |> 
   distinct(run_year, StockID, f_type, rmis_er) |> 
   ggplot(aes(run_year, rmis_er, fill = f_type)) + geom_col() + facet_wrap(~StockID, scales = "free")
 
 ```
+
+## Join FRAM & RMIS
 
 ```{r fram_rmis}
 #left wide and verbose...
@@ -1316,10 +1345,11 @@ er_fram_rmis <- full_join(
     )
 ```
 
+## Summed mortality of year-stock-fishery levels in FRAM, missing in RMIS
+
+This is mortality being assigned in the absence of current recoveries. These may be valid impacts, but are not supported by recent observations.
+
 ```{r fram_rmis_missing_in_rmis}
-#year-stock-fishery levels in FRAM, missing in RMIS
-#this is mortality being assigned in the absence of current recoveries
-#which may still be valid impacts, but are not supported by recent observations...
 er_fram_rmis |> 
   filter(is.na(rmis_est_num_yr)) |>
   group_by(sidnm, fidnm) |> summarise(across(fram_landed_yr, sum), .groups = "drop") |> #ggplot() + stat_ecdf(aes(fram_landed_yr, color = sidnm))
@@ -1331,9 +1361,11 @@ er_fram_rmis |>
     subtitle = "Stock-fishery combinations with FRAM summed LC >= 100")
 ```
 
+## Summed mortality of year-stock-fishery levels in RMIS, missing in FRAM
+
+This is mortality *not* being assigned despite the presence of current recoveries. The overall magnitude appears small for the WA PS examined.
+
 ```{r fram_rmis_missing_in_fram}
-#year-stock-fishery levels in RMIS, missing in FRAM
-#this is mortality NOT being assigned despite the presence of current recoveries
 er_fram_rmis |> 
   filter(is.na(fram_landed_yr)) |> 
   arrange(desc(rmis_est_num_yr)) |> 
@@ -1347,18 +1379,13 @@ er_fram_rmis |>
 
 ```
 
+## Catch:escapement ratios
 
-```{r}
-# er_fram_rmis |> 
-#   drop_na(fram_er, rmis_er) |> 
-#   distinct(sidnm, run_year, fram_catch = fram_landed_yr_sum, fram_escp, rmis_catch = rmis_est_num_yr_sum, rmis_escp) |> 
-#   pivot_longer(-c(run_year, sidnm)) |> 
-#   separate(name, c("f_r", "var"), sep = "_", extra = "merge") |> 
-#   unite("year_source", run_year, f_r) |> 
-#   ggplot(aes(year_source, value, fill = var)) +
-#   geom_col(position = position_stack()) +
-#   facet_wrap(~sidnm, scales = "free")
+Compare the annual ratio of total fishery recoveries to total escapement recoveries.
 
+```{r er_fram_rmis_catch_escp_ratio_bars}
+#these are annual totals, already previously summed separately for each source
+#initial drop_na() just limits to actual values
 er_fram_rmis |> 
   drop_na(fram_er, rmis_er) |> 
   distinct(sidnm, run_year, fram_landed_yr_sum, fram_escp, rmis_est_num_yr_sum, rmis_escp) |> 
@@ -1375,36 +1402,117 @@ er_fram_rmis |>
 
 ```
 
-### NEEDS REVISION
+## ER comparison including FW sport
 
-```{r fram_rmis_diff_boxplots}
-#for stock-fishery-year levels with both sources present...
+```{r gt_total_er_mean}
 er_fram_rmis |> 
-  drop_na(fram_er, rmis_er) |> 
-  ggplot(aes(fidnm, d_er_fram_rmis_fishery)) +
-  geom_boxplot(outlier.shape = NA) +
-  geom_text(aes(label = run_year), size = 2, position = "jitter", alpha = 0.4) +
+  drop_na(fram_er, rmis_er) |>
+  group_by(sidnm) |> 
+  distinct(sidnm, run_year, fram_er, rmis_er, d_er_fram_rmis) |> #arrange(sidnm) |> print(n=50)
+  summarise(across(c(fram_er, rmis_er, d_er_fram_rmis), mean)) |> 
+  gt()
+```
+
+```{r gg_total_er_mean}
+er_fram_rmis |> 
+  drop_na(fram_er, rmis_er) |>
+  group_by(sidnm) |> 
+  distinct(sidnm, run_year, fram_er, rmis_er, d_er_fram_rmis) |> #arrange(sidnm) |> print(n=50)
+  summarise(across(c(fram_er, rmis_er), mean)) |> 
+  pivot_longer(-sidnm) |> 
+  ggplot(aes(sidnm, value, fill = name)) + 
+  geom_col(position = position_dodge()) +
+  geom_text(aes(y = -0.07, label = scales::percent(round(value, 3))), position = position_dodge2(width = 0.7)) +
+  scale_x_discrete("") +
+  scale_y_continuous("Pseudo-ER", limits = c(-0.1, 1),labels = scales::percent) +
   coord_flip() +
-  facet_wrap(~sidnm, scales = "free_y", labeller = label_wrap_gen(multi_line = F), ncol = 1)
+  scale_fill_grey("") +
+  theme(legend.position = "top") +
+  labs(
+    title = "Mean 2010-2020 total pseudo-ER, FRAM - RMIS"
+  )
 
 ```
 
-```{r fram_rmis_diff_means}
-fram_rmis |> 
-  drop_na(pseudo_er) |> 
+```{r gt_total_er_annual}
+er_fram_rmis |> 
+  drop_na(fram_er, rmis_er) |>
+  group_by(sidnm) |> 
+  distinct(sidnm, run_year, fram_er, rmis_er, d_er_fram_rmis) |>
+  ungroup() |>
+  gt(groupname_col = "sidnm", rowname_col = "run_year") |> 
+  fmt_percent(contains("_er"))
+```
+
+```{r gg_total_er_annual_diff}
+er_fram_rmis |> 
+  drop_na(fram_er, rmis_er) |>
+  group_by(sidnm) |> 
+  distinct(sidnm, run_year, fram_er, rmis_er, d_er_fram_rmis) |>
+  ungroup() |>
+  ggplot(aes(run_year, d_er_fram_rmis)) + 
+  geom_col() +
+  scale_y_continuous("", labels = scales::percent) +
+  facet_wrap(~sidnm, scales = "free_y", labeller = label_wrap_gen(multi_line = F), ncol = 1) +
+  labs(
+    title = "Differences in annual total pseudo-ER, FRAM - RMIS"
+  )
+```
+
+```{r gg_total_er_annual_bars}
+er_fram_rmis |> 
+  drop_na(fram_er, rmis_er) |>
+  group_by(sidnm) |> 
+  distinct(sidnm, run_year, fram_er, rmis_er) |>
+  ungroup() |>
+  pivot_longer(-c(sidnm, run_year)) |> 
+  ggplot(aes(run_year, value, fill = name)) + 
+  geom_col(position = position_dodge()) +
+  scale_fill_grey("") +
+  facet_wrap(~sidnm, scales = "free", ncol = 2)
+    
+```
+
+```{r gg_fishery_er_diff_boxplots}
+min_diff_er <- 0.01 #annual, per-fishery
+
+#for stock-fishery-year levels with both sources present...
+er_fram_rmis |> 
+  drop_na(fram_er, rmis_er) |> 
+  filter(abs(d_er_fram_rmis_fishery) >= min_diff_er) |> 
+  ggplot(aes(fidnm, d_er_fram_rmis_fishery)) +
+  geom_boxplot(outlier.shape = NA) +
+  geom_text(aes(label = run_year), size = 2, position = "jitter", alpha = 0.4) +
+  geom_hline(yintercept = 0) +
+  coord_flip() +
+  facet_wrap(~sidnm, scales = "free_y", labeller = label_wrap_gen(multi_line = F), ncol = 1) +
+  labs(
+    title = "Differences in annual per-fishery pseudo-ER, FRAM - RMIS",
+    subtitle = paste("Minimum difference >=", min_diff_er)
+  )
+
+```
+
+```{r gg_fishery_er_diff_means}
+er_fram_rmis |> 
+  drop_na(fram_er, rmis_er) |> 
   group_by(sidnm, fidnm) |> 
-  summarise(across(c(fram, rmis, fram_rmis), list(mean=mean)), .groups = "drop") |> 
-  filter(abs(fram_rmis_mean)> 0.01) |> 
-  ggplot(aes(fidnm, fram_rmis_mean, fill = fram_rmis_mean > 0)) +
+  summarise(across(c(fram_er_fishery, rmis_er_fishery, d_er_fram_rmis_fishery), list(mean=mean)), .groups = "drop") |> 
+  filter(abs(d_er_fram_rmis_fishery_mean) >= min_diff_er) |> 
+  ggplot(aes(fidnm, d_er_fram_rmis_fishery_mean, fill = d_er_fram_rmis_fishery_mean > 0)) +
   geom_col(show.legend = F) +
   scale_fill_manual(values = c("purple", "gold")) +
   facet_wrap(~sidnm, scales = "free_x", ncol=1) +
   labs(
-    title = "Mean 2010-2020 CoTC post-season FRAM - RMIS pseudo ERs",
+    title = "Mean 2010-2020 difference FRAM - RMIS pseudo ERs",
     subtitle = "gold/above 0: FRAM landed/(landed+escp) > RMIS fishery/(fishery+escp)"
   )
 
 ```
+
+#!DA START HERE!
+
+
 
 ```{r}
 fram_rmis |> 
@@ -1557,11 +1665,6 @@ fram_rmis |>
 
 
 # Task Overview Apr22
-
-## compare escapement ratios
-
-escp:catch or escp/abund in BKFRAM vs escp:catch in RMIS
-
 
 ## missing Canadian escapements
 
