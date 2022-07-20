@@ -1500,14 +1500,18 @@ er_rmis_selected_stocks |>
 
 ## Join FRAM & RMIS
 
+Now excluding 2020 as seemingly still too incomplete?
+
 ```{r fram_rmis}
 
 #left wide and verbose...
 er_fram_rmis <- full_join(
-  er_fram,
-  er_rmis_selected_stocks,
-  by = c("run_year", "StockID", "FisheryID", "FisheryName")
+  er_fram |> select(-StockLongName, -FisheryName),
+  er_rmis_selected_stocks |> select(-FisheryName),
+  by = c("run_year", "StockID", "FisheryID")
 ) |> 
+  left_join(fram$mort |> distinct(StockID, StockLongName), by = "StockID") |> 
+  left_join(fram$mort |> distinct(FisheryID, FisheryName), by = "FisheryID") |> 
   mutate(
     fidnm = paste(FisheryID, FisheryName, sep = ":") |> fct_reorder(.x = FisheryID, .fun = min),
     sidnm = paste(StockID, StockLongName, sep = ":") |> fct_reorder(.x = StockID, .fun = min),
@@ -1516,13 +1520,15 @@ er_fram_rmis <- full_join(
     d_escp_fram_rmis = fram_escp - rmis_escp,
     d_er_fram_rmis_fishery = fram_er_fishery - rmis_er_fishery,
     d_er_fram_rmis = fram_er - rmis_er
-    )
+    ) 
 
 er_fram_rmis_no_fwspt <- full_join(
-  er_fram_no_fwspt,
-  er_rmis_selected_stocks_no_fwspt,
-  by = c("run_year", "StockID", "FisheryID", "FisheryName")
-) |> 
+  er_fram_no_fwspt|> select(-StockLongName, -FisheryName),
+  er_rmis_selected_stocks_no_fwspt |> select(-FisheryName),
+  by = c("run_year", "StockID", "FisheryID")
+) |>
+  left_join(fram$mort |> distinct(StockID, StockLongName), by = "StockID") |> 
+  left_join(fram$mort |> distinct(FisheryID, FisheryName), by = "FisheryID") |> 
   mutate(
     fidnm = paste(FisheryID, FisheryName, sep = ":") |> fct_reorder(.x = FisheryID, .fun = min),
     sidnm = paste(StockID, StockLongName, sep = ":") |> fct_reorder(.x = StockID, .fun = min),
@@ -1532,8 +1538,6 @@ er_fram_rmis_no_fwspt <- full_join(
     d_er_fram_rmis_fishery = fram_er_fishery - rmis_er_fishery,
     d_er_fram_rmis = fram_er - rmis_er
     )
-
-
 ```
 
 ## Summed mortality of year-stock-fishery levels in FRAM, missing in RMIS
@@ -1557,7 +1561,8 @@ er_fram_rmis |>
 This is mortality *not* being assigned despite the presence of current recoveries. The overall magnitude appears small for the WA PS examined.
 
 ```{r fram_rmis_missing_in_fram}
-er_fram_rmis |> 
+#er_fram_rmis |> 
+er_fram_rmis_no_fwspt |> 
   filter(is.na(fram_landed_yr)) |> 
   arrange(desc(rmis_est_num_yr)) |> 
   select(run_year, sidnm, fidnm, rmis_est_num_yr:rmis_er) |> 
@@ -1569,6 +1574,17 @@ er_fram_rmis |>
     )
 
 ```
+
+## RMIS total estimated number > FRAM landed catch
+
+Only a few instances. Would not expect to see this barring sampling expansion issues?
+
+```{r}
+er_fram_rmis_no_fwspt |> 
+  filter(rmis_est_num_yr_sum > fram_landed_yr_sum) |> 
+  count(sidnm, run_year) 
+```
+
 
 ## Catch:escapement ratios
 
@@ -1809,7 +1825,7 @@ er_fram_rmis_no_fwspt |>
   filter(abs(d_er_fram_rmis_fishery_mean) >= min_diff_er) |> 
   ggplot(aes(fidnm, d_er_fram_rmis_fishery_mean, fill = d_er_fram_rmis_fishery_mean > 0)) +
   geom_col(show.legend = F) +
-  scale_fill_manual(values = c("purple", "gold")) +
+  scale_fill_manual(values = c("purple", "orange")) +
   facet_wrap(~sidnm, scales = "free_x", ncol=2) +
   labs(
     title = "Mean 2010-2020 difference FRAM - RMIS pseudo ERs",
@@ -1820,22 +1836,73 @@ er_fram_rmis_no_fwspt |>
 
 
 ```{r}
-er_fram_rmis_no_fwspt |> 
-  drop_na(fram_er, rmis_er) |> 
-  filter(abs(d_er_fram_rmis_fishery) >= min_diff_er) |> 
-  ggplot(aes(fidnm, d_er_fram_rmis_fishery)) +
-  geom_boxplot(outlier.shape = NA) +
-  geom_text(aes(label = run_year), size = 2, position = "jitter", alpha = 0.4) +
-  geom_hline(yintercept = 0) +
-  coord_flip() +
-  facet_wrap(~sidnm, scales = "free_y", labeller = label_wrap_gen(multi_line = F), ncol = 2) +
+min_fram_landed = 6
+
+library(gganimate)
+
+er_fram_rmis_no_fwspt |>
+  filter(run_year < 2020) |> 
+  mutate(
+    shp = case_when(
+      d_er_fram_rmis_fishery > 0 ~ "FRAM > RMIS",
+      d_er_fram_rmis_fishery < 0 ~ "FRAM < RMIS",
+      d_er_fram_rmis_fishery == 0 ~ "FRAM = RMIS",
+      is.na(rmis_er_fishery) ~ "FRAM-only",
+      is.na(fram_er_fishery) ~ "RMIS-only"
+    ),
+    #sze = abs(d_er_fram_rmis_fishery)
+    sze = if_else(!is.na(d_er_fram_rmis_fishery), abs(d_er_fram_rmis_fishery), 0)
+    ) |> 
+  filter(fram_landed_yr >= min_fram_landed, run_year %in% c(2010:2014, 2017:2019)) |> 
+  ggplot(aes(sidnm, fidnm)) +
+  geom_point(aes(shape = shp), size = 2) +
+  geom_point(aes(shape = shp, size = sze, fill = d_er_fram_rmis_fishery)) +
+  scale_shape_manual(name = "", values = c("FRAM > RMIS" = 24, "FRAM < RMIS" = 25, "FRAM = RMIS" = 22, "FRAM-only" = 20, "RMIS-only" = 3)) +
+  scale_size("ER diff. abs.", range = c(2.5, 7.5)) +
+  scale_fill_gradient2(name = NULL, low = "purple", mid = "lightgrey", high = "orange", midpoint = 0, na.value = "pink", aesthetics = c("color", "fill")) +
+  guides(fill = guide_colorbar(title="ER difference")) +
+  scale_x_discrete("", guide = guide_axis(n.dodge = 2)) +
+  scale_y_discrete("") +
+  facet_wrap(~run_year, ncol = 2) +
   labs(
     title = "Differences in annual per-fishery pseudo-ER, FRAM - RMIS",
-    subtitle = paste("Minimum difference >=", min_diff_er)
+    subtitle = paste("Minimum annual landed catch in FRAM >=", min_fram_landed)
+  )
+# + transition_states(states = run_year, state_length = 1, transition_length = 1) 
+# #+ annotate("text", label = "{closest_state}")
+
+
+er_fram_rmis_no_fwspt |>
+  filter(run_year < 2020) |> 
+  mutate(
+    shp = case_when(
+      d_er_fram_rmis_fishery > 0 ~ "FRAM > RMIS",
+      d_er_fram_rmis_fishery < 0 ~ "FRAM < RMIS",
+      d_er_fram_rmis_fishery == 0 ~ "FRAM = RMIS",
+      is.na(rmis_er_fishery) ~ "FRAM-only",
+      is.na(fram_er_fishery) ~ "RMIS-only"
+    ),
+    #sze = abs(d_er_fram_rmis_fishery)
+    sze = if_else(!is.na(d_er_fram_rmis_fishery), abs(d_er_fram_rmis_fishery), 0)
+    ) |> 
+  filter(fram_landed_yr >= min_fram_landed, run_year %in% c(2010:2014, 2017:2019)) |> 
+  ggplot(aes(run_year, fidnm)) +
+  geom_point(aes(shape = shp), size = 2) +
+  geom_point(aes(shape = shp, size = sze, fill = d_er_fram_rmis_fishery)) +
+  scale_shape_manual(name = "", values = c("FRAM > RMIS" = 24, "FRAM < RMIS" = 25, "FRAM = RMIS" = 22, "FRAM-only" = 20, "RMIS-only" = 3)) +
+  scale_size("ER diff. abs.", range = c(2.5, 7.5)) +
+  scale_fill_gradient2(name = NULL, low = "purple", mid = "lightgrey", high = "orange", midpoint = 0, na.value = "pink", aesthetics = c("color", "fill")) +
+  guides(fill = guide_colorbar(title="ER difference")) +
+  scale_x_discrete("", guide = guide_axis(n.dodge = 2)) +
+  scale_y_discrete("") +
+  facet_wrap(~sidnm, ncol = 2, scales = "free_y") +
+  labs(
+    title = "Differences in annual per-fishery pseudo-ER, FRAM - RMIS",
+    subtitle = paste("Minimum annual landed catch in FRAM >=", min_fram_landed)
   )
 
-
 ```
+
 
 
 ```{r}
@@ -1846,7 +1913,6 @@ er_fram_rmis_no_fwspt |>
   group_by(sidnm, fidnm) |> 
   summarise(across(contains("_er"), list(mean = ~mean(.), var = ~var(.), sd = ~sd(.))))
   
-
 ```
 
 
