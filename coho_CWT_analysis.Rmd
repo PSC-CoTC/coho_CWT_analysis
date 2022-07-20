@@ -179,9 +179,74 @@ rmis_rr <- rmis_rr |> left_join(lu$cwt_stk, by = c("tag_code"))
 
 ```
 
-# Summary
+# AHB fishmap
 
-This script analyzes coho coded wire tag (CWT) recoveries (and associated releases) reported in RMIS.
+```{r rmis_rr_ahb_map}
+
+#!! Note confusion on AK fisheries
+#!! CoTC post-season only includes up to 198 in Fishery table
+#!! AHB mapping goes up to 205
+#!! but doesn't align with recovery_location_name and/or "T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Projects/Coho FRAM MSM CWT analysis/1989LocationsSchema.pdf"
+#!! for example, FRAM FID 198 is
+#!!   "SW AK NET" in AHB mapping, but "Southeast Alaska Net" in CoTC Fishery table
+#!!   and AHB mapping associates 198 to 1M1SW, but 1M1 is listed as Southeast in 1989 spec, with "NW" referring to the NW quadrant of SEAK
+#!! rmis_rr |> filter(recovery_location_code == "1M1NW")
+#!! lu$ahb_fishmap |> filter(PSC_Code == "1M1NW")
+
+#cannot directly join on 'PSC_Code'...have to use the Num_Chars field
+#and/but that means using many possible lengths of recovery_location_code
+#iterator over Num_chars...seems crazy inefficient? but it runs...
+#and addition of uid in setup allows recombination
+
+#first declare temp object of only key fields
+rmis_rr_ahb_map <- rmis_rr |> 
+  select(uid, recovery_location_code, fishery) |> 
+  mutate(fishery_single = floor(fishery/10)) 
+#now overwrite as split-then-bind pattern on Num_Chars
+#per AHB request, added explicit right string padding to specified string length
+#even when actual strings in RMIS and LU are/use fewer char
+rmis_rr_ahb_map <- map_df(
+  sort(unique(lu$ahb_fishmap$Num_Chars)),
+  ~inner_join(
+    rmis_rr_ahb_map |> 
+      mutate(PSC_Code = str_sub(recovery_location_code, 1, .x) |> str_pad(width = .x, side = "right"))
+    ,
+    lu$ahb_fishmap |> filter(Num_Chars == .x) |> 
+      mutate(PSC_Code = str_pad(PSC_Code, width = .x, side = "right"))
+    ,
+    by = c("PSC_Code", "fishery_single")
+  )
+)
+
+#some cases of same fishery from different n-chars being considered on same recovery_location_code
+#some cases initially from simple row duplication in lookup, now fixed on read-in
+overmapped <- rmis_rr_ahb_map |> count(uid) |> filter(n>1) |> select(uid)
+
+# semi_join(rmis_rr_ahb_map, overmapped, by = "uid") |> 
+#   count(recovery_location_code, fishery, fishery_single, PSC_Code, FisheryID, FisheryName, Num_Chars) |> 
+#   writexl::write_xlsx("T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Projects/Coho FRAM MSM CWT analysis/lu_ahb_fishmap_overmapped_qaqc.xlsx")
+
+#now rejoin to full dataset, after making FisheryID distinct per UID
+rmis_rr <- left_join(
+  rmis_rr, 
+  #split out multiple-mapped, make distinct per UID and rebind
+  bind_rows(
+    anti_join(rmis_rr_ahb_map, overmapped, by = "uid") |> 
+      select(uid, FisheryID)
+    ,
+    semi_join(rmis_rr_ahb_map, overmapped, by = "uid") |> 
+      group_by(uid) |> 
+      slice_max(Num_Chars, n = 1, with_ties = F) |> 
+      ungroup() |> 
+      select(uid, FisheryID) #|> count(uid) |> filter(n>1)
+  )
+  ,
+  by = "uid") |> 
+  left_join(fram$fishery, by = "FisheryID")
+
+rm(rmis_rr_ahb_map, overmapped)
+
+```
 
 # Data
 
@@ -965,85 +1030,6 @@ ypct_lm_yr |>
 
 ```
 
-# AHB fishmap
-
-```{r rmis_rr_ahb_map}
-
-#!! Note confusion on AK fisheries
-#!! CoTC post-season only includes up to 198 in Fishery table
-#!! AHB mapping goes up to 205
-#!! but doesn't align with recovery_location_name and/or "T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Projects/Coho FRAM MSM CWT analysis/1989LocationsSchema.pdf"
-#!! for example, FRAM FID 198 is
-#!!   "SW AK NET" in AHB mapping, but "Southeast Alaska Net" in CoTC Fishery table
-#!!   and AHB mapping associates 198 to 1M1SW, but 1M1 is listed as Southeast in 1989 spec, with "NW" referring to the NW quadrant of SEAK
-#!! rmis_rr |> filter(recovery_location_code == "1M1NW")
-#!! lu$ahb_fishmap |> filter(PSC_Code == "1M1NW")
-
-#cannot directly join on 'PSC_Code'...have to use the Num_Chars field
-#and/but that means using many possible lengths of recovery_location_code
-#iterator over Num_chars...seems crazy inefficient? but it runs...
-#and addition of uid in setup allows recombination
-
-#first declare temp object of only key fields
-rmis_rr_ahb_map <- rmis_rr |> 
-  select(uid, recovery_location_code, fishery) |> 
-  mutate(fishery_single = floor(fishery/10)) 
-#now overwrite as split-then-bind pattern on Num_Chars
-#per AHB request, added explicit right string padding to specified string length
-#even when actual strings in RMIS and LU are less
-rmis_rr_ahb_map <- map_df(
-  sort(unique(lu$ahb_fishmap$Num_Chars)),
-  ~inner_join(
-    rmis_rr_ahb_map |> 
-      mutate(PSC_Code = str_sub(recovery_location_code, 1, .x) |> str_pad(width = .x, side = "right"))
-    ,
-    lu$ahb_fishmap |> filter(Num_Chars == .x) |> 
-      mutate(PSC_Code = str_pad(PSC_Code, width = .x, side = "right"))
-    ,
-    by = c("PSC_Code", "fishery_single")
-  )
-)
-
-#some cases of same fishery from different n-chars being considered on same recovery_location_code
-#some cases initially from simple row duplication in lookup, now fixed on read-in
-overmapped <- rmis_rr_ahb_map |> count(uid) |> filter(n>1) |> select(uid)
-
-# semi_join(rmis_rr_ahb_map, overmapped, by = "uid") |> 
-#   count(recovery_location_code, fishery, fishery_single, PSC_Code, FisheryID, FisheryName, Num_Chars) |> 
-#   writexl::write_xlsx("T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Projects/Coho FRAM MSM CWT analysis/lu_ahb_fishmap_overmapped_qaqc.xlsx")
-
-#now rejoin to full dataset, after making FisheryID distinct per UID
-rmis_rr <- left_join(
-  rmis_rr, 
-  #split out multiple-mapped, make distinct per UID and rebind
-  bind_rows(
-    anti_join(rmis_rr_ahb_map, overmapped, by = "uid") |> 
-      select(uid, FisheryID)
-    ,
-    semi_join(rmis_rr_ahb_map, overmapped, by = "uid") |> 
-      group_by(uid) |> 
-      slice_max(Num_Chars, n = 1, with_ties = F) |> 
-      ungroup() |> 
-      select(uid, FisheryID) #|> count(uid) |> filter(n>1)
-  )
-  ,
-  by = "uid") |> 
-  left_join(fram$fishery, by = "FisheryID")
-
-rm(rmis_rr_ahb_map, overmapped)
-
-# rmis_rr |> filter(FisheryID %in% 91:93) |> count(FisheryID)
-# #exact match?!?!
-# y |> filter(FisheryID %in% 91:93) |> count(FisheryID)
-# 
-# left_join(
-#   y |> count(FisheryID),
-#   rmis_rr_ahb_map |> count(FisheryID),
-#   by = "FisheryID"
-#   ) |> print(n=100)
-
-```
-
 
 # Skagit test of preliminary psuedo-ER comparison
 
@@ -1259,10 +1245,26 @@ fram_rmis <- left_join(
 
 
 focal_run_ids <- 34:44 #2010:2020
-#Skagit, Sno, Nisqually, Green, Quinault, Willapa, Columbia Early, Columbia Late, Fraser Lower, Fraser Upper
-focal_stock_ids <- c(20, 38, 68, 96, 148, 164, 166, 176, 226, 230) 
+#Skagit, Sno, Quilcene, George Adams, Nisqually, Green, Quillayute, Quinault, Willapa, Columbia Early, Columbia Late, Fraser Lower, Fraser Upper
+focal_stock_ids <- c(20, 38, 48, 58, 68, 96, 134, 148, 164, 166, 176, 226, 230)
+#per AHB request to combine NT & Tr net fisheries
+paired_fisheries <- c(80, 82, 87, 96, 101, 109, 111, 119, 121, 123, 
+                      130, 132, 137, 139, 141, 143, 145, 153, 155, 157, 159)
+
+# fram$fishery |> 
+#   mutate(
+#     FisheryID_p = if_else(FisheryID %in% paired_fisheries, FisheryID+1, as.double(FisheryID)),
+#     FisheryName_p = if_else(FisheryID %in% c(paired_fisheries, paired_fisheries+1),
+#                             str_sub(FisheryName, 1,8), FisheryName) 
+#   ) |> print(n=160)
+
 fram$escp <- framr::read_coho_escp(fp$mdb_pst, runs = focal_run_ids, stocks = focal_stock_ids)
-fram$mort <- framr::read_coho_mort(fp$mdb_pst, runs = focal_run_ids, stocks = focal_stock_ids)
+fram$mort <- framr::read_coho_mort(fp$mdb_pst, runs = focal_run_ids, stocks = focal_stock_ids) |> 
+  mutate(
+    FisheryID = if_else(FisheryID %in% paired_fisheries, FisheryID+1, as.double(FisheryID)),
+    FisheryName = if_else(FisheryID %in% c(paired_fisheries, paired_fisheries+1),
+                            str_sub(FisheryName, 1,8), FisheryName)
+  )
 
 #initially focusing on landed mort only
 er_fram <- full_join(
@@ -1371,6 +1373,21 @@ rmis_rr |>
   drop_na(estimated_number) |> 
   filter(is.na(FisheryID)) |> arrange(desc(estimated_number))
 
+# rmis_rr |> 
+#   filter(
+#     age == 3,
+#     f_type != "escp",
+#     between(run_year, 2010, 2020),
+#     !is.na(StockID),
+#     !is.na(estimated_number),
+#     !is.na(FisheryID)
+#     ) |> 
+#   count(
+#     StockID, Stock_name, FisheryID, FisheryName, FisheryTitle
+#   ) |> 
+#   writexl::write_xlsx("qaqc_total_recs_by_stock_fishery.xlsx")
+
+
 ```
 
 ## Construct RMIS estimates paralleling FRAM
@@ -1383,7 +1400,12 @@ er_rmis <- full_join(
   rmis_rr |> 
     drop_na(estimated_number, StockID) |> 
     filter(age == 3, f_type != "escp") |> 
-    mutate(StockID = if_else(StockID == 18, 20, StockID)) |> 
+    mutate(
+      StockID = if_else(StockID == 18, 20, StockID),
+      FisheryID = if_else(FisheryID %in% paired_fisheries, FisheryID+1, as.double(FisheryID)),
+      FisheryName = if_else(FisheryID %in% c(paired_fisheries, paired_fisheries+1),
+                            str_sub(FisheryName, 1,8), FisheryName)
+      ) |> 
     group_by(run_year, StockID, f_type, FisheryID, FisheryName) |> 
     summarise(rmis_est_num_yr = sum(estimated_number), .groups = "drop") |> 
     group_by(run_year, StockID) |> 
@@ -1415,7 +1437,12 @@ er_rmis_no_fwspt <- full_join(
     drop_na(estimated_number, StockID) |> #1096098 only 3s, 1117270 including more than 3s
     filter(age == 3, f_type != "escp") |> #548455
     filter(!(f_type == "sport" & rlwtr == "F")) |> 
-    mutate(StockID = if_else(StockID == 18, 20, StockID)) |> 
+    mutate(
+      StockID = if_else(StockID == 18, 20, StockID),
+      FisheryID = if_else(FisheryID %in% paired_fisheries, FisheryID+1, as.double(FisheryID)),
+      FisheryName = if_else(FisheryID %in% c(paired_fisheries, paired_fisheries+1),
+                            str_sub(FisheryName, 1,8), FisheryName)
+      ) |> 
     group_by(run_year, StockID, f_type, FisheryID, FisheryName) |> 
     summarise(rmis_est_num_yr = sum(estimated_number), .groups = "drop") |> 
     group_by(run_year, StockID) |> 
@@ -1439,16 +1466,14 @@ er_rmis_no_fwspt <- full_join(
     rmis_er = rmis_est_num_yr_sum / rmis_abund
   )
 
-```
-
-```{r er_rmis_focal}
-er_rmis_focal <- er_rmis |> 
+#reduce these all-stock objects to those in FRAM dataset
+er_rmis_selected_stocks <- er_rmis |> 
   filter(
     StockID %in% unique(er_fram$StockID),
     between(run_year, min(er_fram$run_year), max(er_fram$run_year))
   )
 
-er_rmis_focal_no_fwspt <- er_rmis_no_fwspt |> 
+er_rmis_selected_stocks_no_fwspt <- er_rmis_no_fwspt |> 
   filter(
     StockID %in% unique(er_fram$StockID),
     between(run_year, min(er_fram$run_year), max(er_fram$run_year))
@@ -1462,12 +1487,12 @@ Why is Sno missing net recoveries in 2019? Checked and appear to be missing in R
 
 ```{r er_rmis_eda_qaqc}
 #simple time series of annually summed fishery and escapement estimated_number values
-er_rmis_focal |> 
+er_rmis_selected_stocks |> 
   distinct(run_year, StockID, rmis_est_num_yr_sum, rmis_escp) |> 
   pivot_longer(-c(run_year, StockID)) |> 
   ggplot(aes(run_year, value, fill = name)) + geom_col() + scale_fill_grey() + facet_wrap(~StockID, scales = "free")
 #simple time series of annual "ER" of fishery est_num / (fishery + escapement est num)
-er_rmis_focal |> 
+er_rmis_selected_stocks |> 
   distinct(run_year, StockID, rmis_er) |> 
   ggplot(aes(run_year, rmis_er)) + geom_col() + facet_wrap(~StockID, scales = "free")
 
@@ -1476,10 +1501,11 @@ er_rmis_focal |>
 ## Join FRAM & RMIS
 
 ```{r fram_rmis}
+
 #left wide and verbose...
 er_fram_rmis <- full_join(
   er_fram,
-  er_rmis_focal,
+  er_rmis_selected_stocks,
   by = c("run_year", "StockID", "FisheryID", "FisheryName")
 ) |> 
   mutate(
@@ -1494,7 +1520,7 @@ er_fram_rmis <- full_join(
 
 er_fram_rmis_no_fwspt <- full_join(
   er_fram_no_fwspt,
-  er_rmis_focal_no_fwspt,
+  er_rmis_selected_stocks_no_fwspt,
   by = c("run_year", "StockID", "FisheryID", "FisheryName")
 ) |> 
   mutate(
@@ -1506,6 +1532,7 @@ er_fram_rmis_no_fwspt <- full_join(
     d_er_fram_rmis_fishery = fram_er_fishery - rmis_er_fishery,
     d_er_fram_rmis = fram_er - rmis_er
     )
+
 
 ```
 
@@ -1885,75 +1912,75 @@ rmis_rr_a5 |>
   count(hatchery_location_name, stock_location_name, StockID, run_year) |> arrange(desc(n)) |> print(n=50)
   
 
-#calculate per-hatchery ("stock") percentages of recoveries per-year
-rmis_rr_a5_pct <- rmis_rr_a5 |> 
-  mutate(release_st_rgn_bsn = paste(release_location_state, release_location_rmis_region, release_location_rmis_basin, sep = "_")) |> 
-  group_by(run_year, release_location_state, release_location_rmis_region, release_location_rmis_basin, release_st_rgn_bsn, hatchery_location_name) |> 
-  summarise(
-    n_rec_year = n(), 
-    est_num_year = sum(estimated_number),
-    .groups = "drop"
-    ) |> 
-  group_by(run_year) |> 
-  mutate(
-    across(c(n_rec_year, est_num_year), list(total = ~sum(.))),
-    n_rec_pct = n_rec_year / n_rec_year_total,
-    est_num_pct = est_num_year / est_num_year_total
-    ) |> 
-  ungroup()
-
-rmis_rr_a5_pct |> 
-  drop_na(hatchery_location_name) |> #count(n_rec_year<3)
-#  filter(n_rec_year >= 3) |> 
-  ggplot(aes(run_year, n_rec_pct, color = paste(release_location_state, release_location_rmis_region, sep = "_"))) +
-#  geom_line()
-  geom_smooth(method = "lm", se = F)
-
-
-#3d points/lines
-#leaving out add_lines re-orders hatcheries to clearly show those that appear later in the record
-#including add_lines orders x-axis alphabetically
-rmis_rr_a5_pct |> 
-  drop_na(hatchery_location_name) |>
-  select(run_year, hatchery_location_name, n_rec_pct) |> 
-  plotly::plot_ly(x = ~hatchery_location_name, y = ~run_year, z = ~n_rec_pct, color = ~n_rec_pct) |> 
-  plotly::add_lines() |> 
-  plotly::add_markers(size = 1)
-
+# #calculate per-hatchery ("stock") percentages of recoveries per-year
+# rmis_rr_a5_pct <- rmis_rr_a5 |> 
+#   mutate(release_st_rgn_bsn = paste(release_location_state, release_location_rmis_region, release_location_rmis_basin, sep = "_")) |> 
+#   group_by(run_year, release_location_state, release_location_rmis_region, release_location_rmis_basin, release_st_rgn_bsn, hatchery_location_name) |> 
+#   summarise(
+#     n_rec_year = n(), 
+#     est_num_year = sum(estimated_number),
+#     .groups = "drop"
+#     ) |> 
+#   group_by(run_year) |> 
+#   mutate(
+#     across(c(n_rec_year, est_num_year), list(total = ~sum(.))),
+#     n_rec_pct = n_rec_year / n_rec_year_total,
+#     est_num_pct = est_num_year / est_num_year_total
+#     ) |> 
+#   ungroup()
+# 
+# rmis_rr_a5_pct |> 
+#   drop_na(hatchery_location_name) |> #count(n_rec_year<3)
+# #  filter(n_rec_year >= 3) |> 
+#   ggplot(aes(run_year, n_rec_pct, color = paste(release_location_state, release_location_rmis_region, sep = "_"))) +
+# #  geom_line()
+#   geom_smooth(method = "lm", se = F)
+# 
+# 
+# #3d points/lines
+# #leaving out add_lines re-orders hatcheries to clearly show those that appear later in the record
+# #including add_lines orders x-axis alphabetically
 # rmis_rr_a5_pct |> 
 #   drop_na(hatchery_location_name) |>
 #   select(run_year, hatchery_location_name, n_rec_pct) |> 
-#   pivot_wider(names_from = run_year, values_from = n_rec_pct) |> 
-#   mutate(across(-hatchery_location_name, ~replace_na(.,0))) |> 
-#   column_to_rownames("hatchery_location_name") |> 
-#   slice(1:7) |> select(1:7) %>% 
-#   plotly::plot_ly(z = ., type = "surface")
-
-
-#not ER, but...trailing means of annual percentage of total recoveries
-{rmis_rr_a5_pct |> 
-  drop_na(hatchery_location_name) |>
-  filter(release_location_state %in% c("WA", "BC")) |> 
-  #filter(str_detect(hatchery_location_name, "QUILCENE")) |> 
-  group_by(hatchery_location_name) |> 
-  mutate(
-    mu6 = slider::slide_dbl(n_rec_pct, ~mean(., na.rm=T), .before = 6)
-  ) |> 
-  ggplot(aes(run_year, mu6, color = paste(release_location_state, release_location_rmis_region, sep = "_"), group = hatchery_location_name)) +
-  geom_line() + scale_color_discrete("") +
-  facet_wrap(~release_location_state+release_location_rmis_region) } |> 
-  plotly::ggplotly()
-
-rmis_rr_a5_pct |> 
-  drop_na(hatchery_location_name) |>
-  filter(release_location_state %in% c("WA", "BC")) |> 
-  group_by(hatchery_location_name) |> 
-  mutate(
-    mu6 = slider::slide_dbl(n_rec_pct, ~mean(., na.rm=T), .before = 6)
-  ) |> 
-  plotly::plot_ly(x = ~hatchery_location_name, y = ~run_year, z = ~mu6, color = ~mu6) |> 
-  plotly::add_lines() |> 
-  plotly::add_markers(size = 1)
+#   plotly::plot_ly(x = ~hatchery_location_name, y = ~run_year, z = ~n_rec_pct, color = ~n_rec_pct) |> 
+#   plotly::add_lines() |> 
+#   plotly::add_markers(size = 1)
+# 
+# # rmis_rr_a5_pct |> 
+# #   drop_na(hatchery_location_name) |>
+# #   select(run_year, hatchery_location_name, n_rec_pct) |> 
+# #   pivot_wider(names_from = run_year, values_from = n_rec_pct) |> 
+# #   mutate(across(-hatchery_location_name, ~replace_na(.,0))) |> 
+# #   column_to_rownames("hatchery_location_name") |> 
+# #   slice(1:7) |> select(1:7) %>% 
+# #   plotly::plot_ly(z = ., type = "surface")
+# 
+# 
+# #not ER, but...trailing means of annual percentage of total recoveries
+# {rmis_rr_a5_pct |> 
+#   drop_na(hatchery_location_name) |>
+#   filter(release_location_state %in% c("WA", "BC")) |> 
+#   #filter(str_detect(hatchery_location_name, "QUILCENE")) |> 
+#   group_by(hatchery_location_name) |> 
+#   mutate(
+#     mu6 = slider::slide_dbl(n_rec_pct, ~mean(., na.rm=T), .before = 6)
+#   ) |> 
+#   ggplot(aes(run_year, mu6, color = paste(release_location_state, release_location_rmis_region, sep = "_"), group = hatchery_location_name)) +
+#   geom_line() + scale_color_discrete("") +
+#   facet_wrap(~release_location_state+release_location_rmis_region) } |> 
+#   plotly::ggplotly()
+# 
+# rmis_rr_a5_pct |> 
+#   drop_na(hatchery_location_name) |>
+#   filter(release_location_state %in% c("WA", "BC")) |> 
+#   group_by(hatchery_location_name) |> 
+#   mutate(
+#     mu6 = slider::slide_dbl(n_rec_pct, ~mean(., na.rm=T), .before = 6)
+#   ) |> 
+#   plotly::plot_ly(x = ~hatchery_location_name, y = ~run_year, z = ~mu6, color = ~mu6) |> 
+#   plotly::add_lines() |> 
+#   plotly::add_markers(size = 1)
 
 
 rmis_rr_a5 |> 
