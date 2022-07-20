@@ -107,13 +107,45 @@ rmis_rr <- readRDS(fp$rmis_rec_rel) |>
   mutate(age = run_year - brood_year) |> 
   rowid_to_column("uid")
 
+#adding missing Canadian escapements
+rmis_rr <- bind_rows(
+  rmis_rr,
+  readxl::read_xlsx(
+    "T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Projects/Coho FRAM MSM CWT analysis/ERAnalysis/2022-02-23 StAD Escapement Report_Coho_EPAD.xlsx",
+    #sheet = "Observed Tagcodes"
+    sheet = "Obs-Est-Exp"
+  ) |>
+    rowid_to_column(var = "uid") |> 
+    mutate(
+      uid = uid + last(rmis_rr$uid),
+      age = `Recovery Year` - `Brood Year`,
+      fishery = 50,
+      f_type = "escp"
+    ) |> #count(age)
+    select(
+      uid,
+      tag_code = Tagcode, 
+      recovery_location_code = `PSC Location Code`,
+      recovery_location_name = `Recovery Site Name`,
+      run_year = `Recovery Year`,
+      brood_year = `Brood Year`,
+      age,
+      fishery, f_type,
+      estimated_number = `Final Expanded`
+    ) |> 
+    filter(
+      tag_code %in% unique(rmis_rr$tag_code),
+      age == 3
+    ) 
+)
+
+
 #add CCT mapped StockIDs to dataset
 #rmis_rr <- rmis_rr |> left_join(lu$cwt_stk_orig, by = c("tag_code", "run_year"))
 rmis_rr <- rmis_rr |> left_join(lu$cwt_stk, by = c("tag_code"))
 
 #see section "AHB fishmap" below for FisheryID mapping
 ```
-
 
 ```{r cct_stock_map_update_qaqc}
 # foo = left_join(
@@ -146,7 +178,6 @@ rmis_rr <- rmis_rr |> left_join(lu$cwt_stk, by = c("tag_code"))
 # lu$cwt_stk_orig |> filter(tag_code=="633337")
 
 ```
-
 
 # Summary
 
@@ -1013,6 +1044,7 @@ rm(rmis_rr_ahb_map, overmapped)
 
 ```
 
+
 # Skagit test of preliminary psuedo-ER comparison
 
 ```{r skagit_stock_mapping_eda}
@@ -1227,8 +1259,8 @@ fram_rmis <- left_join(
 
 
 focal_run_ids <- 34:44 #2010:2020
-#Skagit, Sno, Green, Willapa, Columbia Early, Columbia Late, Fraser Lower, Fraser Upper
-focal_stock_ids <- c(20, 38, 96, 164, 166, 176, 226, 230) 
+#Skagit, Sno, Nisqually, Green, Quinault, Willapa, Columbia Early, Columbia Late, Fraser Lower, Fraser Upper
+focal_stock_ids <- c(20, 38, 68, 96, 148, 164, 166, 176, 226, 230) 
 fram$escp <- framr::read_coho_escp(fp$mdb_pst, runs = focal_run_ids, stocks = focal_stock_ids)
 fram$mort <- framr::read_coho_mort(fp$mdb_pst, runs = focal_run_ids, stocks = focal_stock_ids)
 
@@ -1349,8 +1381,8 @@ rmis_rr |>
 er_rmis <- full_join(
   #analogous to FRAM mortality table
   rmis_rr |> 
-    drop_na(estimated_number, StockID) |> #1096098 only 3s, 1117270 including more than 3s
-    filter(age == 3, f_type != "escp") |> #548455
+    drop_na(estimated_number, StockID) |> 
+    filter(age == 3, f_type != "escp") |> 
     mutate(StockID = if_else(StockID == 18, 20, StockID)) |> 
     group_by(run_year, StockID, f_type, FisheryID, FisheryName) |> 
     summarise(rmis_est_num_yr = sum(estimated_number), .groups = "drop") |> 
@@ -1360,8 +1392,8 @@ er_rmis <- full_join(
   ,
   #analogous to FRAM escapement table
   rmis_rr |> 
-    drop_na(estimated_number, StockID) |> #1096098 only 3s, 1117270 including more than 3s
-    filter(age == 3, f_type == "escp") |> #531353
+    drop_na(estimated_number, StockID) |> 
+    filter(age == 3, f_type == "escp") |> 
     mutate(StockID = if_else(StockID == 18, 20, StockID)) |> 
     group_by(run_year, StockID) |> 
     summarise(rmis_escp = sum(estimated_number), .groups = "drop")
@@ -1438,10 +1470,6 @@ er_rmis_focal |>
 er_rmis_focal |> 
   distinct(run_year, StockID, rmis_er) |> 
   ggplot(aes(run_year, rmis_er)) + geom_col() + facet_wrap(~StockID, scales = "free")
-#same, showing pattern by key fishery types
-er_rmis_focal |> 
-  distinct(run_year, StockID, f_type, rmis_er) |> 
-  ggplot(aes(run_year, rmis_er, fill = f_type)) + geom_col() + facet_wrap(~StockID, scales = "free")
 
 ```
 
@@ -1699,7 +1727,7 @@ er_fram_rmis_no_fwspt |>
   ggplot(aes(run_year, d_er_fram_rmis)) + 
   geom_col() +
   scale_y_continuous("", labels = scales::percent) +
-  facet_wrap(~sidnm, scales = "free_y", labeller = label_wrap_gen(multi_line = F), ncol = 1) +
+  facet_wrap(~sidnm, scales = "free_y", labeller = label_wrap_gen(multi_line = F), ncol = 2) +
   labs(
     title = "Differences in annual total pseudo-ER, FRAM - RMIS"
   )
@@ -1716,7 +1744,13 @@ er_fram_rmis_no_fwspt |>
   geom_col(position = position_dodge()) +
   scale_fill_grey("") +
   facet_wrap(~sidnm, scales = "free", ncol = 2)
-    
+
+# er_fram_rmis_no_fwspt |> 
+#   drop_na(fram_er, rmis_er) |>
+#   group_by(sidnm) |> 
+#   distinct(sidnm, run_year, fram_er, rmis_er) |>
+#   summarise(across(contains("_er"), list(mean = ~mean(.), var = ~var(.))))
+
 ```
 
 ```{r gg_fishery_er_diff_boxplots_no_fwspt}
@@ -1731,7 +1765,7 @@ er_fram_rmis_no_fwspt |>
   geom_text(aes(label = run_year), size = 2, position = "jitter", alpha = 0.4) +
   geom_hline(yintercept = 0) +
   coord_flip() +
-  facet_wrap(~sidnm, scales = "free_y", labeller = label_wrap_gen(multi_line = F), ncol = 1) +
+  facet_wrap(~sidnm, scales = "free_y", labeller = label_wrap_gen(multi_line = F), ncol = 2) +
   labs(
     title = "Differences in annual per-fishery pseudo-ER, FRAM - RMIS",
     subtitle = paste("Minimum difference >=", min_diff_er)
@@ -1742,14 +1776,14 @@ er_fram_rmis_no_fwspt |>
 ```{r gg_fishery_er_diff_means_no_fwspt}
 er_fram_rmis_no_fwspt |> 
   drop_na(fram_er, rmis_er) |> 
-  filter(StockID < 165) |> 
+  #filter(StockID < 165) |> 
   group_by(sidnm, fidnm) |> 
   summarise(across(c(fram_er_fishery, rmis_er_fishery, d_er_fram_rmis_fishery), list(mean=mean)), .groups = "drop") |> 
   filter(abs(d_er_fram_rmis_fishery_mean) >= min_diff_er) |> 
   ggplot(aes(fidnm, d_er_fram_rmis_fishery_mean, fill = d_er_fram_rmis_fishery_mean > 0)) +
   geom_col(show.legend = F) +
   scale_fill_manual(values = c("purple", "gold")) +
-  facet_wrap(~sidnm, scales = "free_x", ncol=1) +
+  facet_wrap(~sidnm, scales = "free_x", ncol=2) +
   labs(
     title = "Mean 2010-2020 difference FRAM - RMIS pseudo ERs",
     subtitle = "gold/above 0: FRAM landed/(landed+escp) > RMIS fishery/(fishery+escp)"
@@ -1757,16 +1791,34 @@ er_fram_rmis_no_fwspt |>
 
 ```
 
+
+```{r}
+er_fram_rmis_no_fwspt |> 
+  drop_na(fram_er, rmis_er) |> 
+  filter(abs(d_er_fram_rmis_fishery) >= min_diff_er) |> 
+  ggplot(aes(fidnm, d_er_fram_rmis_fishery)) +
+  geom_boxplot(outlier.shape = NA) +
+  geom_text(aes(label = run_year), size = 2, position = "jitter", alpha = 0.4) +
+  geom_hline(yintercept = 0) +
+  coord_flip() +
+  facet_wrap(~sidnm, scales = "free_y", labeller = label_wrap_gen(multi_line = F), ncol = 2) +
+  labs(
+    title = "Differences in annual per-fishery pseudo-ER, FRAM - RMIS",
+    subtitle = paste("Minimum difference >=", min_diff_er)
+  )
+
+
+```
+
+
 ```{r}
 er_fram_rmis_no_fwspt |> 
   drop_na(fram_er, rmis_er) |> 
   filter(StockID %in% c(20, 38, 96)) |> 
-  filter(FisheryID==91)
+  filter(FisheryID==91) |> 
+  group_by(sidnm, fidnm) |> 
+  summarise(across(contains("_er"), list(mean = ~mean(.), var = ~var(.), sd = ~sd(.))))
   
-  
-  # group_by(sidnm, fidnm) |> 
-  # summarise(across(c(fram_er_fishery, rmis_er_fishery, d_er_fram_rmis_fishery), list(mean=mean)), .groups = "drop") |> 
-  # filter(abs(d_er_fram_rmis_fishery_mean) >= min_diff_er) |> 
 
 ```
 
@@ -1801,7 +1853,7 @@ next bootstrap years to study (in)stability in the avg ERs that would be calc'd?
 
 ```{r}
 
-# rlsp=="3" & rlwtr=="M" & rlsctr=="1" & rlrgn=="11" & rlarea=="06  " ~ 92, #Area 6 Spt	WA Area 6 Sport (Port Angeles); includes various terminal zones that perhaps could/should assign elsewhere
+# rlsp=="3" & rlwtr=="M" & rlsctr=="1" & rlrgn=="11" & rlarea=="06  " ~ 92, #Area 6 Spt	WA Area 6 Sport (Port Angeles)
 # rlsp=="3" & rlwtr=="M" & rlsctr=="1" & rlrgn=="11" & rlarea=="07  " ~ 93
 
 
@@ -1850,7 +1902,6 @@ rmis_rr_a5_pct <- rmis_rr_a5 |>
     ) |> 
   ungroup()
 
-
 rmis_rr_a5_pct |> 
   drop_na(hatchery_location_name) |> #count(n_rec_year<3)
 #  filter(n_rec_year >= 3) |> 
@@ -1869,15 +1920,14 @@ rmis_rr_a5_pct |>
   plotly::add_lines() |> 
   plotly::add_markers(size = 1)
 
-rmis_rr_a5_pct |> 
-  drop_na(hatchery_location_name) |>
-  select(run_year, hatchery_location_name, n_rec_pct) |> 
-  pivot_wider(names_from = run_year, values_from = n_rec_pct) |> 
-  mutate(across(-hatchery_location_name, ~replace_na(.,0))) |> 
-  column_to_rownames("hatchery_location_name") |> 
-  #data.matrix() |> 
-  slice(1:7) |> select(1:7) %>% 
-  plotly::plot_ly(z = ., type = "surface")
+# rmis_rr_a5_pct |> 
+#   drop_na(hatchery_location_name) |>
+#   select(run_year, hatchery_location_name, n_rec_pct) |> 
+#   pivot_wider(names_from = run_year, values_from = n_rec_pct) |> 
+#   mutate(across(-hatchery_location_name, ~replace_na(.,0))) |> 
+#   column_to_rownames("hatchery_location_name") |> 
+#   slice(1:7) |> select(1:7) %>% 
+#   plotly::plot_ly(z = ., type = "surface")
 
 
 #not ER, but...trailing means of annual percentage of total recoveries
@@ -1904,6 +1954,50 @@ rmis_rr_a5_pct |>
   plotly::plot_ly(x = ~hatchery_location_name, y = ~run_year, z = ~mu6, color = ~mu6) |> 
   plotly::add_lines() |> 
   plotly::add_markers(size = 1)
+
+
+rmis_rr_a5 |> 
+  #filter(str_detect(hatchery_location_name, "QUILCENE"), run_year == 1990) |> 
+  #calc per-recovery percentage of release count, normalizing for variation in release/tag numbers
+  #this value incorporates a host of non-fishing survival factors determining whether releases made it to zone where could be caught & sampled
+  mutate(
+    release_st_rgn = paste(release_location_state, release_location_rmis_region, sep = "_"),
+    #pct_cwt_rec = 1 / cwt_1st_mark_count,
+    pct_cwt_est_num = estimated_number / cwt_1st_mark_count
+    ) |> 
+  #now aggregate these per-recovery "percentage of release" over individual recoveries within a tag_code
+  group_by(
+    run_year, 
+    release_location_state, release_location_rmis_region, release_location_rmis_basin,
+    release_st_rgn,
+    hatchery_location_name,
+    tag_code
+  ) |> 
+  summarise(
+    #pct_cwt_rec = sum(pct_cwt_rec),
+    pct_cwt_est_num = sum(pct_cwt_est_num),
+    .groups = "drop"
+  ) |> 
+  #next, calculate the percentage within fishery-year of each tag_code-recovery-percent (thereby bringing along hatchery and "stock"/region)
+  #these should sum to 1 per year...
+  group_by(run_year) |> 
+  mutate(
+    #pct_cwt_rec_pct_fishery = pct_cwt_rec / sum(pct_cwt_rec),
+    pct_cwt_est_num_pct_fishery = pct_cwt_est_num / sum(pct_cwt_est_num)
+  ) |> 
+  #now, reaggregate to release region for coarse pattern 
+  group_by(
+    run_year, 
+    #release_location_state, release_location_rmis_region, release_location_rmis_basin,
+    release_st_rgn
+    #hatchery_location_name
+  ) |> 
+  summarise(pct_cwt_est_num_pct_fishery = sum(pct_cwt_est_num_pct_fishery), .groups = "drop") |> 
+
+  #group_by(run_year) |> slice_max(pct_cwt_est_num_pct_fishery, n = 1)
+  ggplot(aes(run_year, pct_cwt_est_num_pct_fishery, fill = release_st_rgn)) + geom_col()
+
+
 
 
 ```
