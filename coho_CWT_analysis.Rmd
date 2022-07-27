@@ -248,6 +248,82 @@ rm(rmis_rr_ahb_map, overmapped)
 
 ```
 
+```{r catch_sample_to_FisheryID}
+cs <- readr::read_csv("T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Projects/Coho FRAM MSM CWT analysis/MarkRateA/Data for MR_R/RMIS2010_20CohoMrkSample.csv") |> 
+  rowid_to_column(var = "uid")
+  
+
+cs_ahb_map <- cs |> 
+  select(uid, catch_location_code, fishery) |> 
+  mutate(fishery_single = floor(fishery/10)) 
+
+cs_ahb_map <- map_df(
+  sort(unique(lu$ahb_fishmap$Num_Chars)),
+  ~inner_join(
+    cs_ahb_map |> 
+      mutate(PSC_Code = str_sub(catch_location_code, 1, .x) |> str_pad(width = .x, side = "right"))
+    ,
+    lu$ahb_fishmap |> filter(Num_Chars == .x) |> 
+      mutate(PSC_Code = str_pad(PSC_Code, width = .x, side = "right"))
+    ,
+    by = c("PSC_Code", "fishery_single")
+  )
+)
+
+#some cases of same fishery from different n-chars being considered on same recovery_location_code
+#some cases initially from simple row duplication in lookup, now fixed on read-in
+overmapped <- cs_ahb_map |> count(uid) |> filter(n>1) |> select(uid)
+
+# semi_join(rmis_rr_ahb_map, overmapped, by = "uid") |> 
+#   count(recovery_location_code, fishery, fishery_single, PSC_Code, FisheryID, FisheryName, Num_Chars) |> 
+#   writexl::write_xlsx("T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Projects/Coho FRAM MSM CWT analysis/lu_ahb_fishmap_overmapped_qaqc.xlsx")
+
+#now rejoin to full dataset, after making FisheryID distinct per UID
+cs <- left_join(
+  cs, 
+  #split out multiple-mapped, make distinct per UID and rebind
+  bind_rows(
+    anti_join(cs_ahb_map, overmapped, by = "uid") |> select(uid, FisheryID)
+    ,
+    semi_join(cs_ahb_map, overmapped, by = "uid") |> 
+      group_by(uid) |> 
+      slice_max(Num_Chars, n = 1, with_ties = F) |> 
+      ungroup() |> 
+      select(uid, FisheryID) #|> count(uid) |> filter(n>1)
+  )
+  ,
+  by = "uid") |> 
+  left_join(fram$fishery, by = "FisheryID")
+
+rm(cs_ahb_map, overmapped)
+
+writexl::write_xlsx(
+  list(
+    focal_stock_fishery_coefs = semi_join(cs, er_fram |> distinct(FisheryID), by = "FisheryID") |> 
+      group_by(catch_year, FisheryID, FisheryName) |> 
+      summarise(
+        number_caught_sum = sum(number_caught, na.rm = T),
+        number_caught_not0samp_sum = sum(number_caught[number_sampled != 0], na.rm = T),
+        number_caught_0samp_sum = sum(number_caught[number_sampled == 0], na.rm = T),
+        samp_catch_pct_tot_catch = number_caught_not0samp_sum / number_caught_sum,
+        nosamp_catch_pct_tot_catch = number_caught_0samp_sum / number_caught_sum,
+        coef_sampled = number_caught_sum / number_caught_not0samp_sum,
+        .groups = "drop"
+      ),
+    focal_stock_fisheries = semi_join(cs, er_fram |> distinct(FisheryID), by = "FisheryID"),
+    all_fisheries = cs
+  ), 
+  path = "T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Projects/Coho FRAM MSM CWT analysis/MarkRateA/Data for MR_R/RMIS2010_20CohoMrkSample_qaqc_unsampled.xlsx"
+)
+
+
+# semi_join(cs, er_fram |> distinct(FisheryID), by = "FisheryID") |> 
+#   count(number_sampled == 0) |> mutate(pct = n/sum(n))
+
+
+```
+
+
 # Data
 
 ## RMIS LUs
@@ -277,7 +353,7 @@ These chunks preserve one-time operations to generate starting datasets from RMI
 ```{r read_in_rmis_recoveries, eval=FALSE}
 dir_rmis_recs <- "T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Projects/Coho FRAM MSM CWT analysis/ERAnalysis/RMISRecoveries/"
 
-focal_cols_recs <- c("recovery_id", "tag_code", "run_year", "recovery_location_code", "recovery_location_name", "fishery", "gear", "estimated_number", "recorded_mark")
+focal_cols_recs <- c("recovery_id", "tag_code", "run_year", "recovery_location_code", "recovery_location_name", "fishery", "gear", "estimated_number", "recorded_mark", "catch_sample_id", "sample_type")
 
 rmis_recs <- purrr::map_dfr(
   list.files(dir_rmis_recs, pattern = ".TXT", full.names = T)
@@ -1388,6 +1464,8 @@ rmis_rr |>
 #   writexl::write_xlsx("qaqc_total_recs_by_stock_fishery.xlsx")
 
 
+# rmis_rr |> filter(is.na(estimated_number) | estimated_number == 0) |> count(run_year, estimated_number) |> mutate(estimated_number = as.character(estimated_number), estimated_number = replace_na(estimated_number, "NA")) |> ggplot(aes(run_year, n, fill = estimated_number)) + geom_col()
+
 ```
 
 ## Construct RMIS estimates paralleling FRAM
@@ -1841,7 +1919,7 @@ min_fram_landed = 6
 library(gganimate)
 
 er_fram_rmis_no_fwspt |>
-  filter(run_year < 2020) |> 
+  filter(fram_landed_yr >= min_fram_landed, run_year %in% c(2010:2014, 2017:2019)) |> 
   mutate(
     shp = case_when(
       d_er_fram_rmis_fishery > 0 ~ "FRAM > RMIS",
@@ -1853,7 +1931,6 @@ er_fram_rmis_no_fwspt |>
     #sze = abs(d_er_fram_rmis_fishery)
     sze = if_else(!is.na(d_er_fram_rmis_fishery), abs(d_er_fram_rmis_fishery), 0)
     ) |> 
-  filter(fram_landed_yr >= min_fram_landed, run_year %in% c(2010:2014, 2017:2019)) |> 
   ggplot(aes(sidnm, fidnm)) +
   geom_point(aes(shape = shp), size = 2) +
   geom_point(aes(shape = shp, size = sze, fill = d_er_fram_rmis_fishery)) +
@@ -1870,36 +1947,69 @@ er_fram_rmis_no_fwspt |>
   )
 # + transition_states(states = run_year, state_length = 1, transition_length = 1) 
 # #+ annotate("text", label = "{closest_state}")
+```
 
 
-er_fram_rmis_no_fwspt |>
-  filter(run_year < 2020) |> 
-  mutate(
-    shp = case_when(
-      d_er_fram_rmis_fishery > 0 ~ "FRAM > RMIS",
-      d_er_fram_rmis_fishery < 0 ~ "FRAM < RMIS",
-      d_er_fram_rmis_fishery == 0 ~ "FRAM = RMIS",
-      is.na(rmis_er_fishery) ~ "FRAM-only",
-      is.na(fram_er_fishery) ~ "RMIS-only"
-    ),
-    #sze = abs(d_er_fram_rmis_fishery)
-    sze = if_else(!is.na(d_er_fram_rmis_fishery), abs(d_er_fram_rmis_fishery), 0)
+```{r}
+min_fram_landed = 6
+
+gg_dif <- map(
+  set_names(levels(er_fram_rmis_no_fwspt$sidnm)),
+  function(s) {
+    d <- er_fram_rmis_no_fwspt |>
+      filter(
+        sidnm == s,
+        fram_landed_yr >= min_fram_landed
+        #,run_year %in% c(2010:2014, 2017:2019)
+      ) |> mutate(run_year = as.character(run_year))
+    bind_rows(
+      d,
+      d |> group_by(sidnm, fidnm) |> 
+        summarise(
+          run_year = "mean error",
+          d_er_fram_rmis_fishery = mean(d_er_fram_rmis_fishery, na.rm=T), .groups = "drop"),
+      d |> group_by(sidnm, run_year) |> 
+        summarise(
+          fidnm = "0: annual mean error",
+          d_er_fram_rmis_fishery = mean(d_er_fram_rmis_fishery, na.rm=T), .groups = "drop")
     ) |> 
-  filter(fram_landed_yr >= min_fram_landed, run_year %in% c(2010:2014, 2017:2019)) |> 
-  ggplot(aes(run_year, fidnm)) +
-  geom_point(aes(shape = shp), size = 2) +
-  geom_point(aes(shape = shp, size = sze, fill = d_er_fram_rmis_fishery)) +
-  scale_shape_manual(name = "", values = c("FRAM > RMIS" = 24, "FRAM < RMIS" = 25, "FRAM = RMIS" = 22, "FRAM-only" = 20, "RMIS-only" = 3)) +
-  scale_size("ER diff. abs.", range = c(2.5, 7.5)) +
-  scale_fill_gradient2(name = NULL, low = "purple", mid = "lightgrey", high = "orange", midpoint = 0, na.value = "pink", aesthetics = c("color", "fill")) +
-  guides(fill = guide_colorbar(title="ER difference")) +
-  scale_x_discrete("", guide = guide_axis(n.dodge = 2)) +
-  scale_y_discrete("") +
-  facet_wrap(~sidnm, ncol = 2, scales = "free_y") +
-  labs(
-    title = "Differences in annual per-fishery pseudo-ER, FRAM - RMIS",
-    subtitle = paste("Minimum annual landed catch in FRAM >=", min_fram_landed)
-  )
+      mutate(
+        fidnm = factor(fidnm, levels = c(levels(er_fram_rmis_no_fwspt$fidnm), "0: annual mean error")),
+        shp = case_when(
+          d_er_fram_rmis_fishery > 0 ~ "FRAM > RMIS",
+          d_er_fram_rmis_fishery < 0 ~ "FRAM < RMIS",
+          d_er_fram_rmis_fishery == 0 ~ "FRAM = RMIS",
+          is.na(rmis_er_fishery) ~ "FRAM-only",
+          is.na(fram_er_fishery) ~ "RMIS-only"
+        ),
+        #sze = abs(d_er_fram_rmis_fishery)
+        sze = if_else(!is.na(d_er_fram_rmis_fishery), abs(d_er_fram_rmis_fishery), 0)
+      ) |> 
+      ggplot(aes(run_year, fidnm)) +
+      geom_point(aes(shape = shp), size = 2) +
+      geom_point(aes(shape = shp, size = sze, fill = d_er_fram_rmis_fishery)) +
+      scale_shape_manual(name = "", values = c("FRAM > RMIS" = 24, "FRAM < RMIS" = 25, "FRAM = RMIS" = 22, "FRAM-only" = 20, "RMIS-only" = 3)) +
+      scale_size("ER diff. abs.", range = c(2.5, 10)) +
+      #scale_fill_gradient2(name = NULL, low = "purple", mid = "lightgrey", high = "orange", midpoint = 0, na.value = "pink", aesthetics = c("color", "fill")) +
+      scale_fill_fermenter(type = "div", palette = "PuOr", breaks = c(-0.1, -0.05, 0, 0.05, 0.1), limits = c(-.2, .2)) +
+      guides(
+        #size = guide_bins(range = c(2.5, 10)),
+        fill = guide_colorbar(title="ER difference"),
+        x = guide_axis("Run Year"),
+        y = guide_axis("")) +
+      facet_wrap(~sidnm, ncol = 2, scales = "free_y") +
+      labs(
+        title = "Differences in annual per-fishery pseudo-ER, FRAM - RMIS",
+        subtitle = paste("Minimum annual landed catch in FRAM >=", min_fram_landed, "coho")
+      )
+  }
+)
+
+
+# pwalk(
+#   list(paste0("gg_dif_", str_remove_all(names(gg_dif), "\\:| "), ".png"), gg_dif),
+#   ggsave, path = dir_proj
+# ) 
 
 ```
 
