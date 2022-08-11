@@ -1,0 +1,304 @@
+---
+title: "Comparing Coho FRAM and RMIS estimates of exploitation"
+author: "Dan.Auerbach@dfw.wa.gov, Angelika.Hagen-Breaux@dfw.wa.gov, carrie_cook-tabor@fws.gov"
+date: "`r Sys.Date()`"
+editor_options: 
+  chunk_output_type: console
+output: 
+  bookdown::html_document2:
+    fig_caption: yes
+    theme: cerulean
+    toc: yes
+    toc_depth: 3
+    toc_float: yes
+    code_folding: hide
+---
+
+```{r setup, results = FALSE, warning = FALSE, message = FALSE}
+knitr::opts_chunk$set(echo = TRUE, results = FALSE, warning = FALSE, message = FALSE, fig.width = 9, fig.height = 9)
+
+library("tidyverse")
+library("gt")
+library("patchwork")
+library("odbc"); library("DBI")
+theme_set(theme_light())
+
+dir_proj <- "T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Projects/Coho FRAM MSM CWT analysis"
+
+fp <- list(
+  #RMIS query dataset construction shown below
+  rmis_recs = file.path(dir_proj, "rmis_coho_recoveries_86_2020.rds"),
+  rmis_rel = file.path(dir_proj, "rmis_coho_releases_for_rec_86_2020.rds"),
+  rmis_rec_rel = file.path(dir_proj, "rmis_coho_rec_rel_86_2020.rds"),
+  
+  mdb_pst = "O:/code/coho/fram_mdbs/PSC_CoTC_PostSeason_CohoFRAMDB_thru2020_021622.mdb",
+  
+  lu_stock = "lu_cct_MSM_Stock_CWT_20220711.csv",
+  lu_fish = "lu_ahb_FishMap_20220803.csv"
+  )
+
+lu <- list(
+  ##CCT queried releases, QAQC'd and assigned to PR and PR_MU
+  ##these are assigned to FRAM marked wild StockIDs
+  ##and are limited to tag_codes for marked releases
+  cwt_stk = readr::read_csv(fp$lu_stock) |>
+    mutate(tag_code = str_remove(CWT_Code, "'")) |> 
+    select(tag_code, n_rel = Number_Released, Release_name, Hatchery_name, Stock_name, StockID) |> 
+    filter(!is.na(StockID))
+  ,
+  ##AHB extended prior FRAM fishery mapping on RMIS recovery_location_code and fishery/gear
+  ##various QAQC during earlier project phases
+  ahb_fishmap = readr::read_csv(fp$lu_fish) |> 
+    select(FisheryID, FisheryName, fishery_single = Gear, Num_Chars, PSC_Code) |>
+    distinct(FisheryID, FisheryName, fishery_single, Num_Chars, PSC_Code)
+  )
+
+```
+
+# Data
+
+## FRAM
+
+```{r get_starting_fram_dataset}
+fram <- list()
+
+fram_fishery_fw_spt <- c(
+  24, 27,28,29,30,31,46,51,54,58,59,60,61,62,65,66,67,70,73,
+  76,89,90,94,95,99,100,108,116,117,127,128,135,149,150,151,
+  163,164,165,166,169
+  )
+
+#per AHB request to combine NT & Tr net fisheries
+paired_fisheries <- c(
+  80, 82, 87, 96, 101, 109, 111, 119, 121, 123, 
+  130, 132, 137, 139, 141, 143, 145, 153, 155, 157, 159
+  )
+
+#Skagit, Sno, Quilcene, George Adams, Nisqually, Green, Quillayute, Quinault, Willapa, Columbia Early, Columbia Late, Fraser Lower, Fraser Upper
+stock_ids <- c(20, 38, 48, 58, 68, 96, 134, 148, 164, 166, 176, 226, 230)
+
+run_ids <- 34:44 #2010:2020
+
+
+db_con <- DBI::dbConnect(
+  drv = odbc::odbc(),
+  .connection_string = paste0(
+    "Driver={Microsoft Access Driver (*.mdb, *.accdb)};DBQ=",
+    fp$mdb_pst, ";")
+  )
+
+fram$fishery <- tbl(db_con, "Fishery") |> 
+  filter(Species == "COHO") |> 
+  select(FisheryID:FisheryTitle) |> 
+  collect()
+
+DBI::dbDisconnect(db_con)
+
+
+fram$escp <- framr::read_coho_escp(fp$mdb_pst, runs = run_ids, stocks = stock_ids)
+
+fram$mort <- framr::read_coho_mort(fp$mdb_pst, runs = run_ids, stocks = stock_ids) |> 
+  mutate(
+    FisheryID = if_else(FisheryID %in% paired_fisheries, FisheryID+1, as.double(FisheryID)),
+    FisheryName = if_else(FisheryID %in% c(paired_fisheries, paired_fisheries+1),
+                            str_sub(FisheryName, 1,8), FisheryName)
+  )
+
+
+```
+
+## RMIS
+
+These chunks preserve one-time operations to generate starting datasets from RMIS.
+
+```{r read_in_rmis_recoveries, eval=FALSE}
+dir_rmis_recs <- "T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Projects/Coho FRAM MSM CWT analysis/ERAnalysis/RMISRecoveries/"
+
+focal_cols_recs <- c(
+  "recovery_id", "tag_code", "run_year", 
+  "recovery_location_code", "recovery_location_name", 
+  "fishery", "gear", "estimated_number", "recorded_mark",
+  "catch_sample_id", "sample_type")
+
+rmis_recs <- purrr::map_dfr(
+  list.files(dir_rmis_recs, pattern = ".TXT", full.names = T)
+  ,
+  ~readr::read_csv(.x, col_select = all_of(focal_cols_recs)) |> 
+    dplyr::mutate(recorded_mark = as.character(recorded_mark))
+  )
+
+#saveRDS(rmis_recs, "T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Projects/Coho FRAM MSM CWT analysis/rmis_coho_recoveries_86_2020.rds")
+
+```
+
+```{r get_releases_by_tag_code, eval=FALSE}
+rmis_recs |>
+  distinct(tag_code) |> rownames_to_column(var = "id") |>
+  mutate(
+    id = as.numeric(id),
+    block = cut(id, breaks = c(seq(0,20000,by=2000))),
+    block = letters[as.integer(block)]
+    ) |> #count(block)
+  split(~block) |>
+  writexl::write_xlsx("T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Projects/Coho FRAM MSM CWT analysis/ERAnalysis/tag_codes_by_block.xlsx")
+
+f <- "T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Projects/Coho FRAM MSM CWT analysis/ERAnalysis/tag_codes_by_block.xlsx"
+
+readxl::read_excel(f, sheet = "a") |> pluck("tag_code") |> writeLines("clipboard")
+readxl::read_excel(f, sheet = "b") |> pluck("tag_code") |> writeLines("clipboard")
+readxl::read_excel(f, sheet = "c") |> pluck("tag_code") |> writeLines("clipboard")
+readxl::read_excel(f, sheet = "d") |> pluck("tag_code") |> writeLines("clipboard")
+readxl::read_excel(f, sheet = "e") |> pluck("tag_code") |> writeLines("clipboard")
+readxl::read_excel(f, sheet = "f") |> pluck("tag_code") |> writeLines("clipboard")
+readxl::read_excel(f, sheet = "g") |> pluck("tag_code") |> writeLines("clipboard")
+
+focal_cols_rel <- c(
+  "tag_code_or_release_id", "brood_year",
+  "release_location_code", "hatchery_location_code", "stock_location_code",
+  "release_location_name", "hatchery_location_name", "stock_location_name",
+  "release_location_state", "release_location_rmis_region", "release_location_rmis_basin",
+  "cwt_1st_mark", "cwt_1st_mark_count", "cwt_2nd_mark", "cwt_2nd_mark_count"
+  )
+
+rmis_rel <- map_df(
+  c(
+  "https://www.rmis.org/reports/CSV13497.txt",
+  "https://www.rmis.org/reports/CSV13656.txt",
+  "https://www.rmis.org/reports/CSV13738.txt",
+  "https://www.rmis.org/reports/CSV13814.txt",
+  "https://www.rmis.org/reports/CSV13854.txt",
+  "https://www.rmis.org/reports/CSV14030.txt",
+  "https://www.rmis.org/reports/CSV14116.txt"
+  ),
+  ~read_csv(.x, col_select = all_of(focal_cols_rel)) |> 
+    mutate(
+      cwt_1st_mark = as.character(cwt_1st_mark),
+      cwt_2nd_mark = as.character(cwt_2nd_mark)
+      )
+  )
+
+#saveRDS(rmis_rel, "T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Projects/Coho FRAM MSM CWT analysis/rmis_coho_releases_for_rec_86_2020.rds")
+
+```
+
+```{r join_rel_to_rec, eval=FALSE}
+left_join(
+  readRDS(fp$rmis_recs) |> 
+    mutate(
+      rlsp = str_sub(recovery_location_code, 1, 1),
+      rlwtr = str_sub(recovery_location_code, 2, 2),
+      rlsctr = str_sub(recovery_location_code, 3, 3),
+      rlrgn = str_sub(recovery_location_code, 4, 5),
+      rlarea = str_sub(recovery_location_code, 6, 9),
+      rllocn = str_sub(recovery_location_code, 10, 16),
+      rlsubl = str_sub(recovery_location_code, 17, 19),
+      f_type = case_when(
+        between(fishery, 10, 19) ~ "troll",
+        between(fishery, 20, 39) ~ "net",
+        between(fishery, 40, 49) ~ "sport",
+        between(fishery, 50, 59) ~ "escp"
+      )
+    )
+  ,
+  readRDS(fp$rmis_rel) |> select(-contains("n_code")),
+  by = c("tag_code" = "tag_code_or_release_id")
+  ) |> #saveRDS(file.path(dir_proj, "rmis_coho_rec_rel_86_2020.rds"))
+
+```
+
+```{r rmis_rr}
+#primary dataset, constructed and preserved in chunks below
+rmis_rr <- readRDS(fp$rmis_rec_rel) |> 
+  filter(!is.na(release_location_state)) |>  #drop 3 recent
+  mutate(age = run_year - brood_year) |> 
+  rowid_to_column("uid")
+
+#adding missing Canadian escapements
+rmis_rr <- bind_rows(
+  rmis_rr,
+  readxl::read_xlsx(
+    file.path(dir_proj, "ERAnalysis/2022-02-23 StAD Escapement Report_Coho_EPAD.xlsx"),
+    sheet = "Obs-Est-Exp"
+    ) |>
+    rowid_to_column(var = "uid") |> 
+    mutate(
+      uid = uid + last(rmis_rr$uid),
+      age = `Recovery Year` - `Brood Year`,
+      fishery = 50,
+      f_type = "escp"
+    ) |> 
+    select(
+      uid,
+      tag_code = Tagcode, 
+      recovery_location_code = `PSC Location Code`,
+      recovery_location_name = `Recovery Site Name`,
+      run_year = `Recovery Year`,
+      brood_year = `Brood Year`,
+      age,
+      fishery, f_type,
+      estimated_number = `Final Expanded`
+    ) |> 
+    filter(
+      tag_code %in% unique(rmis_rr$tag_code),
+      age == 3
+    ) 
+  )
+
+
+#add CCT mapped StockIDs
+rmis_rr <- rmis_rr |> left_join(lu$cwt_stk, by = c("tag_code"))
+
+#add AHB mapped FisheryIDs
+#cannot directly join on 'PSC_Code'...have to use the Num_Chars field
+#but that means using many possible lengths of recovery_location_code
+#brute force iterator over Num_chars + uid to allow recombination
+
+#first declare temp object of only key fields
+rmis_rr_ahb_map <- rmis_rr |> 
+  select(uid, recovery_location_code, fishery) |> 
+  mutate(fishery_single = floor(fishery/10)) 
+#now overwrite as split-then-bind pattern on Num_Chars
+#per AHB request, added explicit right string padding to specified string length
+#even when actual strings in RMIS and LU are/use fewer char
+rmis_rr_ahb_map <- map_df(
+  sort(unique(lu$ahb_fishmap$Num_Chars)),
+  ~inner_join(
+    rmis_rr_ahb_map |> 
+      mutate(PSC_Code = str_sub(recovery_location_code, 1, .x) |> str_pad(width = .x, side = "right"))
+    ,
+    lu$ahb_fishmap |> filter(Num_Chars == .x) |> 
+      mutate(PSC_Code = str_pad(PSC_Code, width = .x, side = "right"))
+    ,
+    by = c("PSC_Code", "fishery_single")
+  )
+)
+
+#some cases of same fishery from different n-chars being considered on same recovery_location_code
+#some cases initially from simple row duplication in lookup, now fixed on read-in
+overmapped <- rmis_rr_ahb_map |> count(uid) |> filter(n>1) |> select(uid)
+
+#now rejoin to full dataset, after making FisheryID distinct per UID
+rmis_rr <- left_join(
+  rmis_rr, 
+  #split out multiple-mapped, make distinct per UID and rebind
+  bind_rows(
+    anti_join(rmis_rr_ahb_map, overmapped, by = "uid") |> 
+      select(uid, FisheryID)
+    ,
+    semi_join(rmis_rr_ahb_map, overmapped, by = "uid") |> 
+      group_by(uid) |> 
+      slice_max(Num_Chars, n = 1, with_ties = F) |> 
+      ungroup() |> 
+      select(uid, FisheryID) #|> count(uid) |> filter(n>1)
+  )
+  ,
+  by = "uid") |> 
+  left_join(fram$fishery, by = "FisheryID")
+
+rm(rmis_rr_ahb_map, overmapped)
+
+```
+
+
+# Exploitation calculations
+
