@@ -112,8 +112,8 @@ fishery_ids_paired <- c(
 ```{r get_starting_fram_dataset}
 fram <- list()
 
-#Skagit, Sno, Quilcene, George Adams, Nisqually, Green, Quillayute, Quinault, Willapa, Columbia Early, Columbia Late, Fraser Lower, Fraser Upper
-stock_ids <- c(20, 38, 48, 58, 68, 96, 134, 148, 164, 166, 176, 226, 230)
+#Skagit, Sno, Quilcene, George Adams, Nisqually, Green, Quillayute, Queets, Quinault, Chehalis, Willapa, Columbia Early, Columbia Late, Fraser Lower, Fraser Upper
+stock_ids <- c(20, 38, 48, 58, 68, 96, 134, 142, 148, 152, 164, 166, 176, 226, 230)
 
 run_ids <- 34:44 #2010:2020
 
@@ -136,6 +136,7 @@ fram$escp <- framr::read_coho_escp(fp$mdb_pst, runs = run_ids, stocks = stock_id
 
 fram$mort <- framr::read_coho_mort(fp$mdb_pst, runs = run_ids, stocks = stock_ids)
 
+fram$mort |> distinct(StockID, StockLongName) |> arrange(StockID) |> gt()
 ```
 
 ## RMIS
@@ -238,9 +239,12 @@ left_join(
 ```
 
 ```{r rmis_rr}
-#primary dataset, constructed and preserved in chunks below
+#primary dataset, constructed and preserved in chunks above
 rmis_rr <- readRDS(fp$rmis_rec_rel) |> 
-  filter(!is.na(release_location_state)) |>  #drop 3 recent
+  filter(
+    sample_type != 5,
+    !is.na(release_location_state)
+    ) |>  #drop 3 recent
   mutate(age = run_year - brood_year) |> 
   rowid_to_column("uid")
 
@@ -328,6 +332,18 @@ rmis_rr <- left_join(
 
 rm(rmis_rr_ahb_map, overmapped)
 
+#split Ocean troll into treaty/non-treaty
+rmis_rr |> filter(FisheryID %in% c(35, 36, 38, 39, 42, 43)) |> distinct(FisheryID, FisheryName)
+
+rmis_rr <- rmis_rr |> 
+  mutate(
+    FisheryID = if_else(FisheryID %in% c(35, 38, 42) & fishery==15, FisheryID+1, FisheryID),
+    FisheryName = if_else(FisheryID==36, "Area2TrlTR", FisheryName),
+    FisheryName = if_else(FisheryID==39, "Area3TrlTR", FisheryName),
+    FisheryName = if_else(FisheryID==43, "A4/4BTrlTR", FisheryName)
+  ) 
+
+rmis_rr |> filter(FisheryID %in% c(35, 36, 38, 39, 42, 43)) |> distinct(FisheryID, FisheryName, fishery, gear)
 ```
 
 # Exploitation calculations
@@ -347,7 +363,9 @@ er_fram <- full_join(
       run_year = as.integer(RunYear), RunYear = NULL,
       FisheryID = if_else(FisheryID %in% fishery_ids_paired, FisheryID+1, as.double(FisheryID)),
       FisheryName = if_else(FisheryID %in% c(fishery_ids_paired, fishery_ids_paired+1),
-                            str_sub(FisheryName, 1,8), FisheryName)
+                            str_sub(FisheryName, 1,8), FisheryName),
+      FisheryID = if_else(FisheryID == 98, 97, as.double(FisheryID)),
+      FisheryName = if_else(FisheryID == 97, "A7BCDNet", FisheryName)
     ) |> 
     filter(FisheryID %in% fishery_ids) |> 
     group_by(run_year, StockID, StockLongName, FisheryID, FisheryName) |> 
@@ -390,23 +408,23 @@ er_fram <- full_join(
   select(run_year, everything())
 
 
-
 er_rmis <- full_join(
   #analogous to FRAM mortality table
   rmis_rr |> 
     drop_na(estimated_number, StockID) |>
     mutate(
-      StockID = if_else(StockID == 18, 20, StockID),
       FisheryID = if_else(FisheryID %in% fishery_ids_paired, FisheryID+1, as.double(FisheryID)),
       FisheryName = if_else(FisheryID %in% c(fishery_ids_paired, fishery_ids_paired+1),
-                            str_sub(FisheryName, 1,8), FisheryName)
+                            str_sub(FisheryName, 1,8), FisheryName),
+      FisheryID = if_else(FisheryID == 98, 97, as.double(FisheryID)),
+      FisheryName = if_else(FisheryID == 97, "A7BCDNet", FisheryName)
     ) |> 
     filter(
       age == 3, f_type != "escp",
       between(run_year, min(er_fram$run_year), max(er_fram$run_year)),
       StockID %in% stock_ids,
       FisheryID %in% fishery_ids
-    ) |>
+    ) |> #count(sample_type)
     group_by(run_year, StockID, f_type, FisheryID, FisheryName) |> 
     summarise(rmis_est_num_yr_fsh = sum(estimated_number), .groups = "drop") |> 
     left_join(
@@ -421,7 +439,6 @@ er_rmis <- full_join(
   #analogous to FRAM escapement table
   rmis_rr |> 
     drop_na(estimated_number, StockID) |> 
-    mutate(StockID = if_else(StockID == 18, 20, StockID)) |> 
     filter(
       age == 3, f_type == "escp",
       between(run_year, min(er_fram$run_year), max(er_fram$run_year)),
@@ -470,7 +487,10 @@ er_fram_rmis |>
   ungroup() |>
   gt(groupname_col = "sidnm", rowname_col = "run_year") |> 
   #not working: gt::summary_rows(groups = "sidnm", fns = "mean") |> 
-  fmt_percent(contains("_er"))
+  fmt_percent(contains("_er")) |> 
+  tab_style(
+    style = list(cell_fill(color = "purple", alpha = 0.5)),
+    locations = cells_body(rows = d_er_tot < 0))
 ```
 
 ```{r gt_total_er_mean}
