@@ -98,6 +98,8 @@ fishery_ids_paired <- c(
   153, 155, 157, 159
   )
 
+fishery_ids_ps_spt <- c(91:93, 107, 118, 129, 152, 136, 106, 115)
+
 ##previously excluded from FRAM:
 # fram_fishery_fw_spt <- c(
 #   24, 27,28,29,30,31,46,51,54,58,59,60,61,62,65,66,67,70,73,
@@ -333,8 +335,6 @@ rmis_rr <- left_join(
 rm(rmis_rr_ahb_map, overmapped)
 
 #split Ocean troll into treaty/non-treaty
-rmis_rr |> filter(FisheryID %in% c(35, 36, 38, 39, 42, 43)) |> distinct(FisheryID, FisheryName)
-
 rmis_rr <- rmis_rr |> 
   mutate(
     FisheryID = if_else(FisheryID %in% c(35, 38, 42) & fishery==15, FisheryID+1, FisheryID),
@@ -343,7 +343,7 @@ rmis_rr <- rmis_rr |>
     FisheryName = if_else(FisheryID==43, "A4/4BTrlTR", FisheryName)
   ) 
 
-rmis_rr |> filter(FisheryID %in% c(35, 36, 38, 39, 42, 43)) |> distinct(FisheryID, FisheryName, fishery, gear)
+# rmis_rr |> filter(FisheryID %in% c(35, 36, 38, 39, 42, 43)) |> distinct(FisheryID, FisheryName, fishery, gear)
 ```
 
 # Exploitation calculations
@@ -405,7 +405,8 @@ er_fram <- full_join(
     fram_er_fsh = fram_lnd_yr_fsh / fram_abnd,
     fram_er_tot = fram_lnd_yr_tot / fram_abnd
   ) |> 
-  select(run_year, everything())
+  select(run_year, everything()) |> 
+  filter(between(run_year, 2010, 2019))
 
 
 er_rmis <- full_join(
@@ -472,12 +473,15 @@ er_fram_rmis <- full_join(
     d_escp_fram_rmis = fram_escp - rmis_escp,
     d_er_fsh = fram_er_fsh - rmis_er_fsh,
     d_er_tot = fram_er_tot - rmis_er_tot
-    ) 
+    ) |> 
+  filter(between(run_year, 2010, 2019))
 
 ```
 
 
 # Results
+
+## Annual and mean total marine pseudo-ERs by stock 
 
 ```{r gt_total_er_annual}
 er_fram_rmis |> 
@@ -486,27 +490,59 @@ er_fram_rmis |>
   distinct(sidnm, run_year, fram_er_tot, rmis_er_tot, d_er_tot) |> #arrange(sidnm) |> print(n=50)
   ungroup() |>
   gt(groupname_col = "sidnm", rowname_col = "run_year") |> 
-  #not working: gt::summary_rows(groups = "sidnm", fns = "mean") |> 
-  fmt_percent(contains("_er")) |> 
+  summary_rows(groups = T, fns = "mean", formatter = fmt_percent, decimals = 1) |> 
+  fmt_percent(contains("_er"), decimals = 1) |> 
   tab_style(
     style = list(cell_fill(color = "purple", alpha = 0.5)),
-    locations = cells_body(rows = d_er_tot < 0))
+    locations = cells_body(rows = d_er_tot < -0.05)) |> 
+  tab_style(
+    style = list(cell_fill(color = "orange", alpha = 0.5)),
+    locations = cells_body(rows = d_er_tot > 0.05)) |> 
+  tab_style(
+    style = list(cell_text(weight = "bold")),
+    locations = cells_summary()
+  )
 ```
 
-```{r gt_total_er_mean}
+Same values as a plot...
+
+```{r gg_total_er_annual}
 er_fram_rmis |> 
   drop_na(d_er_tot) |>
   group_by(sidnm) |> 
-  distinct(sidnm, run_year, fram_er_tot, rmis_er_tot, d_er_tot) |> #arrange(sidnm) |> print(n=50)
-  summarise(across(c(fram_er_tot, rmis_er_tot, d_er_tot), mean)) |> 
-  gt() |> 
-  fmt_percent(contains("_er"))
+  distinct(sidnm, run_year, fram_er_tot, rmis_er_tot, d_er_tot) |> 
+  ungroup() |>
+  mutate(
+    run_year = as.character(run_year),
+    shp = case_when(
+      d_er_tot > 0 ~ "FRAM > RMIS",
+      d_er_tot < 0 ~ "FRAM < RMIS",
+      d_er_tot == 0 ~ "FRAM = RMIS"
+    ),
+    sze = if_else(!is.na(d_er_tot), abs(d_er_tot), 0)
+  ) |> 
+  ggplot(aes(run_year, fct_rev(sidnm))) +
+  geom_point(aes(shape = shp), size = 2) +
+  geom_point(aes(shape = shp, size = sze, fill = d_er_tot)) +
+  geom_text(aes(label = paste0(round(100*d_er_tot, digits = 0), "%")), nudge_y = 0.3) +
+  scale_shape_manual(name = "", values = c("FRAM > RMIS" = 24, "FRAM < RMIS" = 25, "FRAM = RMIS" = 22, "FRAM-only" = 20, "RMIS-only" = 3)) +
+  scale_size("ER diff. abs.", range = c(1, 10)) +
+  scale_fill_fermenter(type = "div", palette = "PuOr", breaks = c(-0.1, -0.05, 0, 0.05, 0.1), limits = c(-.2, .2)) +
+  guides(
+    #size = guide_bins(range = c(2.5, 10)),
+    fill = guide_colorbar(title="ER difference"),
+    x = guide_axis("Run Year"),
+    y = guide_axis("")) +
+  labs(
+    title = "Differences in annual total pre-terminal pseudo-ER", subtitle = "FRAM - RMIS"
+  )
+
 ```
 
+## Annual and mean fishery-specific marine pseudo-ERs per stock
 
-
-```{r}
-min_fram_landed = 6
+```{r gg_dif}
+min_fram_landed = 10
 
 gg_dif <- map(
   set_names(levels(er_fram_rmis$sidnm)),
@@ -537,18 +573,16 @@ gg_dif <- map(
           is.na(rmis_er_fsh) ~ "FRAM-only",
           is.na(fram_er_fsh) ~ "RMIS-only"
         ),
-        #sze = abs(d_er_fsh)
         sze = if_else(!is.na(d_er_fsh), abs(d_er_fsh), 0)
       ) |> 
       ggplot(aes(run_year, fidnm)) +
       geom_point(aes(shape = shp), size = 2) +
       geom_point(aes(shape = shp, size = sze, fill = d_er_fsh)) +
+      geom_text(aes(label = if_else(is.na(d_er_fsh), "", paste0(round(100*d_er_fsh, digits = 0), "%"))), nudge_y = 0.6) +
       scale_shape_manual(name = "", values = c("FRAM > RMIS" = 24, "FRAM < RMIS" = 25, "FRAM = RMIS" = 22, "FRAM-only" = 20, "RMIS-only" = 3)) +
       scale_size("ER diff. abs.", range = c(2.5, 10)) +
-      #scale_fill_gradient2(name = NULL, low = "purple", mid = "lightgrey", high = "orange", midpoint = 0, na.value = "pink", aesthetics = c("color", "fill")) +
       scale_fill_fermenter(type = "div", palette = "PuOr", breaks = c(-0.1, -0.05, 0, 0.05, 0.1), limits = c(-.2, .2)) +
       guides(
-        #size = guide_bins(range = c(2.5, 10)),
         fill = guide_colorbar(title="ER difference"),
         x = guide_axis("Run Year"),
         y = guide_axis("")) +
@@ -561,13 +595,404 @@ gg_dif <- map(
 )
 
 
-gg_dif$`20:Skagit River Hatchery Marked`
-
-
 # pwalk(
 #   list(paste0("gg_dif_", str_remove_all(names(gg_dif), "\\:| "), ".png"), gg_dif),
 #   ggsave, path = dir_proj
 # ) 
 
 ```
+
+## Annual fishery impacts relative rank disagreement
+
+Per stock year, calculate the proportion of total, either landed catch (FRAM) or estimated number 
+
+```{r er_fram_rmis_rnk}
+er_fram_rmis_rnk <- er_fram_rmis |> 
+  filter(fram_lnd_yr_fsh > 0) |> 
+  group_by(sidnm, run_year) |> 
+  mutate(
+    fram_fsh_tot = fram_lnd_yr_fsh / fram_lnd_yr_tot,
+    rmis_fsh_tot = rmis_est_num_yr_fsh / rmis_est_num_yr_tot,
+    across(ends_with("_fsh_tot"), list(rnk = ~min_rank(-.))),
+    d_rnk = abs(fram_fsh_tot_rnk - rmis_fsh_tot_rnk)
+    ) |> 
+  arrange(sidnm, run_year, fram_fsh_tot_rnk)
+
+er_fram_rmis_rnk |> 
+  select(run_year, StockID, FisheryID, sidnm, fidnm, ends_with("_fsh"), contains("_fsh_tot"), d_rnk) |> 
+  filter(fram_fsh_tot_rnk <= 5) 
+```
+
+Illustrating "top 5 alignment": per stock, of the FRAM fisheries with the 5 largest catches in a year, how many of those fisheries were also in the RMIS top 5 of summed recoveries?
+
+Note however that this is quite "fuzzy" or loose, insofar as FRAM 1:5 could be RMIS 5:1 and still score "5".
+
+```{r gt_fsh_rnk_rmis5_in_fram5}
+#leaving for now, but this tab_style() approach is probably superseded by data_color() method below in the (better) weighted rank diffs table
+er_fram_rmis_rnk |> 
+  filter(fram_fsh_tot_rnk <= 5) |> 
+  summarise(in5 = sum(rmis_fsh_tot_rnk %in% 1:5, na.rm = T), .groups = "drop") |> 
+  pivot_wider(names_from = run_year, values_from = in5) |> 
+  gt(caption = "Fishery relative rank correspondence: RMIS top 5 in FRAM top 5") |> 
+  tab_style(
+    style = cell_fill("grey30", 0.5),
+    locations = list(cells_body(columns = c(`2015`, `2016`)))
+  ) |> 
+  tab_style(
+    style = cell_fill("forestgreen", 0.5),
+    locations = list(
+      cells_body(columns = `2019`, rows = `2019`==5),
+      cells_body(columns = `2018`, rows = `2018`==5),
+      cells_body(columns = `2017`, rows = `2017`==5),
+      
+      cells_body(columns = `2014`, rows = `2014`==5),
+      cells_body(columns = `2013`, rows = `2013`==5),
+      cells_body(columns = `2012`, rows = `2012`==5),
+      cells_body(columns = `2011`, rows = `2011`==5),
+      cells_body(columns = `2010`, rows = `2010`==5)
+    )
+  ) |> 
+  tab_style(
+    style = cell_fill("forestgreen", 0.2),
+    locations = list(
+      cells_body(columns = `2019`, rows = `2019`==4),
+      cells_body(columns = `2018`, rows = `2018`==4),
+      cells_body(columns = `2017`, rows = `2017`==4),
+      
+      cells_body(columns = `2014`, rows = `2014`==4),
+      cells_body(columns = `2013`, rows = `2013`==4),
+      cells_body(columns = `2012`, rows = `2012`==4),
+      cells_body(columns = `2011`, rows = `2011`==4),
+      cells_body(columns = `2010`, rows = `2010`==4)
+    )
+  ) |> 
+  tab_style(
+    style = cell_fill("orange", 0.5),
+    locations = list(
+      cells_body(columns = `2019`, rows = `2019`<=2),
+      cells_body(columns = `2018`, rows = `2018`<=2),
+      cells_body(columns = `2017`, rows = `2017`<=2),
+      
+      cells_body(columns = `2014`, rows = `2014`<=2),
+      cells_body(columns = `2013`, rows = `2013`<=2),
+      cells_body(columns = `2012`, rows = `2012`<=2),
+      cells_body(columns = `2011`, rows = `2011`<=2),
+      cells_body(columns = `2010`, rows = `2010`<=2)
+    )
+  )
+
+```
+
+Moving to a conceptually related but tighter rank-specific comparison based on the (weighted) difference in ranks, with weights increasing the importance of divergence in larger fisheries. 
+
+```{r gt_fsh_rnk_weighted_diff}
+er_fram_rmis_rnk |>
+  filter(fram_fsh_tot_rnk <= 10, fram_lnd_yr_fsh > 5) |> 
+  select(run_year, StockID, FisheryID, sidnm, fidnm, ends_with("_fsh"), contains("_fsh_tot"), d_rnk) |> 
+  filter(str_detect(sidnm, "20"), run_year==2016)
+
+er_fram_rmis_rnk |> 
+  filter(rmis_fsh_tot_rnk <= 3) |> 
+  select(run_year, StockID, FisheryID, sidnm, fidnm, ends_with("_fsh"), contains("_fsh_tot"), d_rnk)
+
+#illustrating a couple of options to compare stock-years in terms of rank (dis)agreement
+#weighting the difference in ranks by the inverse of
+# - the sum of FRAM and RMIS relative ranks of catch/recoveries
+# - the RMIS rank
+#the second alt better highlights cases such as 20:Skag in 115:8-2 Spt
+#which seems to be consistently underestimated in FRAM
+
+er_fram_rmis_rnk |> 
+  mutate(
+    d_rnk_sum_wt = d_rnk * (1/(fram_fsh_tot_rnk+rmis_fsh_tot_rnk)),
+    d_rnk_rmis_wt = d_rnk * (1/(1+rmis_fsh_tot_rnk))
+  ) |> 
+  filter(rmis_fsh_tot_rnk <= 3) |> 
+  group_by(sidnm, run_year) |> 
+  mutate(
+    d_rnk_sum_wt_tot = sum(d_rnk_sum_wt),
+    d_rnk_rmis_wt_tot = sum(d_rnk_rmis_wt)
+  ) |> 
+  select(run_year, sidnm, fidnm, ends_with("_fsh"), contains("_fsh_tot"), contains("d_rnk"))
+
+er_fram_rmis_rnk |> 
+  mutate(d_rnk_rmis_wt = d_rnk * (1/(1+rmis_fsh_tot_rnk))) |> 
+  filter(rmis_fsh_tot_rnk <= 5) |> 
+  group_by(sidnm, run_year) |> 
+  summarise(d_rnk_rmis_wt_tot = sum(d_rnk_rmis_wt), .groups = "drop") |> 
+  pivot_wider(names_from = run_year, values_from = d_rnk_rmis_wt_tot) |> 
+  gt(caption = "Fishery relative rank disagreement: weighted rank differences for RMIS fisheries with largest annual est_num") |> 
+  fmt_number(columns = -sidnm) |> 
+  data_color(
+    columns = c(`2010`:`2014`, `2017`:`2019`), 
+    colors = scales::col_bin(
+      palette = c("forestgreen", "orange", "red"), domain = c(0, Inf), bins = c(0,0.1,2,3,4,5,Inf)
+    )) |> 
+  tab_style(
+    style = cell_fill("grey30", 0.5),
+    locations = list(cells_body(columns = c(`2015`, `2016`)))
+  ) 
+
+```
+
+
+## Stock specific QAQC/exploration
+
+```{r current_wa_escp}
+escp <- readxl::read_excel("T:/DFW-Salmon Mgmt Modeling Team - General/Escapement files/Coho/fram_coho_escapement_2022.xlsx", sheet = "dataset") |> 
+  select(StockID, StockLongName, year, escp_val, escp_val_data_source)
+```
+
+
+```{r willapa_164}
+gg_dif$`164:Willapa Bay Hatchery Marked`
+
+#Willapa in 2017; considerably more proportional escapement in FRAM
+er_fram_rmis |> filter(StockID==164, FisheryID==47, run_year==2017)
+er_fram |> filter(StockID==164, FisheryID==47)
+er_rmis |> filter(StockID==164, FisheryID==47)
+#escapement compilation values match BackwardsFRAM targets in 2019 & 2020, but 2017 and 2018 look quite off
+#but allowing for diffs between BkFRAM targets and forward escapement values...
+#...escapement in DB are still not close in recent years to current escapement compilation values
+#does not appear to be related to UM nats in 161
+#maybe TargetFlag==2 using preseason mark rate is screwing things up somehow?
+#but the 2019 Escapement of 885 on target of 23995 seems like some sort of error?
+#possibly somehow a function of the included stocks?
+bind_rows(
+  escp |> filter(StockID %in% c(164)) |> pivot_wider(values_from = escp_val, names_from = year),
+  er_fram |> filter(StockID==164) |> distinct(StockID, run_year, fram_escp) |> pivot_wider(values_from = fram_escp, names_from = run_year)
+  )
+fram$mort |> filter(StockID==164, RunYear==2019) |> group_by(StockID, RunYear, FisheryID) |> summarise(lc = sum(LandedCatch) + sum(MSFLandedCatch)) |>  arrange(desc(lc))
+
+#confirmed with AHB that TargetFlag 2 in 2019 seems to have assigned almost all 23995 to stock 163 Hat UM
+
+```
+
+```{r quill_134}
+gg_dif$`134:Quillayute River Fall Hatchery Marked`
+
+#focusing on 2018 as a recent year with larger diffs
+#uniformly negative suggests potential RMIS escapement missing
+#but a few instances where RMIS estnum actually greater than FRAM lc
+er_fram_rmis |>
+  filter(StockID==134, run_year == 2018, fram_lnd_yr_fsh > 0) |> 
+  select(run_year, StockID, FisheryID, sidnm, fidnm, fram_lnd_yr_fsh, rmis_est_num_yr_fsh, fram_er_fsh, rmis_er_fsh, d_er_fsh) |> 
+  arrange(desc(rmis_est_num_yr_fsh)) |> #print(n=50)
+#pretty good congruence in relative distribution of preterm
+er_fram_rmis |>
+  filter(StockID==134, run_year == 2018, fram_lnd_yr_fsh > 0) |> 
+  mutate(
+    fram_fsh_tot = fram_lnd_yr_fsh / fram_lnd_yr_tot,
+    rmis_fsh_tot = rmis_est_num_yr_fsh / rmis_est_num_yr_tot,
+    across(ends_with("_fsh_tot"), list(rnk = ~min_rank(-.)))
+    ) |> 
+  select(run_year, StockID, FisheryID, sidnm, fidnm, ends_with("_fsh"), contains("_fsh_tot")) |> 
+  arrange(fram_fsh_tot_rnk)
+
+#missing escapement in RMIS?
+#FRAM escp 10x lc tot, RMIS estnum ~4x escp...
+er_fram_rmis |>
+  filter(StockID==134, run_year == 2018, fram_lnd_yr_fsh > 0) |> 
+select(run_year, StockID, FisheryID, sidnm, fidnm, fram_lnd_yr_tot, fram_escp, rmis_est_num_yr_tot, rmis_escp)
+
+```
+
+```{r queets_142}
+gg_dif$`142:Queets River Fall Hatchery Marked`
+
+#looks quite good outside of A1 & A2 in 2015
+#big difference in 175:SW VI Trl with FRAM placing most impacts but RMIS no recs
+
+er_fram_rmis_rnk |>
+  filter(StockID==142, run_year == 2014) |> 
+  select(run_year, StockID, FisheryID, sidnm, fidnm, ends_with("_fsh"), contains("_fsh_tot"), contains("_rnk")) |> 
+  arrange(fram_fsh_tot_rnk) 
+
+#looks pretty decent, shared top 2 (A2 and A1)
+#and FRAM generally overcompensating 
+er_fram_rmis_rnk |>
+  filter(StockID==142, run_year == 2018) |> 
+  select(run_year, StockID, FisheryID, sidnm, fidnm, ends_with("_fsh"), contains("_fsh_tot"), contains("_rnk")) |> 
+  arrange(fram_fsh_tot_rnk) |> print(n=20)
+
+
+```
+
+```{r quin_148}
+
+```
+
+
+```{r skagit_20}
+gg_dif$`20:Skagit River Hatchery Marked`
+
+er_fram |> filter(StockID==20, FisheryID==107)
+er_rmis |> filter(StockID==20, FisheryID==107)
+
+#current escapement vals appear relatively close to those in validation DB
+bind_rows(
+  escp |> filter(StockID %in% c(20)) |> pivot_wider(values_from = escp_val, names_from = year),
+  er_fram |> filter(StockID==20) |> distinct(StockID, run_year, fram_escp) |> pivot_wider(values_from = fram_escp, names_from = run_year)
+  )
+
+#interesting to note?
+fram$mort |> filter(StockID==20, RunYear==2019) |> 
+  group_by(StockID, RunYear, FisheryID, FisheryName) |> summarise(lc = sum(LandedCatch)+sum(MSFLandedCatch)) |>  arrange(desc(lc))
+fram$mort |> filter(StockID==20, RunYear==2019, FisheryID %in% fishery_ids_ps_spt) |> 
+  group_by(StockID, RunYear, FisheryID, FisheryName) |> summarise(lc = sum(LandedCatch)+sum(MSFLandedCatch)) |>  arrange(desc(lc))
+
+#re: "Do countervailing fishery ER errors compensate to generate comparable total ERs?"
+er_fram_rmis |>
+  filter(StockID==20, FisheryID %in% fishery_ids_ps_spt, run_year == 2019) |> 
+  select(run_year, StockID, FisheryID, sidnm, fidnm, fram_lnd_yr_fsh, rmis_est_num_yr_fsh, fram_er_fsh, rmis_er_fsh, d_er_fsh) |> 
+  arrange(desc(fram_lnd_yr_fsh)) |> 
+#FRAM assigns appreciable mort in A7 & 8-1 despite no recs
+#but the sum of the ERs from these "rmis missing" impacts 
+#still less than the "underestimated" diffs in fishery ERs for the largest A10, A5, A9
+#since all FRAM ERs for PS sport are lower than RMIS where both exist
+  group_by(is.na(rmis_er_fsh)) |> summarise(across(contains("er_fsh"), ~sum(., na.rm = T)), .groups = "drop")
+
+#see also later work with ranks showing FRAM seeming to consistently miss 8-2 impacts relative to RMIS
+#and/but possibly an accounting issue with 8-1; looks like overassigment in 81 > missing/underassigned in 82
+er_fram_rmis_rnk |> filter(StockID==20, FisheryID %in% c(106,115)) |> 
+  select(run_year, sidnm, fidnm, fram_lnd_yr_fsh, rmis_est_num_yr_fsh) |> 
+  group_by(sidnm, run_year) |> summarise(across(ends_with("_fsh"), ~sum(., na.rm = T)))
+
+#but relative ranking of fisheries by impact is congruent, excepting perhaps A9
+er_fram_rmis |>
+  filter(StockID==20, FisheryID %in% fishery_ids_ps_spt, run_year == 2019) |> 
+  mutate(
+    fram_fsh_tot = fram_lnd_yr_fsh / fram_lnd_yr_tot,
+    rmis_fsh_tot = rmis_est_num_yr_fsh / rmis_est_num_yr_tot,
+    across(ends_with("_fsh_tot"), list(rnk = ~min_rank(-.)))
+    ) |> 
+  select(run_year, StockID, FisheryID, sidnm, fidnm, ends_with("_fsh"), contains("_fsh_tot")) |> 
+  arrange(fram_fsh_tot_rnk)
+
+#and again looks as though RMIS escp is plausibly low:
+#in 2019 summed estnum of escp less than all fisheries
+#vs FRAM escp more than double summed lc
+#possibly also better sampling in A9 than many other fisheries
+#affecting proportional representation of recoveries?
+er_fram_rmis |>
+  filter(StockID==20, FisheryID ==107, run_year == 2019) |> 
+  select(run_year, StockID, FisheryID, sidnm, fidnm, fram_lnd_yr_tot, fram_escp, rmis_est_num_yr_tot, rmis_escp)
+
+```
+
+```{r george_58}
+gg_dif$`58:George Adams Hatchery Marked`
+
+#looks like in-river and near-terminal net is still included and clearly driving diffs
+
+#orders of magnitude diff in treaty net for 12/12B, 9/9A, 12CD
+#with SkokRNet also highly skewed
+er_fram_rmis |>
+  filter(StockID==58, between(FisheryID, 152, 161), run_year == 2017) |> 
+  select(run_year, StockID, FisheryID, sidnm, fidnm, fram_lnd_yr_fsh, rmis_est_num_yr_fsh, fram_er_fsh, rmis_er_fsh, d_er_fsh)
+#just not effectively sampled?
+
+#for the 4 PS spt in both datasets
+#same relative ranks for A10 > A12 > A9
+#but (!) RMIS has most recs in A5 while FRAM assigns A5 least impact
+#monitoring/sampling likely at play, as well as perhaps marking
+#but perhaps warrants further discussion? 
+er_fram_rmis |>
+  filter(StockID==58, FisheryID %in% fishery_ids_ps_spt, run_year == 2017) |> 
+  mutate(
+    fram_fsh_tot = fram_lnd_yr_fsh / fram_lnd_yr_tot,
+    rmis_fsh_tot = rmis_est_num_yr_fsh / rmis_est_num_yr_tot,
+    across(ends_with("_fsh_tot"), list(rnk = ~min_rank(-.)))
+    ) |> 
+  select(run_year, StockID, FisheryID, sidnm, fidnm, ends_with("_fsh"), contains("_fsh_tot")) |> 
+  arrange(fram_fsh_tot_rnk)
+
+```
+
+```{r green_96}
+gg_dif$`96:Green River Hatchery Marked`
+
+#big diffs in 2017 and 2011
+er_fram_rmis_rnk |>
+  filter(StockID==96, run_year == 2017) |> 
+  select(run_year, StockID, FisheryID, sidnm, fidnm, ends_with("_fsh"), contains("_fsh_tot"), contains("_rnk")) |> 
+  arrange(fram_fsh_tot_rnk) # |> filter(FisheryID %in% fishery_ids_ps_spt)
+
+#why so large est_num in BC JDF Spt in 2017? More than A10!
+rmis_rr |> filter(StockID==96, FisheryID==189) |> 
+  #count(run_year) #only 2 recs, actually fewest since 2008, must be expansion?
+  filter(run_year == 2017) |> select(uid:recorded_mark, age:FisheryName) #nope...not the val in RMIS 
+#looks due to the AHB unsampled catch expansion coef 10.6...
+#which also accounts for the big diff in 2011
+samp_catch_coef_vals |> filter(FisheryID==189)
+
+#large coef not necessarily at play in local near-terminal net...
+samp_catch_coef_vals |> filter(FisheryID==122)
+samp_catch_coef_vals |> filter(FisheryID==120)
+#...when no recs/0 est_num for coef to act on 
+rmis_rr |> filter(StockID==96, FisheryID %in% c(120), run_year == 2012) |> select(uid:recorded_mark, age:FisheryName)
+
+#in 2018 the overall agreement is decent
+#both sources put most impacts in A10 spt
+#with all RMIS top 5 in FRAM top 5
+er_fram_rmis_rnk |>
+  filter(StockID==96, run_year == 2018) |> 
+  select(run_year, StockID, FisheryID, sidnm, fidnm, ends_with("_fsh"), contains("_fsh_tot"), contains("_rnk")) |> 
+  arrange(fram_fsh_tot_rnk) |> 
+#FRAM lower ERs in A10 and A9 not fully compensated by higher in A5, A6, A7, A11 etc.
+  filter(FisheryID %in% fishery_ids_ps_spt) |> 
+  summarise(across(contains("er_fsh"), ~sum(., na.rm = T)), .groups = "drop")
+
+#similar in 2019: both rank A10 spt highest
+#but FRAM lower ERs in A10 and A9 not compensated
+#and overall FRAM is short ~5.5% for PS sport
+er_fram_rmis_rnk |>
+  filter(StockID==96, run_year == 2019) |> 
+  select(run_year, StockID, FisheryID, sidnm, fidnm, ends_with("_fsh"), contains("_fsh_tot"), contains("_rnk")) |> 
+  arrange(fram_fsh_tot_rnk) |> 
+  filter(FisheryID %in% fishery_ids_ps_spt) |> 
+  summarise(across(contains("er_fsh"), ~sum(., na.rm = T)), .groups = "drop")
+
+```
+
+
+```{r colearly_166}
+gg_dif$`166:Columbia River Early Hatchery Marked`
+
+#pretty decent alignment in relative ranks
+#shared top 5 and both have A1/Ast and Buoy10 and Newport Spt as top 3, though not matching order
+#but FRAM fairly lower in fishery ERs especially for Buoy10
+er_fram_rmis_rnk |>
+  filter(StockID==166, run_year == 2018) |> 
+  select(run_year, StockID, FisheryID, sidnm, fidnm, ends_with("_fsh"), contains("_fsh_tot"), contains("_rnk")) |> 
+  arrange(fram_fsh_tot_rnk)
+
+#unclear whether recent lower FRAM total ER are escapement related or other factor
+er_fram_rmis_rnk |> ungroup() |> filter(StockID==166, !is.na(rmis_er_fsh)) |> distinct(run_year, fram_er_tot, rmis_er_tot)
+#greater FRAM ERs for some fisheries (e.g. A3 and A4 spt) suggest not necessarily just escapement... 
+
+```
+
+```{r uprfrsr_230}
+gg_dif$`230:Upper Fraser River Hatchery Marked`
+
+#2011 and 2017 affected by the same AHB RMIS samp_catch_coef issue as Green
+#otherwise fishery ER picture looks pretty okay
+#maybe better than would be expected from mean diffs
+
+#in 2018, both see most impact in A5, but FRAM considerably (proportionally) lower fishery ER at 2.9 vs 7.5% RMIS
+#RMIS top 5 in FRAM top 10 but FRAM including several fisheries with no recs
+#wonder how variation in sampling intensity is affecting
+#given relatively rare and thereby fairly low est_num
+er_fram_rmis_rnk |>
+  filter(StockID==230, run_year == 2018) |> 
+  select(run_year, StockID, FisheryID, sidnm, fidnm, ends_with("_fsh"), contains("_fsh_tot"), contains("_rnk")) |> 
+  arrange(fram_fsh_tot_rnk) 
+
+#note that the tags getting assigned to 230 do actually seem to show up in WA Ocn spt
+rmis_rr |> filter(FisheryID == 37, StockID == 230) |> count(run_year)
+rmis_rr |> filter(FisheryID == 33, StockID == 230) |> count(run_year)
+
+```
+
 
