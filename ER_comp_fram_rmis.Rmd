@@ -59,7 +59,7 @@ lu <- list(
 
 ```{r included_fisheries}
 #samp_catch_coef <- readxl::read_excel("C:/Users/auerbdaa/Downloads/fram_samp_fulla.xlsx", sheet = "fram_samp_fulla")
-samp_catch_coef <- read_csv("C:/Users/auerbdaa/Downloads/fram_samp_fulla.csv") |> select(-1)
+samp_catch_coef <- read_csv("fram_samp_fulla.csv") |> select(-1)
 
 # samp_catch_coef |> filter(Source == "Xpansion") |> count(Action)
 # 
