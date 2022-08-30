@@ -1,629 +1,629 @@
-"","FisheryID","FisheryName","Source","2010","2011","2012","2013","2014","2015","2016","2017","2018","2019","Total","Action"
-"1",3,"Ft Brg Spt","FRAM",0,0,0,0,0,0,0,0,0,0,0,"Remove  fishery"
-"2",3,"Ft Brg Spt","RMIS",15,101,22,33,133,23,35,4,25,40,431,"Remove  fishery"
-"3",3,"Ft Brg Spt","Sampled",15,101,22,33,133,23,35,4,25,40,431,"Remove  fishery"
-"4",3,"Ft Brg Spt","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"5",4,"Ft Brg Trl","FRAM",0,0,0,0,0,0,0,0,0,0,0,"Remove  fishery"
-"6",4,"Ft Brg Trl","RMIS",,,,,,,,,,,0,"Remove  fishery"
-"7",4,"Ft Brg Trl","Sampled",,,,,,,,,,,0,"Remove  fishery"
-"8",4,"Ft Brg Trl","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"9",5,"Ca KMZ Spt","FRAM",0,0,0,0,0,0,0,,0,0,0,"Remove  fishery"
-"10",5,"Ca KMZ Spt","RMIS",50,90,49,184,275,12,27,,102,155,944,"Remove  fishery"
-"11",5,"Ca KMZ Spt","Sampled",50,90,49,184,275,12,27,,102,155,944,"Remove  fishery"
-"12",5,"Ca KMZ Spt","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"13",6,"Ca KMZ Trl","FRAM",0,0,0,0,0,0,0,,0,0,0,"Remove  fishery"
-"14",6,"Ca KMZ Trl","RMIS",,,,,,,,,,,0,"Remove  fishery"
-"15",6,"Ca KMZ Trl","Sampled",,,,,,,,,,,0,"Remove  fishery"
-"16",6,"Ca KMZ Trl","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"17",7,"So Cal Spt","FRAM",0,0,0,0,0,0,0,0,0,0,0,"Remove  fishery"
-"18",7,"So Cal Spt","RMIS",68,77,3,87,56,6,8,461,68,501,1335,"Remove  fishery"
-"19",7,"So Cal Spt","Sampled",68,77,3,87,56,6,8,461,68,501,1335,"Remove  fishery"
-"20",7,"So Cal Spt","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"21",8,"So Cal Trl","FRAM",0,0,0,0,0,0,0,0,0,0,0,"Remove  fishery"
-"22",8,"So Cal Trl","RMIS",,,,,,,,,,,0,"Remove  fishery"
-"23",8,"So Cal Trl","Sampled",,,,,,,,,,,0,"Remove  fishery"
-"24",8,"So Cal Trl","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"25",9,"So Ore Trm","FRAM",0,0,0,0,0,0,0,0,0,0,0,"Remove  fishery"
-"26",9,"So Ore Trm","RMIS",,,,,,,,,,,0,"Remove  fishery"
-"27",9,"So Ore Trm","Sampled",,,,,,,,,,,0,"Remove  fishery"
-"28",9,"So Ore Trm","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"29",11,"SMi Or Trm","FRAM",1770,2941,,3803.000004,9359,1473,,,,,19346.000004,"Remove  fishery"
-"30",11,"SMi Or Trm","RMIS",,,,,,,,,,,0,"Remove  fishery"
-"31",11,"SMi Or Trm","Sampled",,,,,,,,,,,0,"Remove  fishery"
-"32",11,"SMi Or Trm","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"33",12,"NMi Or Trm","FRAM",238,3272,2951,4854.000004,7169,1748,,,,,20232.000004,"Remove  fishery"
-"34",12,"NMi Or Trm","RMIS",4,4,,,,,3,,,2,13,"Remove  fishery"
-"35",12,"NMi Or Trm","Sampled",4,4,,,,,3,,,2,13,"Remove  fishery"
-"36",12,"NMi Or Trm","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"37",13,"No Ore Trm","FRAM",0,1809,,631,2753,163,,,,,5356,"Remove  fishery"
-"38",13,"No Ore Trm","RMIS",11,21,,6,18,17,11,45,,175,304,"Remove  fishery"
-"39",13,"No Ore Trm","Sampled",11,21,,6,18,17,11,45,,175,304,"Remove  fishery"
-"40",13,"No Ore Trm","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"41",15,"Brkngs Spt","FRAM",59.999998,0,177.000003,364.000002,559.000002,128.000003,50.000002,0,0,539.999994,1878.000004,"Remove years"
-"42",15,"Brkngs Spt","RMIS",60,28,209,439,567,138,52,,18,542,2053,"Remove years"
-"43",15,"Brkngs Spt","Sampled",60,28,209,439,567,138,52,,18,542,2053,"Remove years"
-"44",15,"Brkngs Spt","Xpansion",1,0,1,1,1,1,1,0,0,1,,"Remove years"
-"45",16,"Brkngs Trl","FRAM",0,0,0,0,0,0,0,0,0,0,0,"Remove  fishery"
-"46",16,"Brkngs Trl","RMIS",,,,,8,,,,,,8,"Remove  fishery"
-"47",16,"Brkngs Trl","Sampled",,,,,,,,,,,0,"Remove  fishery"
-"48",16,"Brkngs Trl","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"49",17,"Newprt Spt","FRAM",7827.000014,5947,8580.000004,5904.000019,45570.00016,9625.000024,2415.000118,7565.000021,11264.000011,28221.999965,132919.000336,"No adjustment"
-"50",17,"Newprt Spt","RMIS",7824,5947,8580,5951,45593,9669,2422,7590,11260,28221,133057,"No adjustment"
-"51",17,"Newprt Spt","Sampled",7824,5947,8580,5951,45593,9669,2422,7590,11260,28221,133057,"No adjustment"
-"52",17,"Newprt Spt","Xpansion",1,1,1,1,1,1,1,1,1,1,,"No adjustment"
-"53",18,"Newprt Trl","FRAM",0,0,0,0,1230.000002,0,0,0,0,0,1230.000002,"Remove years & standard adjustment"
-"54",18,"Newprt Trl","RMIS",,,,1,1290,,,,,,1291,"Remove years & standard adjustment"
-"55",18,"Newprt Trl","Sampled",,,,,1284,,,,,,1284,"Remove years & standard adjustment"
-"56",18,"Newprt Trl","Xpansion",0,0,0,0,1.00467289719626,0,0,0,0,0,,"Remove years & standard adjustment"
-"57",19,"Coos B Spt","FRAM",926.999993,1090.000004,2440.000005,443.000006,9877.000034,4648.000004,1486.000036,3370.000012,4452.999988,9569.999987,38304.000069,"No adjustment"
-"58",19,"Coos B Spt","RMIS",927,1090,2456,498,9919,4653,1486,3396,4453,9590,38468,"No adjustment"
-"59",19,"Coos B Spt","Sampled",927,1090,2456,498,9919,4653,1486,3396,4453,9590,38468,"No adjustment"
-"60",19,"Coos B Spt","Xpansion",1,1,1,1,1,1,1,1,1,1,,"No adjustment"
-"61",20,"Coos B Trl","FRAM",0,0,0,0,963.999997,0,0,0,0,0,963.999997,"Remove years & standard adjustment"
-"62",20,"Coos B Trl","RMIS",,,,8,933,,,,,,941,"Remove years & standard adjustment"
-"63",20,"Coos B Trl","Sampled",,,,,923,,,,,,923,"Remove years & standard adjustment"
-"64",20,"Coos B Trl","Xpansion",0,0,0,0,1.01083423618635,0,0,0,0,0,,"Remove years & standard adjustment"
-"65",21,"Tillmk Spt","FRAM",3360.000003,5721.000004,3160.000002,3630.000012,26526.000091,4940.000012,1774.000063,3641.000003,2808.999997,10703.999973,66265.00016,"No adjustment"
-"66",21,"Tillmk Spt","RMIS",3373,5721,3162,3635,26654,4974,1796,3679,2809,10720,66523,"No adjustment"
-"67",21,"Tillmk Spt","Sampled",3373,5721,3162,3635,26654,4974,1796,3679,2809,10720,66523,"No adjustment"
-"68",21,"Tillmk Spt","Xpansion",1,1,1,1,1,1,1,1,1,1,,"No adjustment"
-"69",22,"Tillmk Trl","FRAM",0,0,0,0,1078,0,0,0,0,0,1078,"Remove years & standard adjustment"
-"70",22,"Tillmk Trl","RMIS",,,,,1070,,,,,,1070,"Remove years & standard adjustment"
-"71",22,"Tillmk Trl","Sampled",,,,,1051,,,,,,1051,"Remove years & standard adjustment"
-"72",22,"Tillmk Trl","Xpansion",0,0,0,0,1.01807802093245,0,0,0,0,0,,"Remove years & standard adjustment"
-"73",23,"Buoy10 Spt","FRAM",7980.000018,7614.000001,7385.000002,7619.999999,57743.999988,36920.000168,9182.000239,18833.999979,6760.999997,22775.000001,182815.000392,"Standard adjustment"
-"74",23,"Buoy10 Spt","RMIS",7926,7571,7375,7633,57278,36676,9116,18740,6728,23471,182514,"Standard adjustment"
-"75",23,"Buoy10 Spt","Sampled",7926,7571,7375,7633,57278,36515,9116,18740,6728,22500,181382,"Standard adjustment"
-"76",23,"Buoy10 Spt","Xpansion",1,1,1,1,1,1.00440914692592,1,1,1,1.04315555555556,,"Standard adjustment"
-"77",24,"L ColR Spt","FRAM",,,,,,,,,,,0,"Remove  fishery"
-"78",24,"L ColR Spt","RMIS",21836,18242,7221,15258,46751,7476,13794,10979,6985,10966,159508,"Remove  fishery"
-"79",24,"L ColR Spt","Sampled",2213,7564,2551,11829,38767,4178,9374,8193,5427,8256,98352,"Remove  fishery"
-"80",24,"L ColR Spt","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"81",25,"L ColR Net","FRAM",,,,,,,,,,,0,"Remove  fishery"
-"82",25,"L ColR Net","RMIS",50050,34654,11787,37815,173059,20656,21177,25308,9145,20234,403885,"Remove  fishery"
-"83",25,"L ColR Net","Sampled",49426,34508,11760,37768,172849,20656,20209,25289,8765,20234,401464,"Remove  fishery"
-"84",25,"L ColR Net","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"85",26,"Yngs B Net","FRAM",,,,,,,,,,,0,"Remove  fishery"
-"86",26,"Yngs B Net","RMIS",27565,25065,5971,14247,65930,11500,15785,13603,4229,3590,187485,"Remove  fishery"
-"87",26,"Yngs B Net","Sampled",27538,24543,5965,14140,65930,11500,15778,13603,4229,3558,186784,"Remove  fishery"
-"88",26,"Yngs B Net","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"89",31,"UpColR Spt","FRAM",,,,,,,,,,,0,"Remove  fishery"
-"90",31,"UpColR Spt","RMIS",2460,4007,2367,3764,13769,2857,4411,3821,2859,3965,44280,"Remove  fishery"
-"91",31,"UpColR Spt","Sampled",14,,8,24,4793,150,4260,39,2021,2702,14011,"Remove  fishery"
-"92",31,"UpColR Spt","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"93",32,"UpColR Net","FRAM",,,,,,,,,,,0,"Remove  fishery"
-"94",32,"UpColR Net","RMIS",9060,22946,5741,4888,33882,2218,5437,6727,3616,3938,98453,"Remove  fishery"
-"95",32,"UpColR Net","Sampled",9005,22946,5673,4884,33245,2184,5374,6500,2993,3282,96086,"Remove  fishery"
-"96",32,"UpColR Net","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"97",33,"A1-Ast Spt","FRAM",24914.000023,26681.000007,11391.000019,20472.000042,75072.000217,44551.000082,18612.000104,21625.000102,20575.000066,53474.999945,317368.000607,"No adjustment"
-"98",33,"A1-Ast Spt","RMIS",24894,26983,11389,20542,75168,44549,18615,22250,20613,54126,319129,"No adjustment"
-"99",33,"A1-Ast Spt","Sampled",24894,26983,11389,20542,75168,44549,18615,22250,20613,54126,319129,"No adjustment"
-"100",33,"A1-Ast Spt","Xpansion",1,1,1,1,1,1,1,1,1,1,,"No adjustment"
-"101",34,"A1-Ast Trl","FRAM",1188.999999,501.999995,712.999999,552.999998,9973.000035,2877.000005,44.000001,601.000006,125.000001,1668.000003,18245.000042,"Remove years & standard adjustment"
-"102",34,"A1-Ast Trl","RMIS",1191,502,714,579,9940,2898,,601,125,1664,18214,"Remove years & standard adjustment"
-"103",34,"A1-Ast Trl","Sampled",931,372,594,367,8620,2430,,264,43,1314,14935,"Remove years & standard adjustment"
-"104",34,"A1-Ast Trl","Xpansion",1.27926960257787,1.3494623655914,1.2020202020202,1.57765667574932,1.15313225058005,1.19259259259259,0,2.27651515151515,2.90697674418605,1.26636225266362,,"Remove years & standard adjustment"
-"105",35,"Area2TrlNT","FRAM",1657.000003,1708.000007,88.999999,3759.000001,8525.000015,1839.000003,0,523.999994,365.999999,1330.999994,19798.000015,"Remove years & standard adjustment"
-"106",35,"Area2TrlNT","RMIS",1662,1711,856,3759,8525,1839,,524,371,1331,20578,"Remove years & standard adjustment"
-"107",35,"Area2TrlNT","Sampled",1575,1631,556,3561,8525,1407,,445,263,1055,19018,"Remove years & standard adjustment"
-"108",35,"Area2TrlNT","Xpansion",1.0552380952381,1.04904966278357,0,1.05560235888795,1,1.30703624733475,0,1.17752808988764,1.4106463878327,1.26161137440758,,"Remove years & standard adjustment"
-"109",36,"Area2TrlTR","FRAM",2137.000012,708.999997,1239.000007,1040.999995,624.000008,215.000001,10.999998,678.000007,804.999999,3122.000001,10581.000025,"Remove  fishery"
-"110",36,"Area2TrlTR","RMIS",2137,709,1239,1039,543,199,11,767,16,,6660,"Remove  fishery"
-"111",36,"Area2TrlTR","Sampled",,,,,,,,,,,0,"Remove  fishery"
-"112",36,"Area2TrlTR","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"113",37,"Area 2 Spt","FRAM",12607.000011,13843.000006,11924.000014,20377.000019,54475.000171,30683.00008,42.99999,15750.000072,15370.000004,20225.999981,195298.000348,"No adjustment"
-"114",37,"Area 2 Spt","RMIS",12670,13539,11925,20351,54391,30683,37,15067,15329,19468,193460,"No adjustment"
-"115",37,"Area 2 Spt","Sampled",12670,13539,11925,20351,54391,30683,37,15067,15329,19468,193460,"No adjustment"
-"116",37,"Area 2 Spt","Xpansion",1,1,1,1,1,1,1,1,1,1,,"No adjustment"
-"117",38,"Area3TrlT","FRAM",208.999999,1166.999996,2119.000003,1846.000004,4602.000003,308.999998,0,402.000004,487.999992,1290.000012,12432.000011,
-"118",38,"Area3TrlT","RMIS",191,1167,2119,1846,4602,309,,402,488,1293,12417,
-"119",38,"Area3TrlT","Sampled",175,1023,1975,1493,2099,263,,384,478,1285,9175,
-"120",38,"Area3TrlT","Xpansion",1.09142857142857,1.14076246334311,1.07291139240506,1.23643670462157,2.19247260600286,1.17490494296578,0,1.046875,1.02092050209205,1.00622568093385,,
-"121",39,"Area3TrlNT","FRAM",450.999992,510.999994,1226.000007,1680.000013,41684.000231,1689.000003,0,188.000004,16.999998,342.000008,47788.00025,
-"122",39,"Area3TrlNT","RMIS",439,515,1226,1647,41671,1689,,188,17,323,47715,
-"123",39,"Area3TrlNT","Sampled",299,,,,41544,1316,,,,,43159,
-"124",39,"Area3TrlNT","Xpansion",1.46822742474916,0,0,0,1.00305699980743,1.28343465045593,0,0,0,0,,
-"125",40,"Area 3 Spt","FRAM",1179.999995,2049.000004,2244.000009,2798,4610.000012,578.999992,4.999997,1750,954.000002,1751.000002,17920.000013,"No adjustment"
-"126",40,"Area 3 Spt","RMIS",1164,2186,2367,2979,5286,689,5,1716,777,1903,19072,"No adjustment"
-"127",40,"Area 3 Spt","Sampled",1164,2186,2367,2979,5286,689,5,1716,777,1903,19072,"No adjustment"
-"128",40,"Area 3 Spt","Xpansion",1,1,1,1,0,1,0,1,1,1,,"No adjustment"
-"129",41,"Area 4 Spt","FRAM",3685.999991,3055.000005,7548.00002,6506.000023,5644.000008,7765.000006,52.999999,3533.000017,4939.000014,6179.999996,48909.000079,"No adjustment"
-"130",41,"Area 4 Spt","RMIS",3648,2909,7403,6327,5631,4162,58,3591,5116,6144,44989,"No adjustment"
-"131",41,"Area 4 Spt","Sampled",3648,2909,7403,6327,5631,4162,58,3591,5116,6144,44989,"No adjustment"
-"132",41,"Area 4 Spt","Xpansion",1,1,1,1,1,0,1,1,1,1,,"No adjustment"
-"133",42,"A4/4BTrlNT","FRAM",87.000001,140.000003,204.000001,308.999999,41.000001,34.000003,0,311.000003,809.999981,2234.000001,4169.999993,"Remove years & standard adjustment"
-"134",42,"A4/4BTrlNT","RMIS",134,136,204,309,41,34,,311,405,1117,2691,"Remove years & standard adjustment"
-"135",42,"A4/4BTrlNT","Sampled",111,45,198,128,17,14,,275,267,969,2024,"Remove years & standard adjustment"
-"136",42,"A4/4BTrlNT","Xpansion",1.20720720720721,3.02222222222222,1.03030303030303,2.4140625,2.41176470588235,2.42857142857143,0,1.13090909090909,0,0,,"Remove years & standard adjustment"
-"137",43,"A4/4BTrlT","FRAM",8888.000028,12346.000013,35065.000047,45550.000177,13806.000072,2459.999997,33,12392.999994,10979.999972,52040.999957,193562.000257,"Remove years & standard adjustment"
-"138",43,"A4/4BTrlT","RMIS",8900,12348,35069,45032,13731,2106,,12386,11534,52993,194099,"Remove years & standard adjustment"
-"139",43,"A4/4BTrlT","Sampled",8764,9664,34417,44963,11844,1660,,12386,11478,52822,187998,"Remove years & standard adjustment"
-"140",43,"A4/4BTrlT","Xpansion",1.01551802829758,1.27773178807947,1.01894412644914,1.00153459511154,1.15932117527862,1.26867469879518,0,1,1.00487889876285,1.00323728749385,,"Remove years & standard adjustment"
-"141",44,"A 5-6C Trl","FRAM",21.999984,101.000001,45.999997,236.000015,197.999995,881.999995,,180.000005,579,169.999999,2413.999991,"Remove years & standard adjustment"
-"142",44,"A 5-6C Trl","RMIS",22,101,46,236,198,882,,180,25,,1690,"Remove years & standard adjustment"
-"143",44,"A 5-6C Trl","Sampled",,,,161,,633,,,,,794,"Remove years & standard adjustment"
-"144",44,"A 5-6C Trl","Xpansion",0,0,0,1.46583850931677,0,1.39336492890995,0,0,0,0,,"Remove years & standard adjustment"
-"145",45,"Willpa Spt","FRAM",189,2351.000001,1461.000001,1263,11006,8611,1428.000001,923,622,1371.999999,29226.000002,"Remove  fishery"
-"146",45,"Willpa Spt","RMIS",5138,6140,5421,4424,10382,11472,5529,3495,2417,4146,58564,"Remove  fishery"
-"147",45,"Willpa Spt","Sampled",,,1511,,,6019,1500,858,617,1276,11781,"Remove  fishery"
-"148",45,"Willpa Spt","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"149",46,"Wlp Tb Spt","FRAM",4785,3467,3590.999999,2983,10160,2610,3778,2285,1609.999999,2652,37920.999998,"Remove  fishery"
-"150",46,"Wlp Tb Spt","RMIS",,,,,,,,,,,0,"Remove  fishery"
-"151",46,"Wlp Tb Spt","Sampled",,,,,,,,,,,0,"Remove  fishery"
-"152",46,"Wlp Tb Spt","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"153",47,"WlpaBT Net","FRAM",28901.000247,47985.000001,25783,11559.999999,77474.99997,589.000007,19324.000566,4614.999996,7252.999999,8199.999999,231685.000784,"Remove years & standard adjustment"
-"154",47,"WlpaBT Net","RMIS",28901,47985,25789,11569,77477,1926,19324,4615,7253,8200,233039,"Remove years & standard adjustment"
-"155",47,"WlpaBT Net","Sampled",24388,47253,25678,11014,74471,1545,19299,4572,7240,7946,223406,"Remove years & standard adjustment"
-"156",47,"WlpaBT Net","Xpansion",1.18505002460226,1.01549107993143,1.00432276657061,1.05039041220265,1.04036470572438,0,1.00129540390694,1.0094050743657,1.0017955801105,1.03196576894035,,"Remove years & standard adjustment"
-"157",48,"GryHbr Spt","FRAM",1879.999999,2862,6228.999998,1401.999998,6995,2064.000005,406.000002,1737.999998,791.999999,1862,26229.999999,"Remove years & standard adjustment"
-"158",48,"GryHbr Spt","RMIS",1928,3141,6707,3442,6167,2154,423,1821,880,1930,28593,"Remove years & standard adjustment"
-"159",48,"GryHbr Spt","Sampled",,3020,6625,3398,5900,2099,361,1678,850,,23931,"Remove years & standard adjustment"
-"160",48,"GryHbr Spt","Xpansion",0,1.04006622516556,1.01237735849057,0,0,1.02620295378752,1.17174515235457,1.08522050059595,1.03529411764706,0,,"Remove years & standard adjustment"
-"161",49,"SGryHb Spt","FRAM",,108,,9,35,26,,79,,,257,"Remove  fishery"
-"162",49,"SGryHb Spt","RMIS",,,,,,,,,,,0,"Remove  fishery"
-"163",49,"SGryHb Spt","Sampled",,,,,,,,,,,0,"Remove  fishery"
-"164",49,"SGryHb Spt","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"165",50,"GryHbr Net","FRAM",4090.000004,3517.000001,10279.000001,5935.000003,5504.000002,1539.999999,231.999998,1170,818.000002,2000.000002,35085.000012,"Remove years & standard adjustment"
-"166",50,"GryHbr Net","RMIS",5004,5095,11035,7442,6727,1623,624,1506,2442,2640,44138,"Remove years & standard adjustment"
-"167",50,"GryHbr Net","Sampled",5004,5090,11030,7439,6727,1396,624,1506,2109,2640,43565,"Remove years & standard adjustment"
-"168",50,"GryHbr Net","Xpansion",0,0,1.00045330915685,0,0,1.16260744985673,1,1,0,0,,"Remove years & standard adjustment"
-"169",51,"Hump R Spt","FRAM",4101.000001,2933,3021,2797.000001,1691,749,1808,1414,1239.999999,949,20703.000001,"Remove  fishery"
-"170",51,"Hump R Spt","RMIS",4413,3276,3555,2961,2510,902,1865,1711,1358,2028,24579,"Remove  fishery"
-"171",51,"Hump R Spt","Sampled",,,,,,,,,,,0,"Remove  fishery"
-"172",51,"Hump R Spt","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"173",52,"LwCheh Net","FRAM",16484.999999,21493.000001,26959.999999,18504.000011,56972.999997,10606.000004,998.000002,6584.999999,6942.999995,6562.000001,172109.000008,"Remove  fishery"
-"174",52,"LwCheh Net","RMIS",17698,22041,29517,21153,63878,12000,2165,7562,7138,6562,189714,"Remove  fishery"
-"175",52,"LwCheh Net","Sampled",16450,21396,26950,18638,56586,10931,1274,6635,6933,6562,172355,"Remove  fishery"
-"176",52,"LwCheh Net","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"177",54,"Chehal Spt","FRAM",6341,8602.000001,8879,16986.00001,18491,5332.999999,1728,5923,2213.999999,10778.999999,85276.000008,"Remove  fishery"
-"178",54,"Chehal Spt","RMIS",5502,7676,7699,13372,14938,5169,1862,5833,2648,8608,73307,"Remove  fishery"
-"179",54,"Chehal Spt","Sampled",3375,4728,5084,,9972,,,,,,23159,"Remove  fishery"
-"180",54,"Chehal Spt","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"181",55,"Hump R Net","FRAM",8948,6602.999999,4048.999999,3512.000001,10500.000001,1601.000001,802.999999,4224.000001,2057,1461.999999,43759,"Remove  fishery"
-"182",55,"Hump R Net","RMIS",8802,6584,3550,3275,10144,1691,797,4162,2041,1652,42698,"Remove  fishery"
-"183",55,"Hump R Net","Sampled",8802,6584,3550,3275,10144,1691,797,4162,2041,1652,42698,"Remove  fishery"
-"184",55,"Hump R Net","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"185",56,"UpCheh Net","FRAM",1216,645.000001,2470,2515.000001,7291.999999,1069,884.999999,857.999999,177.000001,,17127,"Remove  fishery"
-"186",56,"UpCheh Net","RMIS",,,,,,,,,,,0,"Remove  fishery"
-"187",56,"UpCheh Net","Sampled",,,,,,,,,,,0,"Remove  fishery"
-"188",56,"UpCheh Net","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"189",61,"Satsop Spt","FRAM",,,,,,,,,,,0,"Remove  fishery"
-"190",61,"Satsop Spt","RMIS",1506,2928,2213,5585,4575,881,999,1361,1131,2233,23412,"Remove  fishery"
-"191",61,"Satsop Spt","Sampled",,,,,,,,,,,0,"Remove  fishery"
-"192",61,"Satsop Spt","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"193",62,"Quin R Spt","FRAM",,,,,,,,,,,0,"Remove  fishery"
-"194",62,"Quin R Spt","RMIS",681,803,956,1031,982,527,598,630,23,778,7009,"Remove  fishery"
-"195",62,"Quin R Spt","Sampled",,,,,,,,,,,0,"Remove  fishery"
-"196",62,"Quin R Spt","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"197",63,"Quin R Net","FRAM",42262.000295,38450.999998,19165.999995,20698.000002,50715.999982,9625,37135.000074,33986.999997,12084.99999,4334.000003,268459.000336,"Remove  fishery"
-"198",63,"Quin R Net","RMIS",41764,38448,19159,24635,50385,9722,37263,33848,12083,4349,271656,"Remove  fishery"
-"199",63,"Quin R Net","Sampled",41764,38448,19159,24635,50385,9722,37263,33848,12083,4349,271656,"Remove  fishery"
-"200",63,"Quin R Net","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"201",65,"Queets Spt","FRAM",962.999999,1520,527,1285,1625,308,441.000001,107.000001,184,639,7599.000001,"Remove  fishery"
-"202",65,"Queets Spt","RMIS",1001,1550,563,1200,1647,308,468,103,242,773,7855,"Remove  fishery"
-"203",65,"Queets Spt","Sampled",,,,,,,,,,,0,"Remove  fishery"
-"204",65,"Queets Spt","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"205",68,"Queets Net","FRAM",21103.000111,16669.000001,6135.000001,4542.999997,15178.999996,2262,6790.000008,7598.999998,3312.999994,2560.000002,86153.000108,"Remove  fishery"
-"206",68,"Queets Net","RMIS",21137,16635,6117,4510,15466,2247,6775,7590,3311,2559,86347,"Remove  fishery"
-"207",68,"Queets Net","Sampled",21137,16635,6117,4510,15466,2247,6775,7590,3311,2559,86347,"Remove  fishery"
-"208",68,"Queets Net","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"209",69,"Queets C&S","FRAM",,,,,,,,,,349,349,"Remove  fishery"
-"210",69,"Queets C&S","RMIS",,,,,,,,,,,0,"Remove  fishery"
-"211",69,"Queets C&S","Sampled",,,,,,,,,,,0,"Remove  fishery"
-"212",69,"Queets C&S","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"213",70,"Quilly Spt","FRAM",3877,4383,1570.999999,4701.000004,6125,2993,574,3442.000001,1798.000001,2509,31973.000005,"Remove  fishery"
-"214",70,"Quilly Spt","RMIS",4221,4587,1948,4697,6492,3350,719,3651,2140,3318,35123,"Remove  fishery"
-"215",70,"Quilly Spt","Sampled",,,,,,,,,,,0,"Remove  fishery"
-"216",70,"Quilly Spt","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"217",71,"Quilly Net","FRAM",28787.000002,24185,11510.999999,13957.000006,31687.999998,5780.999998,7719.000009,25837.999999,5954.999996,3502.000001,158923.000008,"Remove  fishery"
-"218",71,"Quilly Net","RMIS",28893,24199,11517,13962,31689,5781,7733,19594,5659,3587,152614,"Remove  fishery"
-"219",71,"Quilly Net","Sampled",28888,24177,11514,13950,31680,5778,7718,19587,5655,3587,152534,"Remove  fishery"
-"220",71,"Quilly Net","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"221",72,"Quilly C&S","FRAM",,4,,,,,,,,303,307,"Remove  fishery"
-"222",72,"Quilly C&S","RMIS",,,,,,,,,,,0,"Remove  fishery"
-"223",72,"Quilly C&S","Sampled",,,,,,,,,,,0,"Remove  fishery"
-"224",72,"Quilly C&S","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"225",73,"Hoh R  Spt","FRAM",,,,,,,,,,,0,"Remove  fishery"
-"226",73,"Hoh R  Spt","RMIS",513,1246,468,998,453,289,40,926,427,1362,6722,"Remove  fishery"
-"227",73,"Hoh R  Spt","Sampled",,,,,,,,,,,0,"Remove  fishery"
-"228",73,"Hoh R  Spt","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"229",74,"Hoh R  Net","FRAM",2810.000004,3550.999998,2890.000002,4802.000001,3574.000001,496.000002,294.999999,1576.999999,560,297.000001,20852.000007,"Remove  fishery"
-"230",74,"Hoh R  Net","RMIS",,,,,,,,,756,297,1053,"Remove  fishery"
-"231",74,"Hoh R  Net","Sampled",,,,,,,,,687,,687,"Remove  fishery"
-"232",74,"Hoh R  Net","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"233",75,"Hoh R  C&S","FRAM",,,,,,,,,,,0,"Remove  fishery"
-"234",75,"Hoh R  C&S","RMIS",,,,,,,,,,,0,"Remove  fishery"
-"235",75,"Hoh R  C&S","Sampled",,,,,,,,,,,0,"Remove  fishery"
-"236",75,"Hoh R  C&S","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"237",76,"Mak FW Spt","FRAM",,,,,,,,,,,0,"Remove  fishery"
-"238",76,"Mak FW Spt","RMIS",6,124,,15,82,18,,10,,,255,"Remove  fishery"
-"239",76,"Mak FW Spt","Sampled",,,,,,,,,,,0,"Remove  fishery"
-"240",76,"Mak FW Spt","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"241",77,"Mak FW Net","FRAM",1586,250,66,1826,798,160,5613,4448,539,1320,16606,"Remove  fishery"
-"242",77,"Mak FW Net","RMIS",1586,308,68,1826,798,164,5613,313,539,1320,12535,"Remove  fishery"
-"243",77,"Mak FW Net","Sampled",,163,44,,,,3881,,,,4088,"Remove  fishery"
-"244",77,"Mak FW Net","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"245",79,"A 4-4A Net","FRAM",,,,,,,,,,,0,"Remove  fishery"
-"246",79,"A 4-4A Net","RMIS",,,,38,,69,15,6,1,1,130,"Remove  fishery"
-"247",79,"A 4-4A Net","Sampled",,,,,,,,,,,0,"Remove  fishery"
-"248",79,"A 4-4A Net","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"249",81,"4B-6C  Net","FRAM",3278.999996,2655.999997,3856.000045,2480.000003,2458.999987,816.000002,688.000005,983.000005,4456.999996,407.000008,22081.000044,"Remove years & standard adjustment"
-"250",81,"4B-6C  Net","RMIS",3344,2665,4051,2606,2459,816,750,983,4560,418,22652,"Remove years & standard adjustment"
-"251",81,"4B-6C  Net","Sampled",1792,2269,2785,938,644,707,178,,3204,,12517,"Remove years & standard adjustment"
-"252",81,"4B-6C  Net","Xpansion",1.86607142857143,1.17452622300573,1.45457809694794,2.77825159914712,3.81832298136646,1.15417256011315,4.21348314606742,0,1.42322097378277,0,,"Remove years & standard adjustment"
-"253",83,"6D-DgR Net","FRAM",1271.000001,5020.999999,5269.999999,2065.000001,3244.999998,295,3931.000008,4842.000014,3312.999985,1200.000054,30453.000059,"No adjustment"
-"254",83,"6D-DgR Net","RMIS",1271,5021,5369,2057,3195,323,3957,4894,3313,1205,30605,"No adjustment"
-"255",83,"6D-DgR Net","Sampled",1271,4979,5369,2057,3195,323,3939,4894,3313,1205,30545,"No adjustment"
-"256",83,"6D-DgR Net","Xpansion",1,1.00843542880096,1,1,1,1,1.004569687738,1,1,1,,"No adjustment"
-"257",84,"Elwha  Net","FRAM",1250,586,11,,,,,,,,1847,"Remove  fishery"
-"258",84,"Elwha  Net","RMIS",1250,586,11,,,,,,,,1847,"Remove  fishery"
-"259",84,"Elwha  Net","Sampled",1136,36,,,,,,,,,1172,"Remove  fishery"
-"260",84,"Elwha  Net","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"261",85,"WJDF T Net","FRAM",,,,,,,,,,,0,"Remove  fishery"
-"262",85,"WJDF T Net","RMIS",21,57,3,42,28,34,16,10,1,,212,"Remove  fishery"
-"263",85,"WJDF T Net","Sampled",,,,,,,,,,,0,"Remove  fishery"
-"264",85,"WJDF T Net","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"265",88,"A 6-7A Net","FRAM",4708.000003,11474.999994,10216.000001,19476.000025,19430.000002,3938.99999,4175.999978,3351.999996,3830.999988,2409.999991,83012.999968,"Standard adjustment"
-"266",88,"A 6-7A Net","RMIS",4719,11346,10533,20559,19661,4119,4065,3501,3947,2204,84654,"Standard adjustment"
-"267",88,"A 6-7A Net","Sampled",2871,8388,6354,15806,17708,3547,3783,3080,2708,1765,66010,"Standard adjustment"
-"268",88,"A 6-7A Net","Xpansion",1.64367816091954,1.35264663805436,1.65769593956563,1.30070859167405,1.1102891348543,1.16126303918805,1.07454401268834,1.13668831168831,1.45753323485968,1.24872521246459,,"Standard adjustment"
-"269",89,"EJDF FWSpt","FRAM",,,,,,,,,,,0,"Remove  fishery"
-"270",89,"EJDF FWSpt","RMIS",,,20,,,,,,,,20,"Remove  fishery"
-"271",89,"EJDF FWSpt","Sampled",,,,,,,,,,,0,"Remove  fishery"
-"272",89,"EJDF FWSpt","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"273",90,"WJDF FWSpt","FRAM",,,,,,,,,,,0,"Remove  fishery"
-"274",90,"WJDF FWSpt","RMIS",2,,20,31,,9,,,,47,109,"Remove  fishery"
-"275",90,"WJDF FWSpt","Sampled",,,,,,,,,,,0,"Remove  fishery"
-"276",90,"WJDF FWSpt","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"277",91,"Area 5 Spt","FRAM",15679.00005,18070.99999,44496.000013,34315.000017,30799.999961,27529.999982,26.000004,2754.999995,14302.999866,12254.000004,200228.999882,"divide FRAM by RMIS"
-"278",91,"Area 5 Spt","RMIS",12959,28596,73163,40394,47287,56043,28,4879,22869,26057,312275,"divide FRAM by RMIS"
-"279",91,"Area 5 Spt","Sampled",12959,28596,73124,40357,47287,55921,28,4879,22869,26004,312024,"divide FRAM by RMIS"
-"280",91,"Area 5 Spt","Xpansion",1.20989274249556,0.631941529934257,0.608176264136244,0.84950735299797,0.651341805591389,0.491229948111272,0.928571571428571,0.564664889321582,0.625431801390529,0.470276701231915,,"divide FRAM by RMIS"
-"281",92,"Area 6 Spt","FRAM",663.000002,4067.000004,10489.000007,7409.000005,15722.000004,10842.000003,0,74.999989,5090.999939,3550.000004,57907.999957,"Remove years & standard adjustment"
-"282",92,"Area 6 Spt","RMIS",663,4070,11130,6415,15722,11814,86,75,5091,3542,58608,"Remove years & standard adjustment"
-"283",92,"Area 6 Spt","Sampled",663,4039,11130,6405,15715,11776,12,75,5091,3533,58439,"Remove years & standard adjustment"
-"284",92,"Area 6 Spt","Xpansion",1,1.00767516712057,1,0,1.00044543429844,1.00322690217391,0,1,1,1.00254741013303,,"Remove years & standard adjustment"
-"285",93,"Area 7 Spt","FRAM",622.999998,869.000007,2182.000003,2551.000019,1968.999999,3776.000001,0,55.000002,4763.999939,5747.000005,22535.999973,"Remove years & standard adjustment"
-"286",93,"Area 7 Spt","RMIS",623,865,2344,2182,1969,3678,19,55,4764,5775,22274,"Remove years & standard adjustment"
-"287",93,"Area 7 Spt","Sampled",623,865,2344,2172,1969,3656,19,55,4764,5775,22242,"Remove years & standard adjustment"
-"288",93,"Area 7 Spt","Xpansion",1,1,1,1.00460405156538,1,1.00601750547046,0,1,1,1,,"Remove years & standard adjustment"
-"289",94,"Dung R Spt","FRAM",214,2136,893,1438.000001,464.000001,303,638.000003,1030.000003,211.999999,639.000036,7967.000043,"Remove  fishery"
-"290",94,"Dung R Spt","RMIS",233,2143,985,1089,464,331,793,1040,212,628,7918,"Remove  fishery"
-"291",94,"Dung R Spt","Sampled",,,,,,,,,,,0,"Remove  fishery"
-"292",94,"Dung R Spt","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"293",95,"ElwhaR Spt","FRAM",70,9,,,,,,,,,79,"Remove  fishery"
-"294",95,"ElwhaR Spt","RMIS",76,9,,15,,18,,,,,118,"Remove  fishery"
-"295",95,"ElwhaR Spt","Sampled",,,,,,,,,,,0,"Remove  fishery"
-"296",95,"ElwhaR Spt","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"297",97,"7B-7D  Net","FRAM",70588.000246,55299.999993,44013.999998,53446.999989,18359.999976,5792.999995,33222.000075,14198.99997,30360.999763,10893.000012,336177.000017,"Combine fisheries 97 & 98"
-"298",97,"7B-7D  Net","RMIS",70629,71640,60667,93357,29460,15170,51833,29757,55344,28965,506822,"Combine fisheries 97 & 98"
-"299",97,"7B-7D  Net","Sampled",67488,70970,60431,92254,29177,15083,51115,28259,52662,28694,496133,"Combine fisheries 97 & 98"
-"300",97,"7B-7D  Net","Xpansion",1.06981187349543,1.0094406087079,1.00390528040244,1.0119561211438,1.00969942077664,1.00576808327256,1.01404675731194,1.05300966063909,1.05092856329042,1.00944448316721,,"Combine fisheries 97 & 98"
-"301",98,"Nook R Net","FRAM",13362.999999,16340.000001,16596.999999,39901.00007,11068.000001,9399.999999,18636.000001,15555,24857,18059.999999,183777.000069,"Combine fisheries 97 & 98"
-"302",98,"Nook R Net","RMIS",13363,,,,,,,,,,13363,"Combine fisheries 97 & 98"
-"303",98,"Nook R Net","Sampled",11023,,,,,,,,,,11023,"Combine fisheries 97 & 98"
-"304",98,"Nook R Net","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Combine fisheries 97 & 98"
-"305",99,"Nook R Spt","FRAM",922.000001,1336,2592,2164.000004,887,2906,578,706,4480,2202.999999,18774.000004,"Remove  fishery"
-"306",99,"Nook R Spt","RMIS",934,1372,2674,1801,923,2907,636,716,4529,2253,18745,"Remove  fishery"
-"307",99,"Nook R Spt","Sampled",,,,,,,,,,,0,"Remove  fishery"
-"308",99,"Nook R Spt","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"309",100,"Samh R Spt","FRAM",,,,,,,,,,,0,"Remove  fishery"
-"310",100,"Samh R Spt","RMIS",360,332,178,1021,208,297,224,204,232,272,3328,"Remove  fishery"
-"311",100,"Samh R Spt","Sampled",,,,,,,,,,,0,"Remove  fishery"
-"312",100,"Samh R Spt","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"313",102,"Area 8 Net","FRAM",1431.000012,523.000009,1261.000008,3421.000002,838.000001,305.999996,133.000001,,207.999993,16,8137.000022,"Remove years & standard adjustment"
-"314",102,"Area 8 Net","RMIS",1431,523,1275,3421,838,345,133,,208,16,8190,"Remove years & standard adjustment"
-"315",102,"Area 8 Net","Sampled",1318,348,1033,3380,415,311,132,,,,6937,"Remove years & standard adjustment"
-"316",102,"Area 8 Net","Xpansion",1.08573596358118,1.50287356321839,1.23426911907067,1.01213017751479,2.01927710843374,1.10932475884244,1.00757575757576,0,0,0,,"Remove years & standard adjustment"
-"317",103,"Skag R Net","FRAM",21995.000001,20118.000002,16930.000003,21428.000058,11986.000002,2370,4407.999999,26,11715,3932,114908.000065,"Remove  fishery"
-"318",103,"Skag R Net","RMIS",23669,21460,18352,23526,13571,2757,5480,1044,13059,4530,127448,"Remove  fishery"
-"319",103,"Skag R Net","Sampled",23302,21225,18341,23490,13548,2756,5407,1042,12959,4421,126491,"Remove  fishery"
-"320",103,"Skag R Net","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"321",104,"SkgR TsNet","FRAM",1658,1151.999999,1387.999999,2001.000005,1447,338,1029.999999,1018,1355,597,11984.000002,"Remove  fishery"
-"322",104,"SkgR TsNet","RMIS",,,,,,,,,,,0,"Remove  fishery"
-"323",104,"SkgR TsNet","Sampled",,,,,,,,,,,0,"Remove  fishery"
-"324",104,"SkgR TsNet","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"325",106,"Ar 8-1 Spt","FRAM",109.000003,994.999996,2204.999999,3092.000002,3577,4302.999999,0,0,1181.999986,2099.000003,17561.999988,"Remove years & standard adjustment"
-"326",106,"Ar 8-1 Spt","RMIS",109,996,2348,2574,3577,4336,,,1190,2099,17229,"Remove years & standard adjustment"
-"327",106,"Ar 8-1 Spt","Sampled",109,994,2341,2569,3570,4283,,,1190,2099,17155,"Remove years & standard adjustment"
-"328",106,"Ar 8-1 Spt","Xpansion",1,1.00201207243461,1.00299017513883,0,1.00196078431373,1.01237450385244,0,0,1,1,,"Remove years & standard adjustment"
-"329",107,"Area 9 Spt","FRAM",2169.000002,12780.000006,44749.000014,38522.000052,31613.999913,45636.000011,22.000001,4184.999998,6113.999948,7449.000015,193239.99996,"Remove years & standard adjustment"
-"330",107,"Area 9 Spt","RMIS",2169,16361,47951,32647,31614,45893,22,4185,6114,7815,194771,"Remove years & standard adjustment"
-"331",107,"Area 9 Spt","Sampled",2164,16361,47931,32612,31614,45697,22,4151,6103,7770,194425,"Remove years & standard adjustment"
-"332",107,"Area 9 Spt","Xpansion",1.00231053604436,0,1.00041726648724,0,1,1.00428912182419,1,1.00819079739822,1.0018023922661,1.00579150579151,,"Remove years & standard adjustment"
-"333",108,"Skag R Spt","FRAM",2784.000001,5993,6172.000001,13952.000037,3672.000001,2602.999999,3446,,4080.000001,7144.000001,49846.000041,"Remove  fishery"
-"334",108,"Skag R Spt","RMIS",2814,6059,6574,11908,3737,2631,3465,,4206,7287,48681,"Remove  fishery"
-"335",108,"Skag R Spt","Sampled",355,,,,,,,,,,355,"Remove  fishery"
-"336",108,"Skag R Spt","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"337",110,"Ar8A Net","FRAM",1564.999998,10957.999999,15547.999991,17717.000004,9506.999989,1837,1,1204.999991,10195.999735,1642.000003,70175.99971,"Remove years & standard adjustment"
-"338",110,"Ar8A Net","RMIS",1582,10959,14375,17715,9519,2650,132,1205,10196,1642,69975,"Remove years & standard adjustment"
-"339",110,"Ar8A Net","Sampled",1582,10937,13840,17696,5719,788,124,787,10196,240,61909,"Remove years & standard adjustment"
-"340",110,"Ar8A Net","Xpansion",1,1.00201152052665,1.03865606936416,1.00107368896926,1.66445182724252,0,0,1.53113087674714,1,6.84166666666667,,"Remove years & standard adjustment"
-"341",112,"Ar8D Net","FRAM",249.000004,8867.000001,39977.999995,35860.000001,37011.999976,6449.387528,77195.000002,44337.999968,15680.999673,3509.000007,269138.387155,"Remove years & standard adjustment"
-"342",112,"Ar8D Net","RMIS",275,8867,41309,36139,36789,5622,77370,44341,15681,3487,269880,"Remove years & standard adjustment"
-"343",112,"Ar8D Net","Sampled",204,8641,41294,35620,36550,5203,73954,44330,14755,1242,261793,"Remove years & standard adjustment"
-"344",112,"Ar8D Net","Xpansion",1.34803921568627,1.02615438028006,1.00036324889815,1.01457046603032,1.0065389876881,0,1.04619087540904,1.00024813895782,1.06275838698746,2.80756843800322,,"Remove years & standard adjustment"
-"345",113,"Stil R Net","FRAM",136.000001,1736,1599,497,408,87.788223,,14,112,96.999999,4686.788223,"Remove  fishery"
-"346",113,"Stil R Net","RMIS",136,1796,1599,994,408,,,14,112,97,5156,"Remove  fishery"
-"347",113,"Stil R Net","Sampled",,951,451,586,89,,,,,,2077,"Remove  fishery"
-"348",113,"Stil R Net","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"349",114,"Snoh R Net","FRAM",,,,,,,,,,,0,"Remove  fishery"
-"350",114,"Snoh R Net","RMIS",,,7,7,,,,,,,14,"Remove  fishery"
-"351",114,"Snoh R Net","Sampled",,,,,,,,,,,0,"Remove  fishery"
-"352",114,"Snoh R Net","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"353",115,"Ar 8-2 Spt","FRAM",592.000003,4853.999995,13130.999996,10275.000005,8968.999981,8128.000001,31.999997,181.000001,9742.999753,548,56452.999732,"Remove years & standard adjustment"
-"354",115,"Ar 8-2 Spt","RMIS",592,4853,13802,8836,8969,8108,32,181,9750,557,55680,"Remove years & standard adjustment"
-"355",115,"Ar 8-2 Spt","Sampled",592,4853,13775,8836,8965,8108,32,181,9674,548,55564,"Remove years & standard adjustment"
-"356",115,"Ar 8-2 Spt","Xpansion",1,1,1.00196007259528,0,1.00044617958728,1,1,1,1.00785610915857,1.01642335766423,,"Remove years & standard adjustment"
-"357",116,"Stil R Spt","FRAM",341,1651,1220.000001,2646.000001,214,346.999999,,0,,931.999999,7351,"Remove  fishery"
-"358",116,"Stil R Spt","RMIS",341,1658,1225,2273,221,346,,,,933,6997,"Remove  fishery"
-"359",116,"Stil R Spt","Sampled",,,,,,,,,,,0,"Remove  fishery"
-"360",116,"Stil R Spt","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"361",117,"Snoh R Spt","FRAM",1564,7550,6901,16295.000011,2539,3717,1194,2664,944,1638,45006.000011,"Remove  fishery"
-"362",117,"Snoh R Spt","RMIS",1588,7709,7054,13598,2596,3751,1231,2849,984,1681,43041,"Remove  fishery"
-"363",117,"Snoh R Spt","Sampled",,,,,,,479,,,,479,"Remove  fishery"
-"364",117,"Snoh R Spt","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"365",118,"Ar 10  Spt","FRAM",2429.000001,10925.000008,21402.000029,16344.000059,12011.999975,15945.999999,77,20344.999762,26297.999714,28538.000025,154315.999572,"Remove years & standard adjustment"
-"366",118,"Ar 10  Spt","RMIS",2429,14160,23672,15031,12012,16278,77,20345,26298,29339,159641,"Remove years & standard adjustment"
-"367",118,"Ar 10  Spt","Sampled",2424,14104,23476,15015,11982,16270,35,20312,26298,29330,159246,"Remove years & standard adjustment"
-"368",118,"Ar 10  Spt","Xpansion",1.00206270627063,0,0,1.0010656010656,1.00250375563345,1.00049170251998,2.2,1.00162465537613,1,1.00030685305148,,"Remove years & standard adjustment"
-"369",120,"Ar10 Net","FRAM",69.000002,433.999997,3855.000007,848.000006,1305.999997,292.99999,1210.999996,2457.999952,2371.999953,333.000002,13178.999902,"Remove years & standard adjustment"
-"370",120,"Ar10 Net","RMIS",96,483,3895,940,391,126,1447,2701,2372,296,12747,"Remove years & standard adjustment"
-"371",120,"Ar10 Net","Sampled",55,211,482,373,325,118,849,1690,39,109,4251,"Remove years & standard adjustment"
-"372",120,"Ar10 Net","Xpansion",1.74545454545455,2.28909952606635,8.08091286307054,2.5201072386059,0,1.06779661016949,1.70435806831567,1.59822485207101,0,2.71559633027523,,"Remove years & standard adjustment"
-"373",122,"A10A Net","FRAM",204.000001,223,2158.999998,2421,1186.999998,2,851.000001,1899.999962,2463.999966,637.000001,12047.999927,"Remove years & standard adjustment"
-"374",122,"A10A Net","RMIS",204,255,2159,2421,1348,2,963,1934,2465,637,12388,"Remove years & standard adjustment"
-"375",122,"A10A Net","Sampled",173,221,2099,1585,1342,,894,1896,2285,474,10969,"Remove years & standard adjustment"
-"376",122,"A10A Net","Xpansion",1.17919075144509,1.15384615384615,1.02858504049547,1.52744479495268,1.00447093889717,0,1.07718120805369,1.02004219409283,1.07877461706783,1.34388185654008,,"Remove years & standard adjustment"
-"377",124,"A10E Net","FRAM",22.000002,1065.999998,853.999998,1740.000006,482,9,3251.000008,538.999985,3.999999,61,8027.999996,"Remove years & standard adjustment"
-"378",124,"A10E Net","RMIS",23,1089,854,1761,290,,3386,539,4,61,8007,"Remove years & standard adjustment"
-"379",124,"A10E Net","Sampled",1,1080,539,1687,290,,3380,285,4,,7266,"Remove years & standard adjustment"
-"380",124,"A10E Net","Xpansion",0,1.00833333333333,1.58441558441558,1.0438648488441,1,0,1.00177514792899,1.89122807017544,0,0,,"Remove years & standard adjustment"
-"381",125,"10F-G  Net","FRAM",55,512.999999,3999.999999,3531.000002,3439.999994,108,6989,4829.999955,1697.999985,2659.000001,27822.999935,"Remove years & standard adjustment"
-"382",125,"10F-G  Net","RMIS",55,493,3964,3540,3440,121,7030,4859,1744,2659,27905,"Remove years & standard adjustment"
-"383",125,"10F-G  Net","Sampled",,487,3964,3540,3273,121,6678,4859,1744,457,25123,"Remove years & standard adjustment"
-"384",125,"10F-G  Net","Xpansion",0,1.01232032854209,1,1,1.05102352581729,1,1.05271039233303,1,1,5.81838074398249,,"Remove years & standard adjustment"
-"385",126,"Duwm R Net","FRAM",15903,25705,45864.000001,45514.000034,28770.000002,228,24969.999999,14320.000001,40750.999999,6120.000001,248145.000037,"Remove  fishery"
-"386",126,"Duwm R Net","RMIS",16056,25965,45864,45567,28770,475,25198,14354,40751,6129,249129,"Remove  fishery"
-"387",126,"Duwm R Net","Sampled",15320,25910,42367,43516,27847,473,25014,11866,39108,16,231437,"Remove  fishery"
-"388",126,"Duwm R Net","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"389",127,"Duwm R Spt","FRAM",885,2479.000001,4163,4228.000003,2108,2231.999999,1750,1290,2042,3057,24234.000003,"Remove  fishery"
-"390",127,"Duwm R Spt","RMIS",941,2816,4683,3635,2521,2581,2183,1513,2167,3944,26984,"Remove  fishery"
-"391",127,"Duwm R Spt","Sampled",,,,,,,,,,,0,"Remove  fishery"
-"392",127,"Duwm R Spt","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"393",128,"L WaSm Spt","FRAM",6,121.000001,141,149,758,132,694,542,301,604,3448.000001,"Remove  fishery"
-"394",128,"L WaSm Spt","RMIS",6,121,160,125,758,152,771,562,311,638,3604,"Remove  fishery"
-"395",128,"L WaSm Spt","Sampled",,,,,,,771,,,,771,"Remove  fishery"
-"396",128,"L WaSm Spt","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"397",129,"Ar 11  Spt","FRAM",325.999999,1505.999997,7056.00001,1275.999997,1435.999996,1525,72.999997,3408.999964,5466.999889,2508.000006,24581.999855,"Remove years & standard adjustment"
-"398",129,"Ar 11  Spt","RMIS",326,2708,9290,1212,1436,3140,73,3409,5467,3026,30087,"Remove years & standard adjustment"
-"399",129,"Ar 11  Spt","Sampled",319,2702,9290,1212,1436,3140,58,3409,5467,3017,30050,"Remove years & standard adjustment"
-"400",129,"Ar 11  Spt","Xpansion",1.02194357366771,0,0,1,1,0,1.25862068965517,1,1,0,,"Remove years & standard adjustment"
-"401",131,"Ar11 Net","FRAM",0.999999,15.999999,27.000002,240.999999,138.000002,33.000002,76.000002,337.999995,307.999995,,1177.999995,"Remove  fishery"
-"402",131,"Ar11 Net","RMIS",1,78,30,296,248,34,76,338,309,,1410,"Remove  fishery"
-"403",131,"Ar11 Net","Sampled",,2,8,,101,30,,,2,,143,"Remove  fishery"
-"404",131,"Ar11 Net","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"405",133,"A11A Net","FRAM",,24,,,,,,,,,24,"Remove  fishery"
-"406",133,"A11A Net","RMIS",,24,,,,,,,,,24,"Remove  fishery"
-"407",133,"A11A Net","Sampled",,,,,,,,,,,0,"Remove  fishery"
-"408",133,"A11A Net","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"409",134,"Puyl R Net","FRAM",3038.999999,5658.000001,11135.000006,9577.000019,9320.000001,1778.000001,58,6247,17301,8526.000001,72639.000028,"Remove  fishery"
-"410",134,"Puyl R Net","RMIS",3039,5658,11216,9604,9634,1778,64,6256,17304,8526,73079,"Remove  fishery"
-"411",134,"Puyl R Net","Sampled",2630,5389,10303,8745,9429,1592,6,5263,17301,7469,68127,"Remove  fishery"
-"412",134,"Puyl R Net","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"413",135,"Puyl R Spt","FRAM",671,10229.000002,8133.000004,20662.000039,4330,3755,26,4232,4739,6027,62804.000045,"Remove  fishery"
-"414",135,"Puyl R Spt","RMIS",719,11252,8486,18487,4711,4510,26,4870,5122,9617,67800,"Remove  fishery"
-"415",135,"Puyl R Spt","Sampled",171,,,,,,,,,,171,"Remove  fishery"
-"416",135,"Puyl R Spt","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"417",136,"Ar 13  Spt","FRAM",91,222,732.000007,151.999999,105.999999,212.999999,537.999998,886.999999,643.999994,504,4088.999995,"Standard adjustment"
-"418",136,"Ar 13  Spt","RMIS",101,222,895,218,106,213,614,887,644,504,4404,"Standard adjustment"
-"419",136,"Ar 13  Spt","Sampled",76,210,854,180,106,213,614,879,594,504,4230,"Standard adjustment"
-"420",136,"Ar 13  Spt","Xpansion",1.32894736842105,1.05714285714286,1.0480093676815,1.21111111111111,1,1,1,1.00910125142207,1.08417508417508,1,,"Standard adjustment"
-"421",138,"Ar13 Net","FRAM",3.000001,111,36.000001,85.000002,,,,84.999998,507.000001,,827.000003,"Remove  fishery"
-"422",138,"Ar13 Net","RMIS",87,,,37,,,73,226,,,423,"Remove  fishery"
-"423",138,"Ar13 Net","Sampled",87,,,,,,73,226,,,386,"Remove  fishery"
-"424",138,"Ar13 Net","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"425",140,"A13C Net","FRAM",,,,,,,,,,,0,"Remove  fishery"
-"426",140,"A13C Net","RMIS",7,113,36,90,,,,85,507,,838,"Remove  fishery"
-"427",140,"A13C Net","Sampled",7,12,,42,,,,,,,61,"Remove  fishery"
-"428",140,"A13C Net","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"429",142,"A13A Net","FRAM",868.000002,1560.000002,2396.000011,404,166,1,141.999999,913.999988,1024.999992,183,7658.999994,"Remove years & standard adjustment"
-"430",142,"A13A Net","RMIS",875,1560,2396,425,166,1,142,914,1048,183,7710,"Remove years & standard adjustment"
-"431",142,"A13A Net","Sampled",289,649,2031,401,,1,,,10,,3381,"Remove years & standard adjustment"
-"432",142,"A13A Net","Xpansion",3.02768166089965,2.40369799691834,1.17971442639094,1.05985037406484,0,0,0,0,0,0,,"Remove years & standard adjustment"
-"433",144,"A13D Net","FRAM",2722.000006,4683.000036,54046.000675,17193.000018,8426.999998,7950.999999,38726.000001,37578.999595,41027.998778,23890.00005,236244.999156,"Standard adjustment"
-"434",144,"A13D Net","RMIS",2722,4683,54046,17884,8370,7951,38430,37579,41028,23890,236583,"Standard adjustment"
-"435",144,"A13D Net","Sampled",1887,3572,48734,17613,6028,7203,38017,37141,40207,23641,224043,"Standard adjustment"
-"436",144,"A13D Net","Xpansion",1.44250132485427,1.31103023516237,1.10899987688267,1.01538636234599,1.3885202388852,1.10384561988061,1.01086356103848,1.01179289733717,1.02041932996742,1.01053254938454,,"Standard adjustment"
-"437",146,"13FK Net","FRAM",4,55,450.000011,61,155,70,458,689,190,46,2178.000011,"Remove  fishery"
-"438",146,"13FK Net","RMIS",4,55,450,24,155,70,523,742,197,46,2266,"Remove  fishery"
-"439",146,"13FK Net","Sampled",,,35,,,,421,59,94,,609,"Remove  fishery"
-"440",146,"13FK Net","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"441",147,"Nisq R Net","FRAM",3436.999993,2630.000056,8347.000193,3643.000009,2500,881.000001,1058.999999,4105,1226.999999,386,28215.00025,"Remove  fishery"
-"442",147,"Nisq R Net","RMIS",3437,2630,8347,3553,2595,994,1067,4105,1227,401,28356,"Remove  fishery"
-"443",147,"Nisq R Net","Sampled",3428,2562,8219,3382,2595,960,999,4094,1164,267,27670,"Remove  fishery"
-"444",147,"Nisq R Net","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"445",148,"McAlls Net","FRAM",,,,,,,,,7.000001,,7.000001,"Remove  fishery"
-"446",148,"McAlls Net","RMIS",,,,,,,,,7,,7,"Remove  fishery"
-"447",148,"McAlls Net","Sampled",,,,,,,,,,,0,"Remove  fishery"
-"448",148,"McAlls Net","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"449",149,"13D-K TSpt","FRAM",,,,,,,,,,,0,"Remove  fishery"
-"450",149,"13D-K TSpt","RMIS",,,65,,,,,,175,719,959,"Remove  fishery"
-"451",149,"13D-K TSpt","Sampled",,,,,,,,,,,0,"Remove  fishery"
-"452",149,"13D-K TSpt","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"453",150,"Nisq R Spt","FRAM",798.999998,894.000016,4000.000082,1681.000004,621,314.999999,9.999999,3944,10,803,13077.000098,"Remove  fishery"
-"454",150,"Nisq R Spt","RMIS",938,1117,4375,1576,684,540,20,4528,29,1129,14936,"Remove  fishery"
-"455",150,"Nisq R Spt","Sampled",,,,,,,,,,,0,"Remove  fishery"
-"456",150,"Nisq R Spt","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"457",151,"Desc R Spt","FRAM",,,,,,,,,,,0,"Remove  fishery"
-"458",151,"Desc R Spt","RMIS",,,4,,,,,,,,4,"Remove  fishery"
-"459",151,"Desc R Spt","Sampled",,,,,,,,,,,0,"Remove  fishery"
-"460",151,"Desc R Spt","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"461",152,"Ar 12  Spt","FRAM",329.000005,3195,2033.999998,2418.999997,1492.999988,1147.000004,4037.000004,2418.999953,644.999983,1320.000003,19037.999935,"Remove years & standard adjustment"
-"462",152,"Ar 12  Spt","RMIS",329,3183,2036,1634,1493,1155,4037,2419,645,1322,18253,"Remove years & standard adjustment"
-"463",152,"Ar 12  Spt","Sampled",48,,309,1634,241,257,4037,2419,640,1313,10898,"Remove years & standard adjustment"
-"464",152,"Ar 12  Spt","Xpansion",6.85416666666667,0,6.58899676375405,0,6.19502074688797,4.49416342412451,1,1,1.0078125,1.00685453160701,,"Remove years & standard adjustment"
-"465",154,"A1212B Net","FRAM",5220.00001,15047.000008,24239.000035,10869.000036,11903.999994,3957.999991,5643.000012,6606.999997,5627.99999,1688.000004,90803.000077,"Remove years & standard adjustment"
-"466",154,"A1212B Net","RMIS",5395,14895,24284,10874,11934,4099,6327,6757,5689,1691,91945,"Remove years & standard adjustment"
-"467",154,"A1212B Net","Sampled",2595,11041,16215,9177,11413,3724,5648,6720,5113,1526,73172,"Remove years & standard adjustment"
-"468",154,"A1212B Net","Xpansion",2.07899807321773,1.34906258491079,1.49762565525748,1.1849188187861,1.04564969771313,1.10069817400644,0,1.00550595238095,1.11265401916683,1.10812581913499,,"Remove years & standard adjustment"
-"469",156,"Ar9-9A Net","FRAM",4804.000049,15310.999973,18114.999982,8316.999994,3916.999976,554.000013,21096.000023,7293.999735,443.999992,280.000007,80131.999744,"Standard adjustment"
-"470",156,"Ar9-9A Net","RMIS",4749,15318,18338,8367,4050,553,21180,7147,440,317,80459,"Standard adjustment"
-"471",156,"Ar9-9A Net","Sampled",3685,12906,17601,8175,3344,275,19471,5737,134,91,71419,"Standard adjustment"
-"472",156,"Ar9-9A Net","Xpansion",1.2887381275441,1.18688981868898,1.04187262087381,1.02348623853211,1.21112440191388,2.01090909090909,1.0877715577012,1.24577305211783,3.28358208955224,3.48351648351648,,"Standard adjustment"
-"473",158,"Ar 12A Net","FRAM",5198.000109,5257.999999,9058.999999,9019,872.999999,641,12226.00002,8233.999975,6304.99984,719.000002,57531.999943,"Standard adjustment"
-"474",158,"Ar 12A Net","RMIS",5214,5258,9059,9019,873,641,12441,8319,6305,719,57848,"Standard adjustment"
-"475",158,"Ar 12A Net","Sampled",4402,4353,7610,8422,669,641,12340,8301,3328,636,50702,"Standard adjustment"
-"476",158,"Ar 12A Net","Xpansion",1.18446160835984,1.20790259591087,1.1904073587385,1.07088577535027,1.30493273542601,1,1.0081847649919,1.00216841344416,1.89453125,1.13050314465409,,"Standard adjustment"
-"477",160,"12CD Net","FRAM",7131,13101.000006,15889.000015,6501.00003,11300.999951,891.999999,6065,4948.999983,7952.999997,3522,77303.999981,"Standard adjustment"
-"478",160,"12CD Net","RMIS",7133,13101,15898,6494,11301,904,6086,5057,7965,3444,77383,"Standard adjustment"
-"479",160,"12CD Net","Sampled",5316,10330,12904,4898,9901,733,5353,4695,5534,3216,62880,"Standard adjustment"
-"480",160,"12CD Net","Xpansion",1.34179834462002,1.26824782187803,1.23202107873528,1.32584728460596,1.14139985860014,1.23328785811733,1.13693256118065,1.07710330138445,1.43928442356343,1.07089552238806,,"Standard adjustment"
-"481",161,"Skok R Net","FRAM",1795.999999,6310.000003,11802.000018,4273.000012,3981.000001,596,2493,3361,3033.999999,1246,38892.000032,"Standard adjustment"
-"482",161,"Skok R Net","RMIS",1788,6311,11800,4294,3951,596,2480,3342,3055,1246,38863,"Standard adjustment"
-"483",161,"Skok R Net","Sampled",1232,2853,3530,2369,3751,107,2154,3018,2736,1020,22770,"Standard adjustment"
-"484",161,"Skok R Net","Xpansion",1.4512987012987,2.21205748335086,3.34277620396601,1.81257914731954,1.05331911490269,5.57009345794393,1.15134633240483,1.10735586481113,1.11659356725146,1.22156862745098,,"Standard adjustment"
-"485",162,"Quilcn Net","FRAM",10,20062.000011,14652.000015,5451.000006,478.999999,2112,5706.000001,13045.000001,12472,748,74737.000033,"Remove years & standard adjustment"
-"486",162,"Quilcn Net","RMIS",12,20062,14652,5451,453,2112,5758,12995,12710,748,74953,"Remove years & standard adjustment"
-"487",162,"Quilcn Net","Sampled",12,13722,14475,4783,,2067,5367,9243,11370,674,61713,"Remove years & standard adjustment"
-"488",162,"Quilcn Net","Xpansion",0,1.46203177379391,1.01222797927461,1.13966130043906,0,1.02177068214804,1.07285261784982,1.4059288109921,1.11785400175902,1.10979228486647,,"Remove years & standard adjustment"
-"489",163,"1212B TSpt","FRAM",,,,,,,,,,,0,"Remove  fishery"
-"490",163,"1212B TSpt","RMIS",,,,,,,,,,,0,"Remove  fishery"
-"491",163,"1212B TSpt","Sampled",,,,,,,,,,,0,"Remove  fishery"
-"492",163,"1212B TSpt","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"493",164,"12A Tb Spt","FRAM",339,5208.000004,6036.000005,2819.000004,1230.999999,728,3077,2229,2550,1533,25750.000012,"Remove  fishery"
-"494",164,"12A Tb Spt","RMIS",446,5237,6422,2298,1231,746,3246,2249,2560,1665,26100,"Remove  fishery"
-"495",164,"12A Tb Spt","Sampled",,,,,,,,,,,0,"Remove  fishery"
-"496",164,"12A Tb Spt","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"497",165,"12C-D TSpt","FRAM",,,,,,,,,,,0,"Remove  fishery"
-"498",165,"12C-D TSpt","RMIS",,361,1314,293,283,184,63,265,2,12,2777,"Remove  fishery"
-"499",165,"12C-D TSpt","Sampled",,,,,,,,,,,0,"Remove  fishery"
-"500",165,"12C-D TSpt","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"501",166,"Skok R Spt","FRAM",487,2004.000001,1843.000002,2057.000005,508,1276,,,1,,8176.000008,"Remove  fishery"
-"502",166,"Skok R Spt","RMIS",546,2111,1874,1889,542,1638,,,1,,8601,"Remove  fishery"
-"503",166,"Skok R Spt","Sampled",,1643,,,,,,,,,1643,"Remove  fishery"
-"504",166,"Skok R Spt","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"505",167,"FRSLOW Trm","FRAM",0,0,0,0,0,5275.99999,0,3006,1032,554,9867.99999,"Remove  fishery"
-"506",167,"FRSLOW Trm","RMIS",,,,,,,,,,,0,"Remove  fishery"
-"507",167,"FRSLOW Trm","Sampled",,,,,,,,,,,0,"Remove  fishery"
-"508",167,"FRSLOW Trm","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"509",168,"FRSUPP Trm","FRAM",0,0,0,0,0,747.999999,0,444.999999,962,260.999999,2415.999997,"Remove  fishery"
-"510",168,"FRSUPP Trm","RMIS",,,,,,,,,,,0,"Remove  fishery"
-"511",168,"FRSUPP Trm","Sampled",,,,,,,,,,,0,"Remove  fishery"
-"512",168,"FRSUPP Trm","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"513",169,"Fraser Spt","FRAM",,,,,,,,1347,622,,1969,"Remove  fishery"
-"514",169,"Fraser Spt","RMIS",,,,,,,,,,,0,"Remove  fishery"
-"515",169,"Fraser Spt","Sampled",,,,,,,,,,,0,"Remove  fishery"
-"516",169,"Fraser Spt","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"517",170,"JStrBC Trl","FRAM",0,0,0,0,6,0,0,,,,6,"Remove  fishery"
-"518",170,"JStrBC Trl","RMIS",,,,,,,,,,,0,"Remove  fishery"
-"519",170,"JStrBC Trl","Sampled",,,,,,,,,,,0,"Remove  fishery"
-"520",170,"JStrBC Trl","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"521",171,"No BC  Trl","FRAM",138295.000005,280715.000136,215452.000199,378187.000466,177461.000027,255674.999993,214610.000009,337666.005468,176547.000133,177188.999978,2351797.006414,"Standard adjustment"
-"522",171,"No BC  Trl","RMIS",138295,280715,215452,378187,177461,255675,214610,333175,176547,177189,2347306,"Standard adjustment"
-"523",171,"No BC  Trl","Sampled",138198,279532,211827,378133,170307,255302,214447,333175,176547,177180,2334648,"Standard adjustment"
-"524",171,"No BC  Trl","Xpansion",1.00070189148902,1.00423207360875,1.01711302147507,1.00014280689599,1.04200649415467,1.00146101479816,1.00076009456882,1,1,1.00005079580088,,"Standard adjustment"
-"525",172,"NoC BC Trl","FRAM",,15931.999997,,21120.999957,0,4343,4343.000005,6485.999991,367.000004,2387.999999,54979.999953,"Remove years & standard adjustment"
-"526",172,"NoC BC Trl","RMIS",,15932,1,21121,,,4343,6468,367,2388,50620,"Remove years & standard adjustment"
-"527",172,"NoC BC Trl","Sampled",,15476,,15914,,,4303,6468,41,2327,44529,"Remove years & standard adjustment"
-"528",172,"NoC BC Trl","Xpansion",0,1.0294649780305,0,1.32719617946462,0,0,1.00929584011155,1,8.95121951219512,1.02621400945423,,"Remove years & standard adjustment"
-"529",173,"SoC BC Trl","FRAM",,0,,,,,,,,,0,"Remove  fishery"
-"530",173,"SoC BC Trl","RMIS",,,,,2,,,,,,2,"Remove  fishery"
-"531",173,"SoC BC Trl","Sampled",,,,,,,,,,,0,"Remove  fishery"
-"532",173,"SoC BC Trl","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"533",174,"NW VI  Trl","FRAM",79.000001,0,365,5296.999998,2189,3038.000004,0,83.000001,4320.000059,617.000006,15988.000069,"Remove years & standard adjustment"
-"534",174,"NW VI  Trl","RMIS",79,,389,5297,2189,3136,265,106,3958,390,15809,"Remove years & standard adjustment"
-"535",174,"NW VI  Trl","Sampled",68,,292,5297,2120,3122,45,57,3096,376,14473,"Remove years & standard adjustment"
-"536",174,"NW VI  Trl","Xpansion",1.16176470588235,0,1.33219178082192,1,1.03254716981132,1.00448430493274,0,1.85964912280702,1.27842377260982,1.03723404255319,,"Remove years & standard adjustment"
-"537",175,"SW VI  Trl","FRAM",379.000003,0,1664.999998,0,32760.000009,3041.000005,138.999996,232.999996,2466.000022,539.000001,41222.00003,"Remove years & standard adjustment"
-"538",175,"SW VI  Trl","RMIS",379,,1730,829,32760,3050,130,240,2,,39120,"Remove years & standard adjustment"
-"539",175,"SW VI  Trl","Sampled",329,,1675,829,32760,3019,100,233,,,38945,"Remove years & standard adjustment"
-"540",175,"SW VI  Trl","Xpansion",1.15197568389058,0,1.03283582089552,0,1,1.01026830076184,1.3,1.03004291845494,0,0,,"Remove years & standard adjustment"
-"541",176,"GeoStr Trl","FRAM",0,0,,,0,,,,0,,0,"Remove  fishery"
-"542",176,"GeoStr Trl","RMIS",,,,,4,,,,1,,5,"Remove  fishery"
-"543",176,"GeoStr Trl","Sampled",,,,,,,,,,,0,"Remove  fishery"
-"544",176,"GeoStr Trl","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"545",178,"No BC  Net","FRAM",4181.000004,10966.999999,0,21022.000046,26730.000007,20001.999996,37739,12915.000253,1262.000005,625,135443.00031,"Remove years & standard adjustment"
-"546",178,"No BC  Net","RMIS",572,11489,0,21456,27114,20506,38427,13397,829,224,134014,"Remove years & standard adjustment"
-"547",178,"No BC  Net","Sampled",122,10990,,21254,4902,20179,38427,13396,829,224,110323,"Remove years & standard adjustment"
-"548",178,"No BC  Net","Xpansion",0,1.04540491355778,0,1.00950409334713,5.531211750306,1.01620496555825,1,1.000074649149,0,0,,"Remove years & standard adjustment"
-"549",179,"Cen BC Net","FRAM",385.999998,,494.999999,24498.999991,11636.000003,964.000002,224.000001,4550.999996,1982.000005,586.999997,45323.999992,"Remove years & standard adjustment"
-"550",179,"Cen BC Net","RMIS",362,15672,495,24499,11784,964,224,536,,6,54542,"Remove years & standard adjustment"
-"551",179,"Cen BC Net","Sampled",362,14485,,10221,640,,,536,,,26244,"Remove years & standard adjustment"
-"552",179,"Cen BC Net","Xpansion",1,0,0,2.39692789355249,18.4125,0,0,0,0,0,,"Remove years & standard adjustment"
-"553",180,"NW VI  Net","FRAM",572.000003,682.999999,0,0,,2,0,,,,1257.000002,"Remove  fishery"
-"554",180,"NW VI  Net","RMIS",568,689,3,2,,12,,,,,1274,"Remove  fishery"
-"555",180,"NW VI  Net","Sampled",,,,,,,,,,,0,"Remove  fishery"
-"556",180,"NW VI  Net","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"557",181,"SW VI  Net","FRAM",193.999992,358.999989,346.000003,1181.999999,607.000005,66.999997,807.999995,0,0,0,3562.99998,"Remove  fishery"
-"558",181,"SW VI  Net","RMIS",198,296,346,1177,607,1389,3572,2946,4053,3664,18248,"Remove  fishery"
-"559",181,"SW VI  Net","Sampled",,94,21,715,,298,3564,2005,4053,3634,14384,"Remove  fishery"
-"560",181,"SW VI  Net","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"561",182,"Johnst Net","FRAM",535.000005,614.999989,5.000005,2416.000018,1799.999991,206.000002,326.000002,0,0,0,5903.000012,"Remove years & standard adjustment"
-"562",182,"Johnst Net","RMIS",535,614,8,2415,1861,789,415,452,752,110,7951,"Remove years & standard adjustment"
-"563",182,"Johnst Net","Sampled",364,421,,,1347,,176,,,106,2414,"Remove years & standard adjustment"
-"564",182,"Johnst Net","Xpansion",1.46978021978022,1.458432304038,0,0,1.38158871566444,0,2.35795454545455,0,0,0,,"Remove years & standard adjustment"
-"565",183,"GeoStr Net","FRAM",0,,1.999999,,0,103.999998,0,0,0,0,105.999997,"Remove  fishery"
-"566",183,"GeoStr Net","RMIS",,,2,,,,,,,,2,"Remove  fishery"
-"567",183,"GeoStr Net","Sampled",,,,,,,,,,,0,"Remove  fishery"
-"568",183,"GeoStr Net","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"569",184,"Fraser Net","FRAM",,,,,,,,,,,0,"Remove  fishery"
-"570",184,"Fraser Net","RMIS",14,295,,514,237,189,519,407,426,264,2865,"Remove  fishery"
-"571",184,"Fraser Net","Sampled",10,,,,1,181,519,407,318,264,1700,"Remove  fishery"
-"572",184,"Fraser Net","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"573",185,"BC JDF Net","FRAM",4.999999,0,0,2868.999996,160.999994,0,27.000004,,,,3061.999993,"Remove  fishery"
-"574",185,"BC JDF Net","RMIS",5,,,,121,26,26,9,31,49,267,"Remove  fishery"
-"575",185,"BC JDF Net","Sampled",,,,,,,,,,46,46,"Remove  fishery"
-"576",185,"BC JDF Net","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"577",186,"JStrBC Spt","FRAM",2484.999998,3169.000021,3577.000051,4339.000228,9791.000079,7414.999992,4012,5545.000016,4839.000015,4797.000003,49969.000403,"Remove  fishery"
-"578",186,"JStrBC Spt","RMIS",,,,,,,,,,,0,"Remove  fishery"
-"579",186,"JStrBC Spt","Sampled",,,,,,,,,,,0,"Remove  fishery"
-"580",186,"JStrBC Spt","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"581",187,"No BC  Spt","FRAM",58693.999995,81060.000002,70156.000008,41100.000004,63387.000001,72829.999999,70155.999999,77127.000927,45921.000005,62735.000002,643166.000942,"Remove  fishery"
-"582",187,"No BC  Spt","RMIS",2951,5782,6172,6128,10275,8440,4901,5509,4067,2279,56504,"Remove  fishery"
-"583",187,"No BC  Spt","Sampled",,,,,,114,24,,26,245,409,"Remove  fishery"
-"584",187,"No BC  Spt","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"585",188,"Cen BC Spt","FRAM",11950.000001,2613.000004,19873.000078,23883.000191,21518.000012,26305.99999,25544.000014,19395.000149,16439.000039,17427.999995,184949.000473,"Remove  fishery"
-"586",188,"Cen BC Spt","RMIS",,,,,,,,,,,0,"Remove  fishery"
-"587",188,"Cen BC Spt","Sampled",,,,,,,,,,,0,"Remove  fishery"
-"588",188,"Cen BC Spt","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"589",189,"BC JDF Spt","FRAM",1537.000005,10484.999994,21122.000027,23024.000051,20234.000004,12315,7605.999993,8236.999972,11248.99996,10243.000007,126052.000013,"Remove years & standard adjustment"
-"590",189,"BC JDF Spt","RMIS",2358,11117,22033,23616,23782,12577,7794,9070,12987,12435,137769,"Remove years & standard adjustment"
-"591",189,"BC JDF Spt","Sampled",822,633,909,592,460,325,227,852,1768,2223,8811,"Remove years & standard adjustment"
-"592",189,"BC JDF Spt","Xpansion",0,17.5624012638231,0,0,0,0,0,10.6455399061033,0,0,,"Remove years & standard adjustment"
-"593",190,"WC VI  Spt","FRAM",14920.99986,56346.999942,46228.000472,49911.000951,39447.000291,27018.999949,20067.000088,29374.000119,45152.00017,68350.999513,396817.001355,"Remove  fishery"
-"594",190,"WC VI  Spt","RMIS",14922,56341,44899,64406,43456,27023,20069,26540,45154,35818,378628,"Remove  fishery"
-"595",190,"WC VI  Spt","Sampled",,,,,,475,155,148,199,546,1523,"Remove  fishery"
-"596",190,"WC VI  Spt","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"597",191,"NGaStr Spt","FRAM",1272.000002,653.99999,1151.000002,21430.000057,12702.000037,8971.000001,9875.000004,6596.000006,13725.00001,4323.000005,80699.000114,"Remove  fishery"
-"598",191,"NGaStr Spt","RMIS",1101,4100,2287,17612,11663,6265,4835,2984,8005,1221,60073,"Remove  fishery"
-"599",191,"NGaStr Spt","Sampled",,,,,,35,28,50,119,13,245,"Remove  fishery"
-"600",191,"NGaStr Spt","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"601",192,"SGaStr Spt","FRAM",1215,763.000008,2497.999994,5277.000013,1956.999999,2076.999985,2551.999989,3286,5302.000004,2176.999999,27103.999991,"Remove  fishery"
-"602",192,"SGaStr Spt","RMIS",1541,885,2661,12855,8004,5874,8687,7544,11997,5759,65807,"Remove  fishery"
-"603",192,"SGaStr Spt","Sampled",,,,,,996,47,30,59,14,1146,"Remove  fishery"
-"604",192,"SGaStr Spt","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
-"605",194,"SW AK  Trl","FRAM",196231.000011,166860.00002,184127.000002,382365.00004,290590.000026,164667.00001,213666.000005,223273.002037,177030.000008,109247.000001,2108056.00216,"No adjustment"
-"606",194,"SW AK  Trl","RMIS",196231,166860,184127,382365,290590,164667,214073,223273,177030,109247,2108463,"No adjustment"
-"607",194,"SW AK  Trl","Sampled",196231,166860,184127,382365,290590,164667,214073,223273,177030,109247,2108463,"No adjustment"
-"608",194,"SW AK  Trl","Xpansion",1,1,1,1,1,1,1,1,1,1,,"No adjustment"
-"609",195,"SE AK  Trl","FRAM",123304.000001,130344.000016,144235.000005,284460.000045,198432.000002,180447.000001,108284,106654.00108,64397.000003,34568.000004,1375125.001157,"Standard adjustment"
-"610",195,"SE AK  Trl","RMIS",123354,130470,145549,287799,216701,182573,108503,106654,64722,35074,1401399,"Standard adjustment"
-"611",195,"SE AK  Trl","Sampled",123283,130203,144292,283617,201821,181272,108468,106654,64688,34873,1379171,"Standard adjustment"
-"612",195,"SE AK  Trl","Xpansion",1.00057591070951,1.00205064399438,1.00871150167715,1.01474523741525,1.07372870018482,1.0071770598879,1.00032267581222,1,1.00052559980213,1.00576377139908,,"Standard adjustment"
-"613",196,"NW AK  Trl","FRAM",887480.000026,811904.000045,787503.000013,1502845.000076,1504623.000104,612265.000003,940188.000009,1500216.010127,619871.00003,688250.999994,9855146.010427,"Standard adjustment"
-"614",196,"NW AK  Trl","RMIS",887486,812109,787635,1503086,1504977,612977,940711,1500216,619990,688430,9857617,"Standard adjustment"
-"615",196,"NW AK  Trl","Sampled",887480,811928,787428,1493387,1504612,612174,940540,1500159,619877,688220,9845805,"Standard adjustment"
-"616",196,"NW AK  Trl","Xpansion",1.00000676071573,1.00022292617079,1.00026288117771,1.00649463267057,1.00024258745776,1.00131171856368,1.00018181044932,1.00003799597243,1.00018229422934,1.00030513498591,,"Standard adjustment"
-"617",197,"NE AK  Trl","FRAM",135059,193818.000006,84285.000003,206430.000006,235541.000002,276615.000001,123084.000002,321639.001157,79422.000001,134402.000001,1790295.001179,"Standard adjustment"
-"618",197,"NE AK  Trl","RMIS",135961,204771,84413,220540,236103,280883,124303,321639,80869,141152,1830634,"Standard adjustment"
-"619",197,"NE AK  Trl","Sampled",135511,202712,84297,214724,235529,277098,124299,316620,79754,134858,1805402,"Standard adjustment"
-"620",197,"NE AK  Trl","Xpansion",1.00332076362805,1.01015726745333,1.00137608693073,1.02708593357054,1.00243706719767,1.01365942735061,1.00003218046806,1.01585180974038,1.01398049000677,1.04667131352979,,"Standard adjustment"
-"621",198,"SE AK Net","FRAM",741789.999989,615371.00003,529597.000004,1007502.000007,918731.000033,514187.999998,549592.000001,615080.001913,469378.00001,516090.000002,6477319.001987,"Don't adjust"
-"622",198,"SE AK Net","RMIS",944350,764181,682650,1194122,1155895,699054,711999,605942,525522,561019,7844734,"Don't adjust"
-"623",198,"SE AK Net","Sampled",742135,624037,536466,1141704,982013,554797,548456,450198,412184,446196,6438186,"Don't adjust"
-"624",198,"SE AK Net","Xpansion",1,1,1,1,1,1,1,1,1,1,,"Don't adjust"
-"625",199,"SE AK Sport","FRAM",,,,,,,,,,,0,"Remove  fishery"
-"626",199,"SE AK Sport","RMIS",80105,99341,62427,126019,95570,110407,106095,179851,105468,78681,1043964,"Remove  fishery"
-"627",199,"SE AK Sport","Sampled",80105,99341,62427,126019,95570,110405,106095,179851,105454,78681,1043948,"Remove  fishery"
-"628",199,"SE AK Sport","Xpansion",0,0,0,0,0,0,0,0,0,0,,"Remove  fishery"
+,FisheryID,FisheryName,Source,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,Total,Action
+1,3,Ft Brg Spt,FRAM,0,0,0,0,0,0,0,0,0,0,0,Remove  fishery
+2,3,Ft Brg Spt,RMIS,15,101,22,33,133,23,35,4,25,40,431,Remove  fishery
+3,3,Ft Brg Spt,Sampled,15,101,22,33,133,23,35,4,25,40,431,Remove  fishery
+4,3,Ft Brg Spt,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+5,4,Ft Brg Trl,FRAM,0,0,0,0,0,0,0,0,0,0,0,Remove  fishery
+6,4,Ft Brg Trl,RMIS,,,,,,,,,,,0,Remove  fishery
+7,4,Ft Brg Trl,Sampled,,,,,,,,,,,0,Remove  fishery
+8,4,Ft Brg Trl,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+9,5,Ca KMZ Spt,FRAM,0,0,0,0,0,0,0,,0,0,0,Remove  fishery
+10,5,Ca KMZ Spt,RMIS,50,90,49,184,275,12,27,,102,155,944,Remove  fishery
+11,5,Ca KMZ Spt,Sampled,50,90,49,184,275,12,27,,102,155,944,Remove  fishery
+12,5,Ca KMZ Spt,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+13,6,Ca KMZ Trl,FRAM,0,0,0,0,0,0,0,,0,0,0,Remove  fishery
+14,6,Ca KMZ Trl,RMIS,,,,,,,,,,,0,Remove  fishery
+15,6,Ca KMZ Trl,Sampled,,,,,,,,,,,0,Remove  fishery
+16,6,Ca KMZ Trl,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+17,7,So Cal Spt,FRAM,0,0,0,0,0,0,0,0,0,0,0,Remove  fishery
+18,7,So Cal Spt,RMIS,68,77,3,87,56,6,8,461,68,501,1335,Remove  fishery
+19,7,So Cal Spt,Sampled,68,77,3,87,56,6,8,461,68,501,1335,Remove  fishery
+20,7,So Cal Spt,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+21,8,So Cal Trl,FRAM,0,0,0,0,0,0,0,0,0,0,0,Remove  fishery
+22,8,So Cal Trl,RMIS,,,,,,,,,,,0,Remove  fishery
+23,8,So Cal Trl,Sampled,,,,,,,,,,,0,Remove  fishery
+24,8,So Cal Trl,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+25,9,So Ore Trm,FRAM,0,0,0,0,0,0,0,0,0,0,0,Remove  fishery
+26,9,So Ore Trm,RMIS,,,,,,,,,,,0,Remove  fishery
+27,9,So Ore Trm,Sampled,,,,,,,,,,,0,Remove  fishery
+28,9,So Ore Trm,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+29,11,SMi Or Trm,FRAM,1770,2941,,3803.000004,9359,1473,,,,,19346,Remove  fishery
+30,11,SMi Or Trm,RMIS,,,,,,,,,,,0,Remove  fishery
+31,11,SMi Or Trm,Sampled,,,,,,,,,,,0,Remove  fishery
+32,11,SMi Or Trm,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+33,12,NMi Or Trm,FRAM,238,3272,2951,4854.000004,7169,1748,,,,,20232,Remove  fishery
+34,12,NMi Or Trm,RMIS,4,4,,,,,3,,,2,13,Remove  fishery
+35,12,NMi Or Trm,Sampled,4,4,,,,,3,,,2,13,Remove  fishery
+36,12,NMi Or Trm,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+37,13,No Ore Trm,FRAM,0,1809,,631,2753,163,,,,,5356,Remove  fishery
+38,13,No Ore Trm,RMIS,11,21,,6,18,17,11,45,,175,304,Remove  fishery
+39,13,No Ore Trm,Sampled,11,21,,6,18,17,11,45,,175,304,Remove  fishery
+40,13,No Ore Trm,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+41,15,Brkngs Spt,FRAM,59.999998,0,177.000003,364.000002,559.000002,128.000003,50.000002,0,0,539.999994,1878.000004,Remove years
+42,15,Brkngs Spt,RMIS,60,28,209,439,567,138,52,,18,542,2053,Remove years
+43,15,Brkngs Spt,Sampled,60,28,209,439,567,138,52,,18,542,2053,Remove years
+44,15,Brkngs Spt,Xpansion,1,0,1,1,1,1,1,0,0,1,,Remove years
+45,16,Brkngs Trl,FRAM,0,0,0,0,0,0,0,0,0,0,0,Remove  fishery
+46,16,Brkngs Trl,RMIS,,,,,8,,,,,,8,Remove  fishery
+47,16,Brkngs Trl,Sampled,,,,,,,,,,,0,Remove  fishery
+48,16,Brkngs Trl,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+49,17,Newprt Spt,FRAM,7827.000014,5947,8580.000004,5904.000019,45570.00016,9625.000024,2415.000118,7565.000021,11264.00001,28221.99997,132919.0003,No adjustment
+50,17,Newprt Spt,RMIS,7824,5947,8580,5951,45593,9669,2422,7590,11260,28221,133057,No adjustment
+51,17,Newprt Spt,Sampled,7824,5947,8580,5951,45593,9669,2422,7590,11260,28221,133057,No adjustment
+52,17,Newprt Spt,Xpansion,1,1,1,1,1,1,1,1,1,1,,No adjustment
+53,18,Newprt Trl,FRAM,0,0,0,0,1230.000002,0,0,0,0,0,1230.000002,Remove years & standard adjustment
+54,18,Newprt Trl,RMIS,,,,,,,,,,,0,Remove years & standard adjustment
+55,18,Newprt Trl,Sampled,,,,,,,,,,,0,Remove years & standard adjustment
+56,18,Newprt Trl,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove years & standard adjustment
+57,19,Coos B Spt,FRAM,926.999993,1090.000004,2440.000005,443.000006,9877.000034,4648.000004,1486.000036,3370.000012,4452.999988,9569.999987,38304.00007,No adjustment
+58,19,Coos B Spt,RMIS,927,1090,2456,498,9919,4653,1486,3396,4453,9590,38468,No adjustment
+59,19,Coos B Spt,Sampled,927,1090,2456,498,9919,4653,1486,3396,4453,9590,38468,No adjustment
+60,19,Coos B Spt,Xpansion,1,1,1,1,1,1,1,1,1,1,,No adjustment
+61,20,Coos B Trl,FRAM,0,0,0,0,963.999997,0,0,0,0,0,963.999997,Remove years & standard adjustment
+62,20,Coos B Trl,RMIS,,,,,,,,,,,0,Remove years & standard adjustment
+63,20,Coos B Trl,Sampled,,,,,,,,,,,0,Remove years & standard adjustment
+64,20,Coos B Trl,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove years & standard adjustment
+65,21,Tillmk Spt,FRAM,3360.000003,5721.000004,3160.000002,3630.000012,26526.00009,4940.000012,1774.000063,3641.000003,2808.999997,10703.99997,66265.00016,No adjustment
+66,21,Tillmk Spt,RMIS,3373,5721,3162,3635,26654,4974,1796,3679,2809,10720,66523,No adjustment
+67,21,Tillmk Spt,Sampled,3373,5721,3162,3635,26654,4974,1796,3679,2809,10720,66523,No adjustment
+68,21,Tillmk Spt,Xpansion,1,1,1,1,1,1,1,1,1,1,,No adjustment
+69,22,Tillmk Trl,FRAM,0,0,0,0,1078,0,0,0,0,0,1078,Remove years & standard adjustment
+70,22,Tillmk Trl,RMIS,,,,,,,,,,,0,Remove years & standard adjustment
+71,22,Tillmk Trl,Sampled,,,,,,,,,,,0,Remove years & standard adjustment
+72,22,Tillmk Trl,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove years & standard adjustment
+73,23,Buoy10 Spt,FRAM,7980.000018,7614.000001,7385.000002,7619.999999,57743.99999,36920.00017,9182.000239,18833.99998,6760.999997,22775,182815.0004,Standard adjustment
+74,23,Buoy10 Spt,RMIS,7926,7571,7375,7633,57278,36676,9116,18740,6728,23471,182514,Standard adjustment
+75,23,Buoy10 Spt,Sampled,7926,7571,7375,7633,57278,36515,9116,18740,6728,22500,181382,Standard adjustment
+76,23,Buoy10 Spt,Xpansion,1,1,1,1,1,1.004409147,1,1,1,1.043155556,,Standard adjustment
+77,24,L ColR Spt,FRAM,,,,,,,,,,,0,Remove  fishery
+78,24,L ColR Spt,RMIS,21836,18242,7221,15258,46751,7476,13794,10979,6985,10966,159508,Remove  fishery
+79,24,L ColR Spt,Sampled,2213,7564,2551,11829,38767,4178,9374,8193,5427,8256,98352,Remove  fishery
+80,24,L ColR Spt,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+81,25,L ColR Net,FRAM,,,,,,,,,,,0,Remove  fishery
+82,25,L ColR Net,RMIS,50050,34654,11787,37815,173059,20656,21177,25308,9145,20234,403885,Remove  fishery
+83,25,L ColR Net,Sampled,49426,34508,11760,37768,172849,20656,20209,25289,8765,20234,401464,Remove  fishery
+84,25,L ColR Net,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+85,26,Yngs B Net,FRAM,,,,,,,,,,,0,Remove  fishery
+86,26,Yngs B Net,RMIS,27565,25065,5971,14247,65930,11500,15785,13603,4229,3590,187485,Remove  fishery
+87,26,Yngs B Net,Sampled,27538,24543,5965,14140,65930,11500,15778,13603,4229,3558,186784,Remove  fishery
+88,26,Yngs B Net,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+89,31,UpColR Spt,FRAM,,,,,,,,,,,0,Remove  fishery
+90,31,UpColR Spt,RMIS,2460,4007,2367,3764,13769,2857,4411,3821,2859,3965,44280,Remove  fishery
+91,31,UpColR Spt,Sampled,14,,8,24,4793,150,4260,39,2021,2702,14011,Remove  fishery
+92,31,UpColR Spt,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+93,32,UpColR Net,FRAM,,,,,,,,,,,0,Remove  fishery
+94,32,UpColR Net,RMIS,9060,22946,5741,4888,33882,2218,5437,6727,3616,3938,98453,Remove  fishery
+95,32,UpColR Net,Sampled,9005,22946,5673,4884,33245,2184,5374,6500,2993,3282,96086,Remove  fishery
+96,32,UpColR Net,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+97,33,A1-Ast Spt,FRAM,24914.00002,26681.00001,11391.00002,20472.00004,75072.00022,44551.00008,18612.0001,21625.0001,20575.00007,53474.99995,317368.0006,No adjustment
+98,33,A1-Ast Spt,RMIS,24894,26983,11389,20542,75168,44549,18615,22250,20613,54126,319129,No adjustment
+99,33,A1-Ast Spt,Sampled,24894,26983,11389,20542,75168,44549,18615,22250,20613,54126,319129,No adjustment
+100,33,A1-Ast Spt,Xpansion,1,1,1,1,1,1,1,1,1,1,,No adjustment
+101,34,A1-Ast Trl,FRAM,1188.999999,501.999995,712.999999,552.999998,9973.000035,2877.000005,44.000001,601.000006,125.000001,1668.000003,18245.00004,Remove years & standard adjustment
+102,34,A1-Ast Trl,RMIS,1191,502,714,579,9940,2898,,601,125,1664,18214,Remove years & standard adjustment
+103,34,A1-Ast Trl,Sampled,931,372,594,367,8620,2430,,264,43,1314,14935,Remove years & standard adjustment
+104,34,A1-Ast Trl,Xpansion,1.279269603,1.349462366,1.202020202,1.577656676,1.153132251,1.192592593,0,2.276515152,2.906976744,1.266362253,,Remove years & standard adjustment
+105,35,Area2TrlNT,FRAM,1657.000003,1708.000007,88.999999,3759.000001,8525.000015,1839.000003,0,523.999994,365.999999,1330.999994,19798.00002,Remove years & standard adjustment
+106,35,Area2TrlNT,RMIS,1662,1711,856,3759,8525,1839,,524,371,1331,20578,Remove years & standard adjustment
+107,35,Area2TrlNT,Sampled,1575,1631,556,3561,8525,1407,,445,263,1055,19018,Remove years & standard adjustment
+108,35,Area2TrlNT,Xpansion,1.055238095,1.049049663,0,1.055602359,1,1.307036247,0,1.17752809,1.410646388,1.261611374,,Remove years & standard adjustment
+109,36,Area2TrlTR,FRAM,2137.000012,708.999997,1239.000007,1040.999995,624.000008,215.000001,10.999998,678.000007,804.999999,3122.000001,10581.00003,Remove  fishery
+110,36,Area2TrlTR,RMIS,2137,709,1239,1039,543,199,11,767,16,,6660,Remove  fishery
+111,36,Area2TrlTR,Sampled,,,,,,,,,,,0,Remove  fishery
+112,36,Area2TrlTR,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+113,37,Area 2 Spt,FRAM,12607.00001,13843.00001,11924.00001,20377.00002,54475.00017,30683.00008,42.99999,15750.00007,15370,20225.99998,195298.0003,No adjustment
+114,37,Area 2 Spt,RMIS,12670,13539,11925,20351,54391,30683,37,15067,15329,19468,193460,No adjustment
+115,37,Area 2 Spt,Sampled,12670,13539,11925,20351,54391,30683,37,15067,15329,19468,193460,No adjustment
+116,37,Area 2 Spt,Xpansion,1,1,1,1,1,1,1,1,1,1,,No adjustment
+117,38,Area3TrlT,FRAM,208.999999,1166.999996,2119.000003,1846.000004,4602.000003,308.999998,0,402.000004,487.999992,1290.000012,12432.00001,
+118,38,Area3TrlT,RMIS,191,1167,2119,1846,4602,309,,402,488,1293,12417,
+119,38,Area3TrlT,Sampled,175,1023,1975,1493,2099,263,,384,478,1285,9175,
+120,38,Area3TrlT,Xpansion,1.091428571,1.140762463,1.072911392,1.236436705,2.192472606,1.174904943,0,1.046875,1.020920502,1.006225681,,
+121,39,Area3TrlNT,FRAM,450.999992,510.999994,1226.000007,1680.000013,41684.00023,1689.000003,0,188.000004,16.999998,342.000008,47788.00025,
+122,39,Area3TrlNT,RMIS,439,515,1226,1647,41671,1689,,188,17,323,47715,
+123,39,Area3TrlNT,Sampled,299,,,,41544,1316,,,,,43159,
+124,39,Area3TrlNT,Xpansion,1.468227425,0,0,0,1.003057,1.28343465,0,0,0,0,,
+125,40,Area 3 Spt,FRAM,1179.999995,2049.000004,2244.000009,2798,4610.000012,578.999992,4.999997,1750,954.000002,1751.000002,17920.00001,No adjustment
+126,40,Area 3 Spt,RMIS,1164,2186,2367,2979,5286,689,5,1716,777,1903,19072,No adjustment
+127,40,Area 3 Spt,Sampled,1164,2186,2367,2979,5286,689,5,1716,777,1903,19072,No adjustment
+128,40,Area 3 Spt,Xpansion,1,1,1,1,0,1,0,1,1,1,,No adjustment
+129,41,Area 4 Spt,FRAM,3685.999991,3055.000005,7548.00002,6506.000023,5644.000008,7765.000006,52.999999,3533.000017,4939.000014,6179.999996,48909.00008,No adjustment
+130,41,Area 4 Spt,RMIS,3648,2909,7403,6327,5631,4162,58,3591,5116,6144,44989,No adjustment
+131,41,Area 4 Spt,Sampled,3648,2909,7403,6327,5631,4162,58,3591,5116,6144,44989,No adjustment
+132,41,Area 4 Spt,Xpansion,1,1,1,1,1,0,1,1,1,1,,No adjustment
+133,42,A4/4BTrlNT,FRAM,87.000001,140.000003,204.000001,308.999999,41.000001,34.000003,0,311.000003,809.999981,2234.000001,4169.999993,Remove years & standard adjustment
+134,42,A4/4BTrlNT,RMIS,134,136,204,309,41,34,,311,405,1117,2691,Remove years & standard adjustment
+135,42,A4/4BTrlNT,Sampled,111,45,198,128,17,14,,275,267,969,2024,Remove years & standard adjustment
+136,42,A4/4BTrlNT,Xpansion,1.207207207,3.022222222,1.03030303,2.4140625,2.411764706,2.428571429,0,1.130909091,0,0,,Remove years & standard adjustment
+137,43,A4/4BTrlT,FRAM,8888.000028,12346.00001,35065.00005,45550.00018,13806.00007,2459.999997,33,12392.99999,10979.99997,52040.99996,193562.0003,Remove years & standard adjustment
+138,43,A4/4BTrlT,RMIS,8900,12348,35069,45032,13731,2106,,12386,11534,52993,194099,Remove years & standard adjustment
+139,43,A4/4BTrlT,Sampled,8764,9664,34417,44963,11844,1660,,12386,11478,52822,187998,Remove years & standard adjustment
+140,43,A4/4BTrlT,Xpansion,1.015518028,1.277731788,1.018944126,1.001534595,1.159321175,1.268674699,0,1,1.004878899,1.003237287,,Remove years & standard adjustment
+141,44,A 5-6C Trl,FRAM,21.999984,101.000001,45.999997,236.000015,197.999995,881.999995,,180.000005,579,169.999999,2413.999991,Remove years & standard adjustment
+142,44,A 5-6C Trl,RMIS,22,101,46,236,198,882,,180,25,,1690,Remove years & standard adjustment
+143,44,A 5-6C Trl,Sampled,,,,161,,633,,,,,794,Remove years & standard adjustment
+144,44,A 5-6C Trl,Xpansion,0,0,0,1.465838509,0,1.393364929,0,0,0,0,,Remove years & standard adjustment
+145,45,Willpa Spt,FRAM,189,2351.000001,1461.000001,1263,11006,8611,1428.000001,923,622,1371.999999,29226,Remove years & standard adjustment
+146,45,Willpa Spt,RMIS,201,2388,1569,1153,,8728,1530,990,617,1276,18452,Remove years & standard adjustment
+147,45,Willpa Spt,Sampled,,,1511,,,6019,1500,858,617,1276,11781,Remove years & standard adjustment
+148,45,Willpa Spt,Xpansion,0,0,1.038385175,0,0,1.450074763,1.02,1.153846154,1,1,,Remove years & standard adjustment
+149,46,Wlp Tb Spt,FRAM,4785,3467,3590.999999,2983,10160,2610,3778,2285,1609.999999,2652,37921,Remove  fishery
+150,46,Wlp Tb Spt,RMIS,4937,3752,3852,3271,10382,2744,3999,2505,1800,2870,40112,Remove  fishery
+151,46,Wlp Tb Spt,Sampled,,,,,,,,,,,0,Remove  fishery
+152,46,Wlp Tb Spt,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+153,47,WlpaBT Net,FRAM,28901.00025,47985,25783,11560,77474.99997,589.000007,19324.00057,4614.999996,7252.999999,8199.999999,231685.0008,Remove years & standard adjustment
+154,47,WlpaBT Net,RMIS,28901,47985,25789,11569,77477,1926,19324,4615,7253,8200,233039,Remove years & standard adjustment
+155,47,WlpaBT Net,Sampled,24388,47253,25678,11014,74471,1545,19299,4572,7240,7946,223406,Remove years & standard adjustment
+156,47,WlpaBT Net,Xpansion,1.185050025,1.01549108,1.004322767,1.050390412,1.040364706,0,1.001295404,1.009405074,1.00179558,1.031965769,,Remove years & standard adjustment
+157,48,GryHbr Spt,FRAM,1879.999999,2862,6228.999998,1401.999998,6995,2064.000005,406.000002,1737.999998,791.999999,1862,26230,Remove years & standard adjustment
+158,48,GryHbr Spt,RMIS,1928,3141,6707,3442,6167,2154,423,1821,880,1930,28593,Remove years & standard adjustment
+159,48,GryHbr Spt,Sampled,,3020,6625,3398,5900,2099,361,1678,850,,23931,Remove years & standard adjustment
+160,48,GryHbr Spt,Xpansion,0,1.040066225,1.012377358,0,0,1.026202954,1.171745152,1.085220501,1.035294118,0,,Remove years & standard adjustment
+161,49,SGryHb Spt,FRAM,,108,,9,35,26,,79,,,257,Remove  fishery
+162,49,SGryHb Spt,RMIS,,,,,,,,,,,0,Remove  fishery
+163,49,SGryHb Spt,Sampled,,,,,,,,,,,0,Remove  fishery
+164,49,SGryHb Spt,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+165,50,GryHbr Net,FRAM,4090.000004,3517.000001,10279,5935.000003,5504.000002,1539.999999,231.999998,1170,818.000002,2000.000002,35085.00001,Remove years & standard adjustment
+166,50,GryHbr Net,RMIS,4090,3616,10279,5935,5504,1540,232,1176,821,2000,35193,Remove years & standard adjustment
+167,50,GryHbr Net,Sampled,4090,3611,10274,5932,5504,1313,232,1176,809,2000,34941,Remove years & standard adjustment
+168,50,GryHbr Net,Xpansion,1,1.001384658,1.000486665,1.000505732,1,1.172886519,1,1,1.014833127,1,,Remove years & standard adjustment
+169,51,Hump R Spt,FRAM,4101.000001,2933,3021,2797.000001,1691,749,1808,1414,1239.999999,949,20703,Remove  fishery
+170,51,Hump R Spt,RMIS,4413,3276,3555,2961,2510,902,1865,1711,1358,2028,24579,Remove  fishery
+171,51,Hump R Spt,Sampled,,,,,,,,,,,0,Remove  fishery
+172,51,Hump R Spt,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+173,52,LwCheh Net,FRAM,16485,21493,26960,18504.00001,56973,10606,998.000002,6584.999999,6942.999995,6562.000001,172109,Remove  fishery
+174,52,LwCheh Net,RMIS,17698,22041,29517,21153,63878,12000,2165,7562,7138,6562,189714,Remove  fishery
+175,52,LwCheh Net,Sampled,16450,21396,26950,18638,56586,10931,1274,6635,6933,6562,172355,Remove  fishery
+176,52,LwCheh Net,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+177,54,Chehal Spt,FRAM,6341,8602.000001,8879,16986.00001,18491,5332.999999,1728,5923,2213.999999,10779,85276.00001,Remove  fishery
+178,54,Chehal Spt,RMIS,5502,7676,7699,13372,14938,5169,1862,5833,2648,8608,73307,Remove  fishery
+179,54,Chehal Spt,Sampled,3375,4728,5084,,9972,,,,,,23159,Remove  fishery
+180,54,Chehal Spt,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+181,55,Hump R Net,FRAM,8948,6602.999999,4048.999999,3512.000001,10500,1601.000001,802.999999,4224.000001,2057,1461.999999,43759,Remove  fishery
+182,55,Hump R Net,RMIS,8802,6584,3550,3275,10144,1691,797,4162,2041,1652,42698,Remove  fishery
+183,55,Hump R Net,Sampled,8802,6584,3550,3275,10144,1691,797,4162,2041,1652,42698,Remove  fishery
+184,55,Hump R Net,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+185,56,UpCheh Net,FRAM,1216,645.000001,2470,2515.000001,7291.999999,1069,884.999999,857.999999,177.000001,,17127,Remove  fishery
+186,56,UpCheh Net,RMIS,,,,,,,,,,,0,Remove  fishery
+187,56,UpCheh Net,Sampled,,,,,,,,,,,0,Remove  fishery
+188,56,UpCheh Net,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+189,61,Satsop Spt,FRAM,,,,,,,,,,,0,Remove  fishery
+190,61,Satsop Spt,RMIS,1506,2928,2213,5585,4575,881,999,1361,1131,2233,23412,Remove  fishery
+191,61,Satsop Spt,Sampled,,,,,,,,,,,0,Remove  fishery
+192,61,Satsop Spt,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+193,62,Quin R Spt,FRAM,,,,,,,,,,,0,Remove  fishery
+194,62,Quin R Spt,RMIS,681,803,956,1031,982,527,598,630,23,778,7009,Remove  fishery
+195,62,Quin R Spt,Sampled,,,,,,,,,,,0,Remove  fishery
+196,62,Quin R Spt,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+197,63,Quin R Net,FRAM,42262.0003,38451,19166,20698,50715.99998,9625,37135.00007,33987,12084.99999,4334.000003,268459.0003,Remove  fishery
+198,63,Quin R Net,RMIS,41764,38448,19159,24635,50385,9722,37263,33848,12083,4349,271656,Remove  fishery
+199,63,Quin R Net,Sampled,41764,38448,19159,24635,50385,9722,37263,33848,12083,4349,271656,Remove  fishery
+200,63,Quin R Net,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+201,65,Queets Spt,FRAM,962.999999,1520,527,1285,1625,308,441.000001,107.000001,184,639,7599.000001,Remove  fishery
+202,65,Queets Spt,RMIS,1001,1550,563,1200,1647,308,468,103,242,773,7855,Remove  fishery
+203,65,Queets Spt,Sampled,,,,,,,,,,,0,Remove  fishery
+204,65,Queets Spt,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+205,68,Queets Net,FRAM,21103.00011,16669,6135.000001,4542.999997,15179,2262,6790.000008,7598.999998,3312.999994,2560.000002,86153.00011,Remove  fishery
+206,68,Queets Net,RMIS,21137,16635,6117,4510,15466,2247,6775,7590,3311,2559,86347,Remove  fishery
+207,68,Queets Net,Sampled,21137,16635,6117,4510,15466,2247,6775,7590,3311,2559,86347,Remove  fishery
+208,68,Queets Net,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+209,69,Queets C&S,FRAM,,,,,,,,,,349,349,Remove  fishery
+210,69,Queets C&S,RMIS,,,,,,,,,,,0,Remove  fishery
+211,69,Queets C&S,Sampled,,,,,,,,,,,0,Remove  fishery
+212,69,Queets C&S,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+213,70,Quilly Spt,FRAM,3877,4383,1570.999999,4701.000004,6125,2993,574,3442.000001,1798.000001,2509,31973.00001,Remove  fishery
+214,70,Quilly Spt,RMIS,4221,4587,1948,4697,6492,3350,719,3651,2140,3318,35123,Remove  fishery
+215,70,Quilly Spt,Sampled,,,,,,,,,,,0,Remove  fishery
+216,70,Quilly Spt,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+217,71,Quilly Net,FRAM,28787,24185,11511,13957.00001,31688,5780.999998,7719.000009,25838,5954.999996,3502.000001,158923,Remove  fishery
+218,71,Quilly Net,RMIS,28893,24199,11517,13962,31689,5781,7733,19594,5659,3587,152614,Remove  fishery
+219,71,Quilly Net,Sampled,28888,24177,11514,13950,31680,5778,7718,19587,5655,3587,152534,Remove  fishery
+220,71,Quilly Net,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+221,72,Quilly C&S,FRAM,,4,,,,,,,,303,307,Remove  fishery
+222,72,Quilly C&S,RMIS,,,,,,,,,,,0,Remove  fishery
+223,72,Quilly C&S,Sampled,,,,,,,,,,,0,Remove  fishery
+224,72,Quilly C&S,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+225,73,Hoh R  Spt,FRAM,,,,,,,,,,,0,Remove  fishery
+226,73,Hoh R  Spt,RMIS,513,1246,468,998,453,289,40,926,427,1362,6722,Remove  fishery
+227,73,Hoh R  Spt,Sampled,,,,,,,,,,,0,Remove  fishery
+228,73,Hoh R  Spt,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+229,74,Hoh R  Net,FRAM,2810.000004,3550.999998,2890.000002,4802.000001,3574.000001,496.000002,294.999999,1576.999999,560,297.000001,20852.00001,Remove  fishery
+230,74,Hoh R  Net,RMIS,,,,,,,,,756,297,1053,Remove  fishery
+231,74,Hoh R  Net,Sampled,,,,,,,,,687,,687,Remove  fishery
+232,74,Hoh R  Net,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+233,75,Hoh R  C&S,FRAM,,,,,,,,,,,0,Remove  fishery
+234,75,Hoh R  C&S,RMIS,,,,,,,,,,,0,Remove  fishery
+235,75,Hoh R  C&S,Sampled,,,,,,,,,,,0,Remove  fishery
+236,75,Hoh R  C&S,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+237,76,Mak FW Spt,FRAM,,,,,,,,,,,0,Remove  fishery
+238,76,Mak FW Spt,RMIS,6,124,,15,82,18,,10,,,255,Remove  fishery
+239,76,Mak FW Spt,Sampled,,,,,,,,,,,0,Remove  fishery
+240,76,Mak FW Spt,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+241,77,Mak FW Net,FRAM,1586,250,66,1826,798,160,5613,4448,539,1320,16606,Remove  fishery
+242,77,Mak FW Net,RMIS,1586,308,68,1826,798,164,5613,313,539,1320,12535,Remove  fishery
+243,77,Mak FW Net,Sampled,,163,44,,,,3881,,,,4088,Remove  fishery
+244,77,Mak FW Net,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+245,79,A 4-4A Net,FRAM,,,,,,,,,,,0,Remove  fishery
+246,79,A 4-4A Net,RMIS,,,,38,,69,15,6,1,1,130,Remove  fishery
+247,79,A 4-4A Net,Sampled,,,,,,,,,,,0,Remove  fishery
+248,79,A 4-4A Net,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+249,81,4B-6C  Net,FRAM,3278.999996,2655.999997,3856.000045,2480.000003,2458.999987,816.000002,688.000005,983.000005,4456.999996,407.000008,22081.00004,Remove years & standard adjustment
+250,81,4B-6C  Net,RMIS,3344,2665,4051,2606,2459,816,750,983,4560,418,22652,Remove years & standard adjustment
+251,81,4B-6C  Net,Sampled,1792,2269,2785,938,644,707,178,,3204,,12517,Remove years & standard adjustment
+252,81,4B-6C  Net,Xpansion,1.866071429,1.174526223,1.454578097,2.778251599,3.818322981,1.15417256,4.213483146,0,1.423220974,0,,Remove years & standard adjustment
+253,83,6D-DgR Net,FRAM,1271.000001,5020.999999,5269.999999,2065.000001,3244.999998,295,3931.000008,4842.000014,3312.999985,1200.000054,30453.00006,No adjustment
+254,83,6D-DgR Net,RMIS,1271,5021,5369,2057,3195,323,3957,4894,3313,1205,30605,No adjustment
+255,83,6D-DgR Net,Sampled,1271,4979,5369,2057,3195,323,3939,4894,3313,1205,30545,No adjustment
+256,83,6D-DgR Net,Xpansion,1,1.008435429,1,1,1,1,1.004569688,1,1,1,,No adjustment
+257,84,Elwha  Net,FRAM,1250,586,11,,,,,,,,1847,Remove  fishery
+258,84,Elwha  Net,RMIS,1250,586,11,,,,,,,,1847,Remove  fishery
+259,84,Elwha  Net,Sampled,1136,36,,,,,,,,,1172,Remove  fishery
+260,84,Elwha  Net,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+261,85,WJDF T Net,FRAM,,,,,,,,,,,0,Remove  fishery
+262,85,WJDF T Net,RMIS,21,57,3,42,28,34,16,10,1,,212,Remove  fishery
+263,85,WJDF T Net,Sampled,,,,,,,,,,,0,Remove  fishery
+264,85,WJDF T Net,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+265,88,A 6-7A Net,FRAM,4708.000003,11474.99999,10216,19476.00003,19430,3938.99999,4175.999978,3351.999996,3830.999988,2409.999991,83012.99997,Standard adjustment
+266,88,A 6-7A Net,RMIS,4719,11346,10533,20559,19661,4119,4065,3501,3947,2204,84654,Standard adjustment
+267,88,A 6-7A Net,Sampled,2871,8388,6354,15806,17708,3547,3783,3080,2708,1765,66010,Standard adjustment
+268,88,A 6-7A Net,Xpansion,1.643678161,1.352646638,1.65769594,1.300708592,1.110289135,1.161263039,1.074544013,1.136688312,1.457533235,1.248725212,,Standard adjustment
+269,89,EJDF FWSpt,FRAM,,,,,,,,,,,0,Remove  fishery
+270,89,EJDF FWSpt,RMIS,,,20,,,,,,,,20,Remove  fishery
+271,89,EJDF FWSpt,Sampled,,,,,,,,,,,0,Remove  fishery
+272,89,EJDF FWSpt,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+273,90,WJDF FWSpt,FRAM,,,,,,,,,,,0,Remove  fishery
+274,90,WJDF FWSpt,RMIS,2,,20,31,,9,,,,47,109,Remove  fishery
+275,90,WJDF FWSpt,Sampled,,,,,,,,,,,0,Remove  fishery
+276,90,WJDF FWSpt,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+277,91,Area 5 Spt,FRAM,15679.00005,18070.99999,44496.00001,34315.00002,30799.99996,27529.99998,26.000004,2754.999995,14302.99987,12254,200228.9999,divide FRAM by RMIS
+278,91,Area 5 Spt,RMIS,12959,28596,73163,40394,47287,56043,28,4879,22869,26057,312275,divide FRAM by RMIS
+279,91,Area 5 Spt,Sampled,12959,28596,73124,40357,47287,55921,28,4879,22869,26004,312024,divide FRAM by RMIS
+280,91,Area 5 Spt,Xpansion,1.209892742,0.63194153,0.608176264,0.849507353,0.651341806,0.491229948,0.928571571,0.564664889,0.625431801,0.470276701,,divide FRAM by RMIS
+281,92,Area 6 Spt,FRAM,663.000002,4067.000004,10489.00001,7409.000005,15722,10842,0,74.999989,5090.999939,3550.000004,57907.99996,Remove years & standard adjustment
+282,92,Area 6 Spt,RMIS,663,4070,11130,6415,15722,11814,86,75,5091,3542,58608,Remove years & standard adjustment
+283,92,Area 6 Spt,Sampled,663,4039,11130,6405,15715,11776,12,75,5091,3533,58439,Remove years & standard adjustment
+284,92,Area 6 Spt,Xpansion,1,1.007675167,1,0,1.000445434,1.003226902,0,1,1,1.00254741,,Remove years & standard adjustment
+285,93,Area 7 Spt,FRAM,622.999998,869.000007,2182.000003,2551.000019,1968.999999,3776.000001,0,55.000002,4763.999939,5747.000005,22535.99997,Remove years & standard adjustment
+286,93,Area 7 Spt,RMIS,623,865,2344,2182,1969,3678,19,55,4764,5775,22274,Remove years & standard adjustment
+287,93,Area 7 Spt,Sampled,623,865,2344,2172,1969,3656,19,55,4764,5775,22242,Remove years & standard adjustment
+288,93,Area 7 Spt,Xpansion,1,1,1,1.004604052,1,1.006017505,0,1,1,1,,Remove years & standard adjustment
+289,94,Dung R Spt,FRAM,214,2136,893,1438.000001,464.000001,303,638.000003,1030.000003,211.999999,639.000036,7967.000043,Remove  fishery
+290,94,Dung R Spt,RMIS,233,2143,985,1089,464,331,793,1040,212,628,7918,Remove  fishery
+291,94,Dung R Spt,Sampled,,,,,,,,,,,0,Remove  fishery
+292,94,Dung R Spt,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+293,95,ElwhaR Spt,FRAM,70,9,,,,,,,,,79,Remove  fishery
+294,95,ElwhaR Spt,RMIS,76,9,,15,,18,,,,,118,Remove  fishery
+295,95,ElwhaR Spt,Sampled,,,,,,,,,,,0,Remove  fishery
+296,95,ElwhaR Spt,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+297,97,7B-7D  Net,FRAM,70588.00025,55299.99999,44014,53446.99999,18359.99998,5792.999995,33222.00008,14198.99997,30360.99976,10893.00001,336177,Combine fisheries 97 & 98
+298,97,7B-7D  Net,RMIS,70629,71640,60667,93357,29460,15170,51833,29757,55344,28965,506822,Combine fisheries 97 & 98
+299,97,7B-7D  Net,Sampled,67488,70970,60431,92254,29177,15083,51115,28259,52662,28694,496133,Combine fisheries 97 & 98
+300,97,7B-7D  Net,Xpansion,1.069811873,1.009440609,1.00390528,1.011956121,1.009699421,1.005768083,1.014046757,1.053009661,1.050928563,1.009444483,,Combine fisheries 97 & 98
+301,98,Nook R Net,FRAM,13363,16340,16597,39901.00007,11068,9399.999999,18636,15555,24857,18060,183777.0001,Combine fisheries 97 & 98
+302,98,Nook R Net,RMIS,13363,,,,,,,,,,13363,Combine fisheries 97 & 98
+303,98,Nook R Net,Sampled,11023,,,,,,,,,,11023,Combine fisheries 97 & 98
+304,98,Nook R Net,Xpansion,0,0,0,0,0,0,0,0,0,0,,Combine fisheries 97 & 98
+305,99,Nook R Spt,FRAM,922.000001,1336,2592,2164.000004,887,2906,578,706,4480,2202.999999,18774,Remove  fishery
+306,99,Nook R Spt,RMIS,934,1372,2674,1801,923,2907,636,716,4529,2253,18745,Remove  fishery
+307,99,Nook R Spt,Sampled,,,,,,,,,,,0,Remove  fishery
+308,99,Nook R Spt,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+309,100,Samh R Spt,FRAM,,,,,,,,,,,0,Remove  fishery
+310,100,Samh R Spt,RMIS,360,332,178,1021,208,297,224,204,232,272,3328,Remove  fishery
+311,100,Samh R Spt,Sampled,,,,,,,,,,,0,Remove  fishery
+312,100,Samh R Spt,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+313,102,Area 8 Net,FRAM,1431.000012,523.000009,1261.000008,3421.000002,838.000001,305.999996,133.000001,,207.999993,16,8137.000022,Remove years & standard adjustment
+314,102,Area 8 Net,RMIS,1431,523,1275,3421,838,345,133,,208,16,8190,Remove years & standard adjustment
+315,102,Area 8 Net,Sampled,1318,348,1033,3380,415,311,132,,,,6937,Remove years & standard adjustment
+316,102,Area 8 Net,Xpansion,1.085735964,1.502873563,1.234269119,1.012130178,2.019277108,1.109324759,1.007575758,0,0,0,,Remove years & standard adjustment
+317,103,Skag R Net,FRAM,21995,20118,16930,21428.00006,11986,2370,4407.999999,26,11715,3932,114908.0001,Remove  fishery
+318,103,Skag R Net,RMIS,23669,21460,18352,23526,13571,2757,5480,1044,13059,4530,127448,Remove  fishery
+319,103,Skag R Net,Sampled,23302,21225,18341,23490,13548,2756,5407,1042,12959,4421,126491,Remove  fishery
+320,103,Skag R Net,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+321,104,SkgR TsNet,FRAM,1658,1151.999999,1387.999999,2001.000005,1447,338,1029.999999,1018,1355,597,11984,Remove  fishery
+322,104,SkgR TsNet,RMIS,,,,,,,,,,,0,Remove  fishery
+323,104,SkgR TsNet,Sampled,,,,,,,,,,,0,Remove  fishery
+324,104,SkgR TsNet,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+325,106,Ar 8-1 Spt,FRAM,109.000003,994.999996,2204.999999,3092.000002,3577,4302.999999,0,0,1181.999986,2099.000003,17561.99999,Remove years & standard adjustment
+326,106,Ar 8-1 Spt,RMIS,109,996,2348,2574,3577,4336,,,1190,2099,17229,Remove years & standard adjustment
+327,106,Ar 8-1 Spt,Sampled,109,994,2341,2569,3570,4283,,,1190,2099,17155,Remove years & standard adjustment
+328,106,Ar 8-1 Spt,Xpansion,1,1.002012072,1.002990175,0,1.001960784,1.012374504,0,0,1,1,,Remove years & standard adjustment
+329,107,Area 9 Spt,FRAM,2169.000002,12780.00001,44749.00001,38522.00005,31613.99991,45636.00001,22.000001,4184.999998,6113.999948,7449.000015,193240,Remove years & standard adjustment
+330,107,Area 9 Spt,RMIS,2169,16361,47951,32647,31614,45893,22,4185,6114,7815,194771,Remove years & standard adjustment
+331,107,Area 9 Spt,Sampled,2164,16361,47931,32612,31614,45697,22,4151,6103,7770,194425,Remove years & standard adjustment
+332,107,Area 9 Spt,Xpansion,1.002310536,0,1.000417266,0,1,1.004289122,1,1.008190797,1.001802392,1.005791506,,Remove years & standard adjustment
+333,108,Skag R Spt,FRAM,2784.000001,5993,6172.000001,13952.00004,3672.000001,2602.999999,3446,,4080.000001,7144.000001,49846.00004,Remove  fishery
+334,108,Skag R Spt,RMIS,2814,6059,6574,11908,3737,2631,3465,,4206,7287,48681,Remove  fishery
+335,108,Skag R Spt,Sampled,355,,,,,,,,,,355,Remove  fishery
+336,108,Skag R Spt,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+337,110,Ar8A Net,FRAM,1564.999998,10958,15547.99999,17717,9506.999989,1837,1,1204.999991,10195.99974,1642.000003,70175.99971,Remove years & standard adjustment
+338,110,Ar8A Net,RMIS,1582,10959,14375,17715,9519,2650,132,1205,10196,1642,69975,Remove years & standard adjustment
+339,110,Ar8A Net,Sampled,1582,10937,13840,17696,5719,788,124,787,10196,240,61909,Remove years & standard adjustment
+340,110,Ar8A Net,Xpansion,1,1.002011521,1.038656069,1.001073689,1.664451827,0,0,1.531130877,1,6.841666667,,Remove years & standard adjustment
+341,112,Ar8D Net,FRAM,249.000004,8867.000001,39978,35860,37011.99998,6449.387528,77195,44337.99997,15680.99967,3509.000007,269138.3872,Remove years & standard adjustment
+342,112,Ar8D Net,RMIS,275,8867,41309,36139,36789,5622,77370,44341,15681,3487,269880,Remove years & standard adjustment
+343,112,Ar8D Net,Sampled,204,8641,41294,35620,36550,5203,73954,44330,14755,1242,261793,Remove years & standard adjustment
+344,112,Ar8D Net,Xpansion,1.348039216,1.02615438,1.000363249,1.014570466,1.006538988,0,1.046190875,1.000248139,1.062758387,2.807568438,,Remove years & standard adjustment
+345,113,Stil R Net,FRAM,136.000001,1736,1599,497,408,87.788223,,14,112,96.999999,4686.788223,Remove  fishery
+346,113,Stil R Net,RMIS,136,1796,1599,994,408,,,14,112,97,5156,Remove  fishery
+347,113,Stil R Net,Sampled,,951,451,586,89,,,,,,2077,Remove  fishery
+348,113,Stil R Net,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+349,114,Snoh R Net,FRAM,,,,,,,,,,,0,Remove  fishery
+350,114,Snoh R Net,RMIS,,,7,7,,,,,,,14,Remove  fishery
+351,114,Snoh R Net,Sampled,,,,,,,,,,,0,Remove  fishery
+352,114,Snoh R Net,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+353,115,Ar 8-2 Spt,FRAM,592.000003,4853.999995,13131,10275.00001,8968.999981,8128.000001,31.999997,181.000001,9742.999753,548,56452.99973,Remove years & standard adjustment
+354,115,Ar 8-2 Spt,RMIS,592,4853,13802,8836,8969,8108,32,181,9750,557,55680,Remove years & standard adjustment
+355,115,Ar 8-2 Spt,Sampled,592,4853,13775,8836,8965,8108,32,181,9674,548,55564,Remove years & standard adjustment
+356,115,Ar 8-2 Spt,Xpansion,1,1,1.001960073,0,1.00044618,1,1,1,1.007856109,1.016423358,,Remove years & standard adjustment
+357,116,Stil R Spt,FRAM,341,1651,1220.000001,2646.000001,214,346.999999,,0,,931.999999,7351,Remove  fishery
+358,116,Stil R Spt,RMIS,341,1658,1225,2273,221,346,,,,933,6997,Remove  fishery
+359,116,Stil R Spt,Sampled,,,,,,,,,,,0,Remove  fishery
+360,116,Stil R Spt,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+361,117,Snoh R Spt,FRAM,1564,7550,6901,16295.00001,2539,3717,1194,2664,944,1638,45006.00001,Remove  fishery
+362,117,Snoh R Spt,RMIS,1588,7709,7054,13598,2596,3751,1231,2849,984,1681,43041,Remove  fishery
+363,117,Snoh R Spt,Sampled,,,,,,,479,,,,479,Remove  fishery
+364,117,Snoh R Spt,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+365,118,Ar 10  Spt,FRAM,2429.000001,10925.00001,21402.00003,16344.00006,12011.99998,15946,77,20344.99976,26297.99971,28538.00003,154315.9996,Remove years & standard adjustment
+366,118,Ar 10  Spt,RMIS,2429,14160,23672,15031,12012,16278,77,20345,26298,29339,159641,Remove years & standard adjustment
+367,118,Ar 10  Spt,Sampled,2424,14104,23476,15015,11982,16270,35,20312,26298,29330,159246,Remove years & standard adjustment
+368,118,Ar 10  Spt,Xpansion,1.002062706,0,0,1.001065601,1.002503756,1.000491703,2.2,1.001624655,1,1.000306853,,Remove years & standard adjustment
+369,120,Ar10 Net,FRAM,69.000002,433.999997,3855.000007,848.000006,1305.999997,292.99999,1210.999996,2457.999952,2371.999953,333.000002,13178.9999,Remove years & standard adjustment
+370,120,Ar10 Net,RMIS,96,483,3895,940,391,126,1447,2701,2372,296,12747,Remove years & standard adjustment
+371,120,Ar10 Net,Sampled,55,211,482,373,325,118,849,1690,39,109,4251,Remove years & standard adjustment
+372,120,Ar10 Net,Xpansion,1.745454545,2.289099526,8.080912863,2.520107239,0,1.06779661,1.704358068,1.598224852,0,2.71559633,,Remove years & standard adjustment
+373,122,A10A Net,FRAM,204.000001,223,2158.999998,2421,1186.999998,2,851.000001,1899.999962,2463.999966,637.000001,12047.99993,Remove years & standard adjustment
+374,122,A10A Net,RMIS,204,255,2159,2421,1348,2,963,1934,2465,637,12388,Remove years & standard adjustment
+375,122,A10A Net,Sampled,173,221,2099,1585,1342,,894,1896,2285,474,10969,Remove years & standard adjustment
+376,122,A10A Net,Xpansion,1.179190751,1.153846154,1.02858504,1.527444795,1.004470939,0,1.077181208,1.020042194,1.078774617,1.343881857,,Remove years & standard adjustment
+377,124,A10E Net,FRAM,22.000002,1065.999998,853.999998,1740.000006,482,9,3251.000008,538.999985,3.999999,61,8027.999996,Remove years & standard adjustment
+378,124,A10E Net,RMIS,23,1089,854,1761,290,,3386,539,4,61,8007,Remove years & standard adjustment
+379,124,A10E Net,Sampled,1,1080,539,1687,290,,3380,285,4,,7266,Remove years & standard adjustment
+380,124,A10E Net,Xpansion,0,1.008333333,1.584415584,1.043864849,1,0,1.001775148,1.89122807,0,0,,Remove years & standard adjustment
+381,125,10F-G  Net,FRAM,55,512.999999,3999.999999,3531.000002,3439.999994,108,6989,4829.999955,1697.999985,2659.000001,27822.99994,Remove years & standard adjustment
+382,125,10F-G  Net,RMIS,55,493,3964,3540,3440,121,7030,4859,1744,2659,27905,Remove years & standard adjustment
+383,125,10F-G  Net,Sampled,,487,3964,3540,3273,121,6678,4859,1744,457,25123,Remove years & standard adjustment
+384,125,10F-G  Net,Xpansion,0,1.012320329,1,1,1.051023526,1,1.052710392,1,1,5.818380744,,Remove years & standard adjustment
+385,126,Duwm R Net,FRAM,15903,25705,45864,45514.00003,28770,228,24970,14320,40751,6120.000001,248145,Remove  fishery
+386,126,Duwm R Net,RMIS,16056,25965,45864,45567,28770,475,25198,14354,40751,6129,249129,Remove  fishery
+387,126,Duwm R Net,Sampled,15320,25910,42367,43516,27847,473,25014,11866,39108,16,231437,Remove  fishery
+388,126,Duwm R Net,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+389,127,Duwm R Spt,FRAM,885,2479.000001,4163,4228.000003,2108,2231.999999,1750,1290,2042,3057,24234,Remove  fishery
+390,127,Duwm R Spt,RMIS,941,2816,4683,3635,2521,2581,2183,1513,2167,3944,26984,Remove  fishery
+391,127,Duwm R Spt,Sampled,,,,,,,,,,,0,Remove  fishery
+392,127,Duwm R Spt,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+393,128,L WaSm Spt,FRAM,6,121.000001,141,149,758,132,694,542,301,604,3448.000001,Remove  fishery
+394,128,L WaSm Spt,RMIS,6,121,160,125,758,152,771,562,311,638,3604,Remove  fishery
+395,128,L WaSm Spt,Sampled,,,,,,,771,,,,771,Remove  fishery
+396,128,L WaSm Spt,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+397,129,Ar 11  Spt,FRAM,325.999999,1505.999997,7056.00001,1275.999997,1435.999996,1525,72.999997,3408.999964,5466.999889,2508.000006,24581.99986,Remove years & standard adjustment
+398,129,Ar 11  Spt,RMIS,326,2708,9290,1212,1436,3140,73,3409,5467,3026,30087,Remove years & standard adjustment
+399,129,Ar 11  Spt,Sampled,319,2702,9290,1212,1436,3140,58,3409,5467,3017,30050,Remove years & standard adjustment
+400,129,Ar 11  Spt,Xpansion,1.021943574,0,0,1,1,0,1.25862069,1,1,0,,Remove years & standard adjustment
+401,131,Ar11 Net,FRAM,0.999999,15.999999,27.000002,240.999999,138.000002,33.000002,76.000002,337.999995,307.999995,,1177.999995,Remove  fishery
+402,131,Ar11 Net,RMIS,1,78,30,296,248,34,76,338,309,,1410,Remove  fishery
+403,131,Ar11 Net,Sampled,,2,8,,101,30,,,2,,143,Remove  fishery
+404,131,Ar11 Net,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+405,133,A11A Net,FRAM,,24,,,,,,,,,24,Remove  fishery
+406,133,A11A Net,RMIS,,24,,,,,,,,,24,Remove  fishery
+407,133,A11A Net,Sampled,,,,,,,,,,,0,Remove  fishery
+408,133,A11A Net,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+409,134,Puyl R Net,FRAM,3038.999999,5658.000001,11135.00001,9577.000019,9320.000001,1778.000001,58,6247,17301,8526.000001,72639.00003,Remove  fishery
+410,134,Puyl R Net,RMIS,3039,5658,11216,9604,9634,1778,64,6256,17304,8526,73079,Remove  fishery
+411,134,Puyl R Net,Sampled,2630,5389,10303,8745,9429,1592,6,5263,17301,7469,68127,Remove  fishery
+412,134,Puyl R Net,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+413,135,Puyl R Spt,FRAM,671,10229,8133.000004,20662.00004,4330,3755,26,4232,4739,6027,62804.00005,Remove  fishery
+414,135,Puyl R Spt,RMIS,719,11252,8486,18487,4711,4510,26,4870,5122,9617,67800,Remove  fishery
+415,135,Puyl R Spt,Sampled,171,,,,,,,,,,171,Remove  fishery
+416,135,Puyl R Spt,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+417,136,Ar 13  Spt,FRAM,91,222,732.000007,151.999999,105.999999,212.999999,537.999998,886.999999,643.999994,504,4088.999995,Standard adjustment
+418,136,Ar 13  Spt,RMIS,101,222,895,218,106,213,614,887,644,504,4404,Standard adjustment
+419,136,Ar 13  Spt,Sampled,76,210,854,180,106,213,614,879,594,504,4230,Standard adjustment
+420,136,Ar 13  Spt,Xpansion,1.328947368,1.057142857,1.048009368,1.211111111,1,1,1,1.009101251,1.084175084,1,,Standard adjustment
+421,138,Ar13 Net,FRAM,3.000001,111,36.000001,85.000002,,,,84.999998,507.000001,,827.000003,Remove  fishery
+422,138,Ar13 Net,RMIS,87,,,37,,,73,226,,,423,Remove  fishery
+423,138,Ar13 Net,Sampled,87,,,,,,73,226,,,386,Remove  fishery
+424,138,Ar13 Net,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+425,140,A13C Net,FRAM,,,,,,,,,,,0,Remove  fishery
+426,140,A13C Net,RMIS,7,113,36,90,,,,85,507,,838,Remove  fishery
+427,140,A13C Net,Sampled,7,12,,42,,,,,,,61,Remove  fishery
+428,140,A13C Net,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+429,142,A13A Net,FRAM,868.000002,1560.000002,2396.000011,404,166,1,141.999999,913.999988,1024.999992,183,7658.999994,Remove years & standard adjustment
+430,142,A13A Net,RMIS,875,1560,2396,425,166,1,142,914,1048,183,7710,Remove years & standard adjustment
+431,142,A13A Net,Sampled,289,649,2031,401,,1,,,10,,3381,Remove years & standard adjustment
+432,142,A13A Net,Xpansion,3.027681661,2.403697997,1.179714426,1.059850374,0,0,0,0,0,0,,Remove years & standard adjustment
+433,144,A13D Net,FRAM,2722.000006,4683.000036,54046.00068,17193.00002,8426.999998,7950.999999,38726,37578.9996,41027.99878,23890.00005,236244.9992,Standard adjustment
+434,144,A13D Net,RMIS,2722,4683,54046,17884,8370,7951,38430,37579,41028,23890,236583,Standard adjustment
+435,144,A13D Net,Sampled,1887,3572,48734,17613,6028,7203,38017,37141,40207,23641,224043,Standard adjustment
+436,144,A13D Net,Xpansion,1.442501325,1.311030235,1.108999877,1.015386362,1.388520239,1.10384562,1.010863561,1.011792897,1.02041933,1.010532549,,Standard adjustment
+437,146,13FK Net,FRAM,4,55,450.000011,61,155,70,458,689,190,46,2178.000011,Remove  fishery
+438,146,13FK Net,RMIS,4,55,450,24,155,70,523,742,197,46,2266,Remove  fishery
+439,146,13FK Net,Sampled,,,35,,,,421,59,94,,609,Remove  fishery
+440,146,13FK Net,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+441,147,Nisq R Net,FRAM,3436.999993,2630.000056,8347.000193,3643.000009,2500,881.000001,1058.999999,4105,1226.999999,386,28215.00025,Remove  fishery
+442,147,Nisq R Net,RMIS,3437,2630,8347,3553,2595,994,1067,4105,1227,401,28356,Remove  fishery
+443,147,Nisq R Net,Sampled,3428,2562,8219,3382,2595,960,999,4094,1164,267,27670,Remove  fishery
+444,147,Nisq R Net,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+445,148,McAlls Net,FRAM,,,,,,,,,7.000001,,7.000001,Remove  fishery
+446,148,McAlls Net,RMIS,,,,,,,,,7,,7,Remove  fishery
+447,148,McAlls Net,Sampled,,,,,,,,,,,0,Remove  fishery
+448,148,McAlls Net,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+449,149,13D-K TSpt,FRAM,,,,,,,,,,,0,Remove  fishery
+450,149,13D-K TSpt,RMIS,,,65,,,,,,175,719,959,Remove  fishery
+451,149,13D-K TSpt,Sampled,,,,,,,,,,,0,Remove  fishery
+452,149,13D-K TSpt,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+453,150,Nisq R Spt,FRAM,798.999998,894.000016,4000.000082,1681.000004,621,314.999999,9.999999,3944,10,803,13077.0001,Remove  fishery
+454,150,Nisq R Spt,RMIS,938,1117,4375,1576,684,540,20,4528,29,1129,14936,Remove  fishery
+455,150,Nisq R Spt,Sampled,,,,,,,,,,,0,Remove  fishery
+456,150,Nisq R Spt,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+457,151,Desc R Spt,FRAM,,,,,,,,,,,0,Remove  fishery
+458,151,Desc R Spt,RMIS,,,4,,,,,,,,4,Remove  fishery
+459,151,Desc R Spt,Sampled,,,,,,,,,,,0,Remove  fishery
+460,151,Desc R Spt,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+461,152,Ar 12  Spt,FRAM,329.000005,3195,2033.999998,2418.999997,1492.999988,1147.000004,4037.000004,2418.999953,644.999983,1320.000003,19037.99994,Remove years & standard adjustment
+462,152,Ar 12  Spt,RMIS,329,3183,2036,1634,1493,1155,4037,2419,645,1322,18253,Remove years & standard adjustment
+463,152,Ar 12  Spt,Sampled,48,,309,1634,241,257,4037,2419,640,1313,10898,Remove years & standard adjustment
+464,152,Ar 12  Spt,Xpansion,6.854166667,0,6.588996764,0,6.195020747,4.494163424,1,1,1.0078125,1.006854532,,Remove years & standard adjustment
+465,154,A1212B Net,FRAM,5220.00001,15047.00001,24239.00004,10869.00004,11903.99999,3957.999991,5643.000012,6606.999997,5627.99999,1688.000004,90803.00008,Remove years & standard adjustment
+466,154,A1212B Net,RMIS,5395,14895,24284,10874,11934,4099,6327,6757,5689,1691,91945,Remove years & standard adjustment
+467,154,A1212B Net,Sampled,2595,11041,16215,9177,11413,3724,5648,6720,5113,1526,73172,Remove years & standard adjustment
+468,154,A1212B Net,Xpansion,2.078998073,1.349062585,1.497625655,1.184918819,1.045649698,1.100698174,0,1.005505952,1.112654019,1.108125819,,Remove years & standard adjustment
+469,156,Ar9-9A Net,FRAM,4804.000049,15310.99997,18114.99998,8316.999994,3916.999976,554.000013,21096.00002,7293.999735,443.999992,280.000007,80131.99974,Standard adjustment
+470,156,Ar9-9A Net,RMIS,4749,15318,18338,8367,4050,553,21180,7147,440,317,80459,Standard adjustment
+471,156,Ar9-9A Net,Sampled,3685,12906,17601,8175,3344,275,19471,5737,134,91,71419,Standard adjustment
+472,156,Ar9-9A Net,Xpansion,1.288738128,1.186889819,1.041872621,1.023486239,1.211124402,2.010909091,1.087771558,1.245773052,3.28358209,3.483516484,,Standard adjustment
+473,158,Ar 12A Net,FRAM,5198.000109,5257.999999,9058.999999,9019,872.999999,641,12226.00002,8233.999975,6304.99984,719.000002,57531.99994,Standard adjustment
+474,158,Ar 12A Net,RMIS,5214,5258,9059,9019,873,641,12441,8319,6305,719,57848,Standard adjustment
+475,158,Ar 12A Net,Sampled,4402,4353,7610,8422,669,641,12340,8301,3328,636,50702,Standard adjustment
+476,158,Ar 12A Net,Xpansion,1.184461608,1.207902596,1.190407359,1.070885775,1.304932735,1,1.008184765,1.002168413,1.89453125,1.130503145,,Standard adjustment
+477,160,12CD Net,FRAM,7131,13101.00001,15889.00002,6501.00003,11300.99995,891.999999,6065,4948.999983,7952.999997,3522,77303.99998,Standard adjustment
+478,160,12CD Net,RMIS,7133,13101,15898,6494,11301,904,6086,5057,7965,3444,77383,Standard adjustment
+479,160,12CD Net,Sampled,5316,10330,12904,4898,9901,733,5353,4695,5534,3216,62880,Standard adjustment
+480,160,12CD Net,Xpansion,1.341798345,1.268247822,1.232021079,1.325847285,1.141399859,1.233287858,1.136932561,1.077103301,1.439284424,1.070895522,,Standard adjustment
+481,161,Skok R Net,FRAM,1795.999999,6310.000003,11802.00002,4273.000012,3981.000001,596,2493,3361,3033.999999,1246,38892.00003,Standard adjustment
+482,161,Skok R Net,RMIS,1788,6311,11800,4294,3951,596,2480,3342,3055,1246,38863,Standard adjustment
+483,161,Skok R Net,Sampled,1232,2853,3530,2369,3751,107,2154,3018,2736,1020,22770,Standard adjustment
+484,161,Skok R Net,Xpansion,1.451298701,2.212057483,3.342776204,1.812579147,1.053319115,5.570093458,1.151346332,1.107355865,1.116593567,1.221568627,,Standard adjustment
+485,162,Quilcn Net,FRAM,10,20062.00001,14652.00002,5451.000006,478.999999,2112,5706.000001,13045,12472,748,74737.00003,Remove years & standard adjustment
+486,162,Quilcn Net,RMIS,12,20062,14652,5451,453,2112,5758,12995,12710,748,74953,Remove years & standard adjustment
+487,162,Quilcn Net,Sampled,12,13722,14475,4783,,2067,5367,9243,11370,674,61713,Remove years & standard adjustment
+488,162,Quilcn Net,Xpansion,0,1.462031774,1.012227979,1.1396613,0,1.021770682,1.072852618,1.405928811,1.117854002,1.109792285,,Remove years & standard adjustment
+489,163,1212B TSpt,FRAM,,,,,,,,,,,0,Remove  fishery
+490,163,1212B TSpt,RMIS,,,,,,,,,,,0,Remove  fishery
+491,163,1212B TSpt,Sampled,,,,,,,,,,,0,Remove  fishery
+492,163,1212B TSpt,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+493,164,12A Tb Spt,FRAM,339,5208.000004,6036.000005,2819.000004,1230.999999,728,3077,2229,2550,1533,25750.00001,Remove  fishery
+494,164,12A Tb Spt,RMIS,446,5237,6422,2298,1231,746,3246,2249,2560,1665,26100,Remove  fishery
+495,164,12A Tb Spt,Sampled,,,,,,,,,,,0,Remove  fishery
+496,164,12A Tb Spt,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+497,165,12C-D TSpt,FRAM,,,,,,,,,,,0,Remove  fishery
+498,165,12C-D TSpt,RMIS,,361,1314,293,283,184,63,265,2,12,2777,Remove  fishery
+499,165,12C-D TSpt,Sampled,,,,,,,,,,,0,Remove  fishery
+500,165,12C-D TSpt,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+501,166,Skok R Spt,FRAM,487,2004.000001,1843.000002,2057.000005,508,1276,,,1,,8176.000008,Remove  fishery
+502,166,Skok R Spt,RMIS,546,2111,1874,1889,542,1638,,,1,,8601,Remove  fishery
+503,166,Skok R Spt,Sampled,,1643,,,,,,,,,1643,Remove  fishery
+504,166,Skok R Spt,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+505,167,FRSLOW Trm,FRAM,0,0,0,0,0,5275.99999,0,3006,1032,554,9867.99999,Remove  fishery
+506,167,FRSLOW Trm,RMIS,,,,,,,,,,,0,Remove  fishery
+507,167,FRSLOW Trm,Sampled,,,,,,,,,,,0,Remove  fishery
+508,167,FRSLOW Trm,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+509,168,FRSUPP Trm,FRAM,0,0,0,0,0,747.999999,0,444.999999,962,260.999999,2415.999997,Remove  fishery
+510,168,FRSUPP Trm,RMIS,,,,,,,,,,,0,Remove  fishery
+511,168,FRSUPP Trm,Sampled,,,,,,,,,,,0,Remove  fishery
+512,168,FRSUPP Trm,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+513,169,Fraser Spt,FRAM,,,,,,,,1347,622,,1969,Remove  fishery
+514,169,Fraser Spt,RMIS,,,,,,,,,,,0,Remove  fishery
+515,169,Fraser Spt,Sampled,,,,,,,,,,,0,Remove  fishery
+516,169,Fraser Spt,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+517,170,JStrBC Trl,FRAM,0,0,0,0,6,0,0,,,,6,Remove  fishery
+518,170,JStrBC Trl,RMIS,,,,,,,,,,,0,Remove  fishery
+519,170,JStrBC Trl,Sampled,,,,,,,,,,,0,Remove  fishery
+520,170,JStrBC Trl,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+521,171,No BC  Trl,FRAM,138295,280715.0001,215452.0002,378187.0005,177461,255675,214610,337666.0055,176547.0001,177189,2351797.006,Standard adjustment
+522,171,No BC  Trl,RMIS,138295,280715,215452,378187,177461,255675,214610,333175,176547,177189,2347306,Standard adjustment
+523,171,No BC  Trl,Sampled,138198,279532,211827,378133,170307,255302,214447,333175,176547,177180,2334648,Standard adjustment
+524,171,No BC  Trl,Xpansion,1.000701891,1.004232074,1.017113021,1.000142807,1.042006494,1.001461015,1.000760095,1,1,1.000050796,,Standard adjustment
+525,172,NoC BC Trl,FRAM,,15932,,21120.99996,0,4343,4343.000005,6485.999991,367.000004,2387.999999,54979.99995,Remove years & standard adjustment
+526,172,NoC BC Trl,RMIS,,15932,1,21121,,,4343,6468,367,2388,50620,Remove years & standard adjustment
+527,172,NoC BC Trl,Sampled,,15476,,15914,,,4303,6468,41,2327,44529,Remove years & standard adjustment
+528,172,NoC BC Trl,Xpansion,0,1.029464978,0,1.327196179,0,0,1.00929584,1,8.951219512,1.026214009,,Remove years & standard adjustment
+529,173,SoC BC Trl,FRAM,,0,,,,,,,,,0,Remove  fishery
+530,173,SoC BC Trl,RMIS,,,,,2,,,,,,2,Remove  fishery
+531,173,SoC BC Trl,Sampled,,,,,,,,,,,0,Remove  fishery
+532,173,SoC BC Trl,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+533,174,NW VI  Trl,FRAM,79.000001,0,365,5296.999998,2189,3038.000004,0,83.000001,4320.000059,617.000006,15988.00007,Remove years & standard adjustment
+534,174,NW VI  Trl,RMIS,79,,389,5297,2189,3136,265,106,3958,390,15809,Remove years & standard adjustment
+535,174,NW VI  Trl,Sampled,68,,292,5297,2120,3122,45,57,3096,376,14473,Remove years & standard adjustment
+536,174,NW VI  Trl,Xpansion,1.161764706,0,1.332191781,1,1.03254717,1.004484305,0,1.859649123,1.278423773,1.037234043,,Remove years & standard adjustment
+537,175,SW VI  Trl,FRAM,379.000003,0,1664.999998,0,32760.00001,3041.000005,138.999996,232.999996,2466.000022,539.000001,41222.00003,Remove years & standard adjustment
+538,175,SW VI  Trl,RMIS,379,,1730,829,32760,3050,130,240,2,,39120,Remove years & standard adjustment
+539,175,SW VI  Trl,Sampled,329,,1675,829,32760,3019,100,233,,,38945,Remove years & standard adjustment
+540,175,SW VI  Trl,Xpansion,1.151975684,0,1.032835821,0,1,1.010268301,1.3,1.030042918,0,0,,Remove years & standard adjustment
+541,176,GeoStr Trl,FRAM,0,0,,,0,,,,0,,0,Remove  fishery
+542,176,GeoStr Trl,RMIS,,,,,4,,,,1,,5,Remove  fishery
+543,176,GeoStr Trl,Sampled,,,,,,,,,,,0,Remove  fishery
+544,176,GeoStr Trl,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+545,178,No BC  Net,FRAM,4181.000004,10967,0,21022.00005,26730.00001,20002,37739,12915.00025,1262.000005,625,135443.0003,Remove years & standard adjustment
+546,178,No BC  Net,RMIS,572,11489,0,21456,27114,20506,38427,13397,829,224,134014,Remove years & standard adjustment
+547,178,No BC  Net,Sampled,122,10990,,21254,4902,20179,38427,13396,829,224,110323,Remove years & standard adjustment
+548,178,No BC  Net,Xpansion,0,1.045404914,0,1.009504093,5.53121175,1.016204966,1,1.000074649,0,0,,Remove years & standard adjustment
+549,179,Cen BC Net,FRAM,385.999998,,494.999999,24498.99999,11636,964.000002,224.000001,4550.999996,1982.000005,586.999997,45323.99999,Remove years & standard adjustment
+550,179,Cen BC Net,RMIS,362,15672,495,24499,11784,964,224,536,,6,54542,Remove years & standard adjustment
+551,179,Cen BC Net,Sampled,362,14485,,10221,640,,,536,,,26244,Remove years & standard adjustment
+552,179,Cen BC Net,Xpansion,1,0,0,2.396927894,18.4125,0,0,0,0,0,,Remove years & standard adjustment
+553,180,NW VI  Net,FRAM,572.000003,682.999999,0,0,,2,0,,,,1257.000002,Remove  fishery
+554,180,NW VI  Net,RMIS,568,689,3,2,,12,,,,,1274,Remove  fishery
+555,180,NW VI  Net,Sampled,,,,,,,,,,,0,Remove  fishery
+556,180,NW VI  Net,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+557,181,SW VI  Net,FRAM,193.999992,358.999989,346.000003,1181.999999,607.000005,66.999997,807.999995,0,0,0,3562.99998,Remove  fishery
+558,181,SW VI  Net,RMIS,198,296,346,1177,607,1389,3572,2946,4053,3664,18248,Remove  fishery
+559,181,SW VI  Net,Sampled,,94,21,715,,298,3564,2005,4053,3634,14384,Remove  fishery
+560,181,SW VI  Net,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+561,182,Johnst Net,FRAM,535.000005,614.999989,5.000005,2416.000018,1799.999991,206.000002,326.000002,0,0,0,5903.000012,Remove years & standard adjustment
+562,182,Johnst Net,RMIS,535,614,8,2415,1861,789,415,452,752,110,7951,Remove years & standard adjustment
+563,182,Johnst Net,Sampled,364,421,,,1347,,176,,,106,2414,Remove years & standard adjustment
+564,182,Johnst Net,Xpansion,1.46978022,1.458432304,0,0,1.381588716,0,2.357954545,0,0,0,,Remove years & standard adjustment
+565,183,GeoStr Net,FRAM,0,,1.999999,,0,103.999998,0,0,0,0,105.999997,Remove  fishery
+566,183,GeoStr Net,RMIS,,,2,,,,,,,,2,Remove  fishery
+567,183,GeoStr Net,Sampled,,,,,,,,,,,0,Remove  fishery
+568,183,GeoStr Net,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+569,184,Fraser Net,FRAM,,,,,,,,,,,0,Remove  fishery
+570,184,Fraser Net,RMIS,14,295,,514,237,189,519,407,426,264,2865,Remove  fishery
+571,184,Fraser Net,Sampled,10,,,,1,181,519,407,318,264,1700,Remove  fishery
+572,184,Fraser Net,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+573,185,BC JDF Net,FRAM,4.999999,0,0,2868.999996,160.999994,0,27.000004,,,,3061.999993,Remove  fishery
+574,185,BC JDF Net,RMIS,5,,,,121,26,26,9,31,49,267,Remove  fishery
+575,185,BC JDF Net,Sampled,,,,,,,,,,46,46,Remove  fishery
+576,185,BC JDF Net,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+577,186,JStrBC Spt,FRAM,2484.999998,3169.000021,3577.000051,4339.000228,9791.000079,7414.999992,4012,5545.000016,4839.000015,4797.000003,49969.0004,Remove  fishery
+578,186,JStrBC Spt,RMIS,,,,,,,,,,,0,Remove  fishery
+579,186,JStrBC Spt,Sampled,,,,,,,,,,,0,Remove  fishery
+580,186,JStrBC Spt,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+581,187,No BC  Spt,FRAM,58694,81060,70156.00001,41100,63387,72830,70156,77127.00093,45921.00001,62735,643166.0009,Remove  fishery
+582,187,No BC  Spt,RMIS,2951,5782,6172,6128,10275,8440,4901,5509,4067,2279,56504,Remove  fishery
+583,187,No BC  Spt,Sampled,,,,,,114,24,,26,245,409,Remove  fishery
+584,187,No BC  Spt,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+585,188,Cen BC Spt,FRAM,11950,2613.000004,19873.00008,23883.00019,21518.00001,26305.99999,25544.00001,19395.00015,16439.00004,17428,184949.0005,Remove  fishery
+586,188,Cen BC Spt,RMIS,,,,,,,,,,,0,Remove  fishery
+587,188,Cen BC Spt,Sampled,,,,,,,,,,,0,Remove  fishery
+588,188,Cen BC Spt,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+589,189,BC JDF Spt,FRAM,1537.000005,10484.99999,21122.00003,23024.00005,20234,12315,7605.999993,8236.999972,11248.99996,10243.00001,126052,Remove years & standard adjustment
+590,189,BC JDF Spt,RMIS,2358,11117,22033,23616,23782,12577,7794,9070,12987,12435,137769,Remove years & standard adjustment
+591,189,BC JDF Spt,Sampled,822,633,909,592,460,325,227,852,1768,2223,8811,Remove years & standard adjustment
+592,189,BC JDF Spt,Xpansion,0,17.56240126,0,0,0,0,0,10.64553991,0,0,,Remove years & standard adjustment
+593,190,WC VI  Spt,FRAM,14920.99986,56346.99994,46228.00047,49911.00095,39447.00029,27018.99995,20067.00009,29374.00012,45152.00017,68350.99951,396817.0014,Remove  fishery
+594,190,WC VI  Spt,RMIS,14922,56341,44899,64406,43456,27023,20069,26540,45154,35818,378628,Remove  fishery
+595,190,WC VI  Spt,Sampled,,,,,,475,155,148,199,546,1523,Remove  fishery
+596,190,WC VI  Spt,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+597,191,NGaStr Spt,FRAM,1272.000002,653.99999,1151.000002,21430.00006,12702.00004,8971.000001,9875.000004,6596.000006,13725.00001,4323.000005,80699.00011,Remove  fishery
+598,191,NGaStr Spt,RMIS,1101,4100,2287,17612,11663,6265,4835,2984,8005,1221,60073,Remove  fishery
+599,191,NGaStr Spt,Sampled,,,,,,35,28,50,119,13,245,Remove  fishery
+600,191,NGaStr Spt,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+601,192,SGaStr Spt,FRAM,1215,763.000008,2497.999994,5277.000013,1956.999999,2076.999985,2551.999989,3286,5302.000004,2176.999999,27103.99999,Remove  fishery
+602,192,SGaStr Spt,RMIS,1541,885,2661,12855,8004,5874,8687,7544,11997,5759,65807,Remove  fishery
+603,192,SGaStr Spt,Sampled,,,,,,996,47,30,59,14,1146,Remove  fishery
+604,192,SGaStr Spt,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery
+605,194,SW AK  Trl,FRAM,196231,166860,184127,382365,290590,164667,213666,223273.002,177030,109247,2108056.002,No adjustment
+606,194,SW AK  Trl,RMIS,196231,166860,184127,382365,290590,164667,214073,223273,177030,109247,2108463,No adjustment
+607,194,SW AK  Trl,Sampled,196231,166860,184127,382365,290590,164667,214073,223273,177030,109247,2108463,No adjustment
+608,194,SW AK  Trl,Xpansion,1,1,1,1,1,1,1,1,1,1,,No adjustment
+609,195,SE AK  Trl,FRAM,123304,130344,144235,284460,198432,180447,108284,106654.0011,64397,34568,1375125.001,Standard adjustment
+610,195,SE AK  Trl,RMIS,123354,130470,145549,287799,216701,182573,108503,106654,64722,35074,1401399,Standard adjustment
+611,195,SE AK  Trl,Sampled,123283,130203,144292,283617,201821,181272,108468,106654,64688,34873,1379171,Standard adjustment
+612,195,SE AK  Trl,Xpansion,1.000575911,1.002050644,1.008711502,1.014745237,1.0737287,1.00717706,1.000322676,1,1.0005256,1.005763771,,Standard adjustment
+613,196,NW AK  Trl,FRAM,887480,811904,787503,1502845,1504623,612265,940188,1500216.01,619871,688251,9855146.01,Standard adjustment
+614,196,NW AK  Trl,RMIS,887486,812109,787635,1503086,1504977,612977,940711,1500216,619990,688430,9857617,Standard adjustment
+615,196,NW AK  Trl,Sampled,887480,811928,787428,1493387,1504612,612174,940540,1500159,619877,688220,9845805,Standard adjustment
+616,196,NW AK  Trl,Xpansion,1.000006761,1.000222926,1.000262881,1.006494633,1.000242587,1.001311719,1.00018181,1.000037996,1.000182294,1.000305135,,Standard adjustment
+617,197,NE AK  Trl,FRAM,135059,193818,84285,206430,235541,276615,123084,321639.0012,79422,134402,1790295.001,Standard adjustment
+618,197,NE AK  Trl,RMIS,135961,204771,84413,220540,236103,280883,124303,321639,80869,141152,1830634,Standard adjustment
+619,197,NE AK  Trl,Sampled,135511,202712,84297,214724,235529,277098,124299,316620,79754,134858,1805402,Standard adjustment
+620,197,NE AK  Trl,Xpansion,1.003320764,1.010157267,1.001376087,1.027085934,1.002437067,1.013659427,1.00003218,1.01585181,1.01398049,1.046671314,,Standard adjustment
+621,198,SE AK Net,FRAM,741790,615371,529597,1007502,918731,514188,549592,615080.0019,469378,516090,6477319.002,Don't adjust
+622,198,SE AK Net,RMIS,944350,764181,682650,1194122,1155895,699054,711999,605942,525522,561019,7844734,Don't adjust
+623,198,SE AK Net,Sampled,742135,624037,536466,1141704,982013,554797,548456,450198,412184,446196,6438186,Don't adjust
+624,198,SE AK Net,Xpansion,1,1,1,1,1,1,1,1,1,1,,Don't adjust
+625,199,SE AK Sport,FRAM,,,,,,,,,,,0,Remove  fishery
+626,199,SE AK Sport,RMIS,80105,99341,62427,126019,95570,110407,106095,179851,105468,78681,1043964,Remove  fishery
+627,199,SE AK Sport,Sampled,80105,99341,62427,126019,95570,110405,106095,179851,105454,78681,1043948,Remove  fishery
+628,199,SE AK Sport,Xpansion,0,0,0,0,0,0,0,0,0,0,,Remove  fishery

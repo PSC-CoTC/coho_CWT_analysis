@@ -170,13 +170,11 @@ FisheryID,FisheryName,Gear,Num_Chars,PSC_Code
 42,A 5-6C Trl,1,9,3M354  X2
 44,A 5-6C Trl,1,7,3M32505
 44,A 5-6C Trl,1,7,3M32606
-45,Willpa Spt,4,5,3F219
+46,Willpa Spt,4,5,3F219
 45,Willpa Spt,4,7,3M21902
 47,WlpaBT Net,2,5,3F219
 47,WlpaBT Net,2,5,3M219
 48,GryHbr Spt,4,5,3M218
-50,GryHbr Net,2,13,3F21702  2107
-50,GryHbr Net,2,8,3F218   
 50,GryHbr Net,2,5,3M218
 51,Hump R Spt,4,17,3F21802  220004 R
 51,Hump R Spt,4,17,3F21802  220240 R
