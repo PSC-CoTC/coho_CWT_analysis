@@ -110,6 +110,30 @@ fishery_ids_ps_spt <- c(91:93, 107, 118, 129, 152, 136, 106, 115)
 #the ideal situation would have the FRAM landed catch input match the RMIS total and sampled values
 samp_catch_coef <- read_csv("fram_samp_fulla.csv") |> select(-1)
 
+## fisheries with very large coefficients
+# samp_catch_coef |> 
+#   filter(Source=="Xpansion") |> 
+#   select(FisheryID, FisheryName, Action, `2010`:`2019`) |> 
+#   pivot_longer(names_to = "year", values_to = "coef", `2010`:`2019`) |> 
+#   filter(coef >= 2) |> arrange(desc(coef)) |> 
+#   unite("fy", FisheryID, FisheryName, year) |> 
+#   ggplot(aes(coef, fct_reorder(fy, coef))) + geom_col() + geom_vline(xintercept = 8)
+
+# ## fisheries with some years of 0 coefficents (i.e., irregular removal)
+# ## note in some versions the FisheryName labeling is reversed for 38 (actually NT A3 trl) and 39 (Treaty)
+# ## confirmed that 39/Tr A3 trl is the fishery with weaker sampling
+# samp_catch_coef |>
+#   filter(Source=="Xpansion") |>
+#   select(FisheryID, FisheryName, Action, `2010`:`2019`) |>
+#   pivot_longer(names_to = "year", values_to = "coef", `2010`:`2019`) |>
+#   unite("fn", FisheryID, FisheryName) |>
+#   filter(coef == 0) |> 
+#   count(fn) |> 
+#   filter(n != 10) |> #filter(n > 4) #c(39, 44, 142, 179, 182, 189)
+#   arrange(desc(n)) |>
+#   ggplot(aes(n, fct_reorder(fn, n))) + geom_col() + geom_vline(xintercept = 3)
+
+
 # samp_catch_coef |> filter(Source == "Xpansion") |> count(Action)
 # 
 # samp_catch_coef |> 
@@ -397,12 +421,16 @@ $ pseudoER_{s,y} = \frac{\sum_{f}EstNum_{s,f,y}}{Escp_{s,y} + \sum_{f}EstNum_{s,
 These values were then joined by year, stock and fishery to allow comparison between the two data sources.
 
 ```{r er_objects_included_fisheries}
-
+#limiting expansion to 8x, drops several Canadian fishery-years
 samp_catch_coef_vals <- samp_catch_coef |>
   filter(Source == "Xpansion", (Action != "Remove  fishery" | is.na(Action))) |>
   select(FisheryID, `2010`:`2019`) |> 
   pivot_longer(cols = -FisheryID, names_to = "run_year", values_to = "coef") |> 
-  mutate(run_year = as.numeric(run_year))
+  mutate(
+    run_year = as.numeric(run_year),
+    coef = if_else(coef > 8, 0, coef),
+    coef = if_else(FisheryID %in% c(39, 44, 142, 179, 182, 189), 0, coef)
+    )
 
 
 er_fram <- full_join(
@@ -421,13 +449,6 @@ er_fram <- full_join(
       across(c(LandedCatch, MSFLandedCatch), sum), #sum over timesteps
       fram_lnd_yr_fsh = LandedCatch + MSFLandedCatch,
       .groups = "drop") |> 
-    ##excluding fishery-year levels for still-included fisheries
-    ##resulting ERs for a stock then vary between years in terms of which fisheries contribute
-    ##but should parallel RMIS
-    #     anti_join(
-    #       samp_catch_coef_vals |> filter(coef == 0),
-    #       by = c("FisheryID", "run_year")
-    #     ) |> 
     left_join(
       samp_catch_coef_vals |> filter(coef == 0),
       by = c("FisheryID", "run_year")
@@ -546,8 +567,8 @@ er_fram_rmis <- full_join(
 ```{r export_xlsx}
 # list(
 #   er_fram_rmis = er_fram_rmis
-# ) |> 
-#   writexl::write_xlsx("T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Projects/Coho FRAM MSM CWT analysis/er_fram_rmis_all_stocks.xlsx")
+# ) |>
+#   writexl::write_xlsx("T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Projects/Coho FRAM MSM CWT analysis/er_fram_rmis_all_hat_stocks.xlsx")
 
 ```
 
@@ -563,7 +584,17 @@ gg_stk <- function(sid = 20, min_fram_landed = 10){
       mutate(run_year = as.character(run_year)) |> 
       distinct(sidnm, run_year, FRAM = fram_er_tot, RMIS = rmis_er_tot) |>
       pivot_longer(-c(sidnm, run_year), names_to = "var", values_to = "val")
+    
+    tot_d_yr <- filter(er_fram_rmis, StockID == sid) |> 
+      drop_na(d_er_tot) |>
+      distinct(sidnm, run_year, d_er_tot) |> 
+      pluck("d_er_tot") |> abs()
       
+    tot_d_yr = map_chr(
+          c(0.01, 0.05, 0.1),
+          ~paste0("d_yr<",.x,": ", sum(tot_d_yr < .x))
+          ) |> paste(collapse = ";  ")
+ 
     fsh <- bind_rows(
       filter(er_fram_rmis, StockID == sid, fram_lnd_yr_fsh >= min_fram_landed) |> 
         mutate(run_year = as.character(run_year)),
@@ -622,11 +653,14 @@ gg_stk <- function(sid = 20, min_fram_landed = 10){
       ggplot(aes(run_year, val, fill=var)) +
       geom_col(position = position_dodge()) +
       geom_text(aes(label = if_else(is.na(val), "", paste0(round(100*val, digits = 1), "%"))),
-                position = position_dodge2(width = 1, preserve = "single"), vjust = -0.5) +
+                position = position_dodge2(width = 1, preserve = "single"),
+                size = 2, vjust = -0.5) +
       scale_fill_grey() +
-      scale_x_discrete("") +
+      scale_x_discrete("", guide = guide_axis(n.dodge = 2)) +
       scale_y_continuous("", labels = scales::percent) +
-      labs(title = "Annual total pseudo-ER, FRAM & RMIS") +
+      labs(
+        title = "Annual total pseudo-ER, FRAM & RMIS",
+        subtitle = tot_d_yr) +
       theme(legend.position = "right")
     
     gg_fsh <- fsh |>
@@ -644,18 +678,18 @@ gg_stk <- function(sid = 20, min_fram_landed = 10){
       ggplot(aes(run_year, fidnm)) +
       geom_point(aes(shape = shp), size = 2) +
       geom_point(aes(shape = shp, size = sze, fill = d_er_fsh)) +
-      geom_text(aes(label = if_else(is.na(d_er_fsh), "", paste0(round(100*d_er_fsh, digits = 0), "%"))), vjust = -0.5) +
+      geom_text(aes(label = if_else(is.na(d_er_fsh), "", paste0(round(100*d_er_fsh, digits = 0), "%"))), vjust = -0.5, size = 3) +
       scale_shape_manual(name = "", values = c("FRAM > RMIS" = 24, "FRAM < RMIS" = 25, "FRAM = RMIS" = 22, "FRAM-only" = 20, "RMIS-only" = 3)) +
-      scale_size("ER diff. abs.", range = c(2.5, 10)) +
+      scale_size("ER diff. abs.", range = c(2, 5)) +
       scale_fill_fermenter(type = "div", palette = "PuOr", breaks = c(-0.1, -0.05, 0, 0.05, 0.1), limits = c(-.2, .2)) +
       guides(
         fill = guide_colorbar(title="ER difference"),
-        x = guide_axis("Run Year"),
+        x = guide_axis("Run Year", n.dodge = 2),
         y = guide_axis("")) +
       facet_wrap(~sidnm, ncol = 2, scales = "free_y") +
       labs(
-        title = "Per-year per-fishery pseudo-ER, FRAM - RMIS",
-        subtitle = paste("min. annual FRAM landed catch >=", min_fram_landed, "coho")
+        title = "Per-year per-fishery pseudo-ER difference",
+        subtitle = paste("FRAM - RMIS, min. annual FRAM landed >=", min_fram_landed, "coho")
       )
 
     gg_rnk <- rnk |> 
@@ -665,15 +699,15 @@ gg_stk <- function(sid = 20, min_fram_landed = 10){
       geom_text(
         data = filter(rnk, var == "FRAM"),
         aes(label = paste(fidnm, scales::percent(pct), sep = "  ")),
-        hjust = 1, vjust = -0.2, show.legend = F) +
+        size= 1.8, hjust = 1, vjust = -0.2, show.legend = F) +
       geom_text(
         data = filter(rnk, var == "RMIS"),
         aes(label = paste(fidnm, scales::percent(pct), sep = "  ")),
-        hjust = -0.1, vjust = -0.2, show.legend = F) +
+        size= 1.8, hjust = -0.1, vjust = -0.2, show.legend = F) +
       scale_x_discrete("") +
       scale_y_discrete("Rank", limits = rev) +
       scale_size(range = c(0.5, 3)) +
-      labs(title = "Proportional impact ranks, 2010-2019")
+      labs(title = "Proportional ranks, 2010-2019")
 
 
   
@@ -690,7 +724,6 @@ gg_stk <- function(sid = 20, min_fram_landed = 10){
     
 }
 
-gg_stk()
 
 ##ranks still stratified by run_year
     # rnk <- filter(er_fram_rmis, StockID == sid, fram_lnd_yr_fsh > 0) |> 
@@ -737,61 +770,264 @@ gg_stk()
 
 ### Skagit
 
+- **Total across fisheries** 
+  - pseudo-ER differences less than 0.01, 0.05 and 0.1 in 2, 5 and 7 years respectively
+  - FRAM value larger in 2013 and 2014, but otherwise RMIS value larger
+  - RMIS escapement may be low in some years; in 2019 RMIS escp < fisheries, while FRAM escp ~2x fisheries
+  
+- **Fishery-specific**
+  - annually varied +/- differences for most fisheries
+  - contrasting differences did not fully offset in PS sport: lower FRAM for A10, A5, A9 and A8-2 not compensated by A8-1 and A7
+  
+- **Rank agreement**
+  - both FRAM and current RMIS associate the greatest impacts to A5, and FRAM assigns third-most impacts to A9, the second ranked RMIS fishery
+  - RMIS indicates a considerably higher proportion of impact in A10, A8-2 and A2 than in FRAM
+  - RMIS indicates a lower proportion of impact in 4/4B Treaty troll, A6, A8-1, and 8A net than in FRAM
+  - Counter misalignment in 8-1 & 8-2 may be due to errors in datasets and/or mapping
+
 ```{r}
-gg_stk(20)
+gg_stk(20) 
+ggsave(file.path(dir_proj,"f_20_Skagit.png"), width = 9, height = 10)
 ```
+
+```{r}
+er_fram_rmis |>
+  drop_na(rmis_est_num_yr_tot, fram_lnd_yr_tot) |> 
+  filter(StockID==20, between(run_year, 2017, 2019)) |> 
+  distinct(run_year, sidnm, fram_lnd_yr_tot, fram_escp, rmis_est_num_yr_tot, rmis_escp)
+```
+
 
 ### Tulalip
 
+- **Total across fisheries** 
+  - pseudo-ER differences less than 0.1, 0.05 and 0.01 in 1, 5 and 7 years respectively
+  - FRAM value larger in 2016 only
+  - RMIS escapement may be low in some years; 2019 escp. missing entirely preventing ER calc (note no 2019 total column)
+  
+- **Fishery-specific**
+  - most fisheries show negative differences where comparison possible
+  - contrasting Area 8D vs 8A net differences may be related to errors in dataset or mapping
+  
+- **Rank agreement**
+  - both FRAM and current RMIS associate the greatest impacts to 8D net (first) and 8A net (second)
+  - both have A5 and A9 sport as third or fourth largest, and 8-2 as fifth; other fisheries are relatively minor in both
+
 ```{r}
 gg_stk(34)
+ggsave(file.path(dir_proj,"f_34_Tulalip.png"), width = 9, height = 10)
 ```
+
+```{r}
+er_fram_rmis |>
+  drop_na(rmis_est_num_yr_tot, fram_lnd_yr_tot) |> 
+  filter(StockID==34, between(run_year, 2017, 2019)) |> 
+  distinct(run_year, sidnm, fram_lnd_yr_tot, fram_escp, rmis_est_num_yr_tot, rmis_escp)
+```
+
 
 ### Quilcene
 
+- **Total across fisheries** 
+  - pseudo-ER differences less than 0.1, 0.05 and 0.01 in 0, 2 and 4 years respectively
+  - FRAM value consistently larger; RMIS higher in 2010 only
+  - Fishery recoveries may be missing in some years; for example
+    - in 2019 RMIS escp is ~3x fisheries while FRAM is ~1:1
+    - in 2012 FRAM fisheries ~3x escp while RMIS fisheries < escp
+
+- **Fishery-specific**
+  - possibly mapping or other dataset errors affecting Hood Canal net fisheries 12A, 9A and 12/12B (see rank comment)
+  - possible mis-assignments:
+    - sport: FRAM impacts higher in A5, A10, and A6, while A9, A12, A4 and A2 lower than RMIS
+  
+- **Rank agreement**
+  - both FRAM and current RMIS associate the greatest impacts to 12A net
+  - 9/9A net second for RMIS but 5th for FRAM, while 12/12B is third for FRAM but minor for RMIS 
+
 ```{r}
 gg_stk(48)
+ggsave(file.path(dir_proj,"f_48_Quilcene.png"), width = 9, height = 10)
 ```
+
+```{r}
+er_fram_rmis |>
+  drop_na(rmis_est_num_yr_tot, fram_lnd_yr_tot) |> 
+  filter(StockID==48, between(run_year, 2010, 2019)) |> 
+  distinct(run_year, sidnm, fram_lnd_yr_tot, fram_escp, rmis_est_num_yr_tot, rmis_escp)
+```
+
 
 ### George Adams
 
+- **Total across fisheries** 
+  - no years close; RMIS likely missing fishery recoveries and/or mapping error
+
+- **Fishery-specific**
+  - many positive differences may be related to missing fishery recoveries and/or possibly mapping errors (e.g., among Hood Canal net fisheries)
+  
+- **Rank agreement**
+  - both FRAM and current RMIS associate the greatest impacts to 12CD net and large portions to A5, A9 and A10 sport
+  - A12 sport missing from RMIS in most years hinders comparison  
+
 ```{r}
 gg_stk(58)
+ggsave(file.path(dir_proj,"f_58_GeorgeAdams.png"), width = 9, height = 10)
+```
+
+```{r}
+er_fram_rmis |>
+  drop_na(rmis_est_num_yr_tot, fram_lnd_yr_tot) |> 
+  filter(StockID==58, between(run_year, 2017, 2019)) |> 
+  distinct(run_year, sidnm, fram_lnd_yr_tot, fram_escp, rmis_est_num_yr_tot, rmis_escp)
 ```
 
 ### Nisqually
 
+- **Total across fisheries** 
+  - pseudo-ER differences less than 0.01, 0.05 and 0.1 in 0, 4 and 7  years respectively
+  - FRAM value larger in 2012-4 and 2017-8; RMIS larger otherwise; no consistent pattern
+
+- **Fishery-specific**
+  - largest differences in 2015 Puget Sound sport, subject to atypical year caveats
+
+- **Rank agreement**
+  - both FRAM and current RMIS associate the greatest impacts to A5, A10 and A9 sport (recall in-river net not included)
+  - contrasting ranks for A13 (FRAM higher) and A6 (RMIS higher) may be related to sampling intensity
+
 ```{r}
 gg_stk(68)
+ggsave(file.path(dir_proj,"f_68_Nisqually.png"), width = 9, height = 10)
 ```
 
 ### Puyallup
 
+- **Total across fisheries** 
+  - pseudo-ER differences less than 0.01, 0.05 and 0.1 in 0, 3 and 5 years respectively
+  - FRAM value larger in 2011 and 2012 only
+  - Larger RMIS values may be related to missing escapement recoveries in some years
+  - In addition or alternatively, differences could be related to errors in BkFRAM targets and/or mark composition flagging that alter FRAM starting cohorts 
+  
+- **Fishery-specific**
+  - year to year fishery differences primarily in context of larger RMIS pseudo-ERs
+  - contrasting differences among Puget Sound sport fisheries in some years suggests FRAM assignments may not match particular year sampled patterns (e.g, A10 vs A6 or A9)
+  
+- **Rank agreement**
+  - both FRAM and current RMIS associate the greatest (pre-terminal) impacts to A10, A5 and A9 sport (first, second and third respectively), with A6 and A11 also appreciable 
+
 ```{r}
 gg_stk(84)
+ggsave(file.path(dir_proj,"f_84_Puyallup.png"), width = 9, height = 10)
+```
+
+
+```{r}
+er_fram_rmis |>
+  drop_na(rmis_est_num_yr_tot, fram_lnd_yr_tot) |> 
+  filter(StockID==84, between(run_year, 2010, 2019)) |> 
+  distinct(run_year, sidnm, fram_lnd_yr_tot, fram_escp, rmis_est_num_yr_tot, rmis_escp)
+
+escp |> filter(StockID == 84, year == 2019) #2019 5869+1583=7452
 ```
 
 ### Green 
 
+- **Total across fisheries** 
+  - pseudo-ER differences less than 0.01, 0.05 and 0.1 in 0, 4 and 8 years respectively
+  - FRAM had larger value in all years but 2015
+  - Fishery recoveries may be missing in some years; for example
+    - in 2017 RMIS fisheries ~1/2 escp when FRAM ~1:1, vs 2018 and 2019 both similar
+  
+- **Fishery-specific**
+  - As for total, larger differences may be related to missing RMIS fishery recoveries
+  - Larger FRAM pseudo ER values in Area 10A net in 2017 align with possibility of fewer recoveries (or none, as in 2019)
+  
+- **Rank agreement**
+  - Despite pseudo-ER differences, both FRAM and current RMIS associate the greatest proportion of impacts to the same three Puget Sound sport fisheries (A10, A5, A9), while Area 10A net and Area 4/4B troll account for a relatively lower proportion of RMIS recoveries, possibly related to differences in sampling intensity.
+
 ```{r}
 gg_stk(96)
+ggsave(file.path(dir_proj,"f_96_Green.png"), width = 9, height = 10)
+```
+
+```{r}
+er_fram_rmis |>
+  drop_na(rmis_est_num_yr_tot, fram_lnd_yr_tot) |> 
+  filter(StockID==96, between(run_year, 2017, 2019)) |> 
+  distinct(run_year, sidnm, fram_lnd_yr_tot, fram_escp, rmis_est_num_yr_tot, rmis_escp)
+
+er_fram_rmis |>
+  drop_na(rmis_est_num_yr_tot, fram_lnd_yr_tot) |>
+  filter(StockID==96, between(run_year, 2010, 2019), FisheryID %in% c(122)) |>
+  select(run_year, sidnm, fidnm, fram_lnd_yr_fsh:fram_er_tot, rmis_est_num_yr_fsh:rmis_er_tot) |> 
+  mutate(
+    fram_fsh_tot = fram_lnd_yr_fsh / fram_lnd_yr_tot,
+    rmis_fsh_tot = rmis_est_num_yr_fsh / rmis_est_num_yr_tot
+    )
+
 ```
 
 ## JDF & Coast
 
 ### Quillayute Fall
 
+- **Total across fisheries** 
+  - pseudo-ER differences less than 0.01, 0.05 and 0.1 in 0, 1 and 4 years respectively
+  - RMIS value larger in all years; differences may be related to missing escapement recoveries and/or mapping errors
+  
+- **Fishery-specific**
+  - largest differences concentrated in A2 sport, the closest largest pre-terminal fishery, and potentially acounted for by differences in escapement recoveries and/or BkFRAM targets and flagging
+  
+- **Rank agreement**
+  - both FRAM and current RMIS associate the greatest proportion of impacts to the same three fisheries: A2 and A1 sport and Area 4/4B troll
+
 ```{r}
 gg_stk(134)
+ggsave(file.path(dir_proj,"f_134_QuillayuteFall.png"), width = 9, height = 10)
 ```
 
 ### Queets
 
+- **Total across fisheries** 
+  - pseudo-ER differences less than 0.01, 0.05 and 0.1 in 1, 2 and 4 years respectively, but only 6 years with comparison possible
+  - FRAM value larger other than in 2014 and 2015
+  - RMIS escapement entirely missing in several years (2012, 2013, 2016, 2019) and possibly missing in others 
+  - RMIS fishery recoveries may be missing in some years; 
+  
+- **Fishery-specific**
+  - contrasting differences may be related to errors in dataset or mapping
+  
+- **Rank agreement**
+  - both FRAM and current RMIS associate the greatest proportion of impacts to the same three fisheries: A2 and A1 sport and Area 4/4B troll
+  - no recent recoveries in SW VI troll despite FRAM assigning ~7% of impacts over 2010-2019 
+
 ```{r}
 gg_stk(142)
+ggsave(file.path(dir_proj,"f_142_Queets.png"), width = 9, height = 10)
+```
+
+```{r}
+er_fram_rmis |>
+  drop_na(rmis_est_num_yr_tot, fram_lnd_yr_tot) |> 
+  filter(StockID==142, between(run_year, 2010, 2019)) |> 
+  distinct(run_year, sidnm, fram_lnd_yr_tot, fram_escp, rmis_est_num_yr_tot, rmis_escp)
+
+#only 2 recoveries in 2005
+rmis_rr |> filter(StockID==142, FisheryID==175)
+
 ```
 
 ### Quinault
+
+- **Total across fisheries** 
+  - pseudo-ER differences less than 0.01, 0.05 and 0.1 in ,  and  years respectively
+  - FRAM had larger value in , but otherwise RMIS larger
+  - RMIS escapement may be low in some years
+  - Fishery recoveries may be missing in some years; for example
+  
+- **Fishery-specific**
+  - contrasting differences may be related to errors in dataset or mapping
+  
+- **Rank agreement**
 
 ```{r}
 gg_stk(148)
@@ -799,11 +1035,33 @@ gg_stk(148)
 
 ### Chehalis
 
+- **Total across fisheries** 
+  - pseudo-ER differences less than 0.01, 0.05 and 0.1 in ,  and  years respectively
+  - FRAM had larger value in , but otherwise RMIS larger
+  - RMIS escapement may be low in some years
+  - Fishery recoveries may be missing in some years; for example
+  
+- **Fishery-specific**
+  - contrasting differences may be related to errors in dataset or mapping
+  
+- **Rank agreement**
+
 ```{r}
 gg_stk(152)
 ```
 
 ### Willapa
+
+- **Total across fisheries** 
+  - pseudo-ER differences less than 0.01, 0.05 and 0.1 in ,  and  years respectively
+  - FRAM had larger value in , but otherwise RMIS larger
+  - RMIS escapement may be low in some years
+  - Fishery recoveries may be missing in some years; for example
+  
+- **Fishery-specific**
+  - contrasting differences may be related to errors in dataset or mapping
+  
+- **Rank agreement**
 
 ```{r}
 gg_stk(164)
@@ -830,6 +1088,8 @@ gg_stk(176)
 ```{r}
 gg_stk(194)
 ```
+
+## British Columbia
 
 
 
@@ -1502,9 +1762,6 @@ er_fram_rmis_fsh_bias |>
   ggplot(aes(d_er_fsh_sum_mean, fct_reorder(fidnm, d_er_fsh_sum_mean), fill = d_er_fsh_sum_mean)) + 
   geom_col() + 
   scale_fill_gradient2(low = "purple", mid = "white", high = "orange", midpoint = 0)
-
-
-
 
 
 ```
