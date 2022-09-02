@@ -568,7 +568,7 @@ er_fram_rmis <- full_join(
 # list(
 #   er_fram_rmis = er_fram_rmis
 # ) |>
-#   writexl::write_xlsx("T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Projects/Coho FRAM MSM CWT analysis/er_fram_rmis_all_hat_stocks.xlsx")
+#   writexl::write_xlsx("T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Projects/Coho FRAM MSM CWT analysis/er_fram_rmis_all_hat_stocks_with2020.xlsx")
 
 ```
 
@@ -975,7 +975,7 @@ er_fram_rmis |>
   - RMIS value larger in all years; differences may be related to missing escapement recoveries and/or mapping errors
   
 - **Fishery-specific**
-  - largest differences concentrated in A2 sport, the closest largest pre-terminal fishery, and potentially acounted for by differences in escapement recoveries and/or BkFRAM targets and flagging
+  - largest differences concentrated in A2 sport, the closest largest pre-terminal fishery; potentially accounted for by differences in escapement recoveries and/or BkFRAM targets and flagging
   
 - **Rank agreement**
   - both FRAM and current RMIS associate the greatest proportion of impacts to the same three fisheries: A2 and A1 sport and Area 4/4B troll
@@ -988,10 +988,11 @@ ggsave(file.path(dir_proj,"f_134_QuillayuteFall.png"), width = 9, height = 10)
 ### Queets
 
 - **Total across fisheries** 
-  - pseudo-ER differences less than 0.01, 0.05 and 0.1 in 1, 2 and 4 years respectively, but only 6 years with comparison possible
-  - FRAM value larger other than in 2014 and 2015
-  - RMIS escapement entirely missing in several years (2012, 2013, 2016, 2019) and possibly missing in others 
-  - RMIS fishery recoveries may be missing in some years; 
+  - pseudo-ER differences less than 0.01, 0.05 and 0.1 in 1, 2 and 4 years respectively, comparison possible in 6 years
+  - larger RMIS value in 2014 and 2015, also largest differences in these years
+    - RMIS fishery recoveries may be missing in some years: notably higher total estimated number in 2014, driven by A2 sport
+  - RMIS escapement entirely missing in several years (2012, 2013, 2016, 2019) and possibly missing in others
+  - releases may be a contributing factor? varied mark and/or tagging rates?
   
 - **Fishery-specific**
   - contrasting differences may be related to errors in dataset or mapping
@@ -1011,86 +1012,319 @@ er_fram_rmis |>
   filter(StockID==142, between(run_year, 2010, 2019)) |> 
   distinct(run_year, sidnm, fram_lnd_yr_tot, fram_escp, rmis_est_num_yr_tot, rmis_escp)
 
-#only 2 recoveries in 2005
+#SW VI Trl only 2 recoveries, both in 2005, despite appreciable proportion in FRAM
 rmis_rr |> filter(StockID==142, FisheryID==175)
+#at least in 2014, this fishery contributes appreciably to total catch and ER
+er_fram_rmis |>
+  filter(StockID==142, between(run_year, 2014, 2015), FisheryID==175)
+
+er_fram_rmis |>
+  filter(StockID==142, between(run_year, 2014, 2015)) |> 
+  arrange(desc(rmis_est_num_yr_fsh))
 
 ```
 
 ### Quinault
 
 - **Total across fisheries** 
-  - pseudo-ER differences less than 0.01, 0.05 and 0.1 in ,  and  years respectively
-  - FRAM had larger value in , but otherwise RMIS larger
-  - RMIS escapement may be low in some years
-  - Fishery recoveries may be missing in some years; for example
-  
+  - pseudo-ER differences less than 0.01, 0.05 and 0.1 in 1, 5 and 7 years respectively
+  - RMIS value larger in all years; differences may be related to missing escapement recoveries and/or BKFRAM errors
+
 - **Fishery-specific**
-  - contrasting differences may be related to errors in dataset or mapping
+  - largest differences concentrated in A2 sport, the closest largest pre-terminal fishery; potentially accounted for by differences in escapement recoveries and/or BkFRAM targets and flagging
+  - consistently higher FRAM pseudo ER values in A3 and A5 sport despite lower FRAM total pseudo ER; neither a major driver of total but may indicate shift in impact since base period
   
 - **Rank agreement**
+  - both FRAM and current RMIS associate the greatest proportion of impacts to the same three fisheries: A2 and A1 sport and Area 4/4B troll
+  - Area 3 sport, Newport sport and A5 sport shows considerably lower proportion of recent RMIS recoveries relative to FRAM catch assignments
+  - Area 2 and 3 NT troll show higher proportion of recent RMIS recoveries relative to FRAM catch assignments
 
 ```{r}
 gg_stk(148)
+ggsave(file.path(dir_proj,"f_148_Quinault.png"), width = 9, height = 10)
 ```
+
+```{r}
+er_fram_rmis |>
+  drop_na(rmis_est_num_yr_tot, fram_lnd_yr_tot) |> 
+  filter(StockID==148, between(run_year, 2010, 2019)) |> 
+  distinct(run_year, sidnm, fram_lnd_yr_tot, fram_escp, rmis_est_num_yr_tot, rmis_escp)
+
+#A3 sport ER over-represented?
+er_fram_rmis |>
+  filter(StockID==148, between(run_year, 2017, 2019), FisheryID==40)
+#while A2 NT troll under-represented?
+er_fram_rmis |>
+  filter(StockID==148, between(run_year, 2017, 2019), FisheryID==35)
+```
+
 
 ### Chehalis
 
 - **Total across fisheries** 
-  - pseudo-ER differences less than 0.01, 0.05 and 0.1 in ,  and  years respectively
-  - FRAM had larger value in , but otherwise RMIS larger
-  - RMIS escapement may be low in some years
-  - Fishery recoveries may be missing in some years; for example
-  
+  - pseudo-ER differences less than 0.01, 0.05 and 0.1 in 1, 6 and 10 years respectively
+  - varied year to year in source of larger pseduo-ER value; differences small in several years
+
 - **Fishery-specific**
-  - contrasting differences may be related to errors in dataset or mapping
+  - Area 4/4B troll consistently assigned higher FRAM pseudo ER than present in RMIS; not a major driver of total, but difference in relative rank may indicate shift in impact since base period
+  - Grays Harbor net also a consistently assigned higher FRAM pseudo ER than present in RMIS but differences possibly more related to escapement errors given small rank difference
   
 - **Rank agreement**
+  - both FRAM and current RMIS associate the greatest proportion of impacts to Area 2 sport, and similar high relative ranks to Grays Harbor net, A7 sport and Grays sport
+  - Willapa Bay net exhibits higher proportion of recent RMIS recoveries relative to FRAM catch assignments, but fishery is a relatively minor overall element of catch, and year-fishery pseudo-ERs are not uniformly higher in RMIS
 
 ```{r}
 gg_stk(152)
+ggsave(file.path(dir_proj,"f_152_Chehalis.png"), width = 9, height = 10)
+```
+
+```{r}
+#4/4B troll
+#not heavily driven by samp coef: samp_catch_coef |> filter(FisheryID==43)
+er_fram_rmis |>
+  filter(StockID==152, between(run_year, 2010, 2019), FisheryID==43) |> 
+  select(sidnm, fidnm, run_year, contains("er_fsh"))
+
+#also not heavily driven by samp coef:samp_catch_coef |> filter(FisheryID==50)
+er_fram_rmis |>
+  filter(StockID==152, between(run_year, 2010, 2019), FisheryID==50) |> 
+  select(sidnm, fidnm, run_year, contains("er_fsh"))
+
+#Willapa impacts under-represented?
+#not subject to major coef: samp_catch_coef |> filter(FisheryID==47)
+#relatively minor overall element of catch, and not uniformly higher in RMIS, but also not driven by 2015
+er_fram_rmis |>
+  filter(StockID==152, between(run_year, 2010, 2019), FisheryID==47) |> 
+  select(sidnm, fidnm, run_year, contains("er_fsh"))
+
+
 ```
 
 ### Willapa
 
 - **Total across fisheries** 
-  - pseudo-ER differences less than 0.01, 0.05 and 0.1 in ,  and  years respectively
-  - FRAM had larger value in , but otherwise RMIS larger
-  - RMIS escapement may be low in some years
-  - Fishery recoveries may be missing in some years; for example
-  
+  - pseudo-ER differences less than 0.01, 0.05 and 0.1 in 0, 3 and 5 years respectively
+  - FRAM value larger in 2014 and 2019
+  - differences possibly related to missing recoveries and/or BKFRAM errors
+    - 2017 fewest RMIS escapement recoveries and lowest ratio to FRAM escapement
+    - 2019 RMIS escapement ~3.4x FRAM escapement and RMIS Willapa net recovery ~1.6x FRAM catch
+
 - **Fishery-specific**
-  - contrasting differences may be related to errors in dataset or mapping
-  
+  - differences dominated by Willapa net, with RMIS pseudo ER substantially larger in earlier years (2010-12), but FRAM value larger after 2014, excepting 2017
+    - note FRAM catch atypically low in 2019 in Willapa and across fisheries, while RMIS est_num within prior range but higher than FRAM; suggests possible BKFRAM or catch assignment issue
+    - contrast with 2014 in which escapement recovery ratio typical, but very large catches may have affected fishery sampling (second lowest ratio of RMIS fishery est_num to FRAM catch)
+    - possibly also missing fishery recoveries in 2018, with lowest ratio for fishery (est_num/catch)
+
 - **Rank agreement**
+  - both FRAM and current RMIS associate the greatest proportion of impacts to the same three fisheries: Willapa net, A2 and A1 sport; Willapa sport also appreciable in both
 
 ```{r}
 gg_stk(164)
+ggsave(file.path(dir_proj,"f_164_Willapa.png"), width = 9, height = 10)
 ```
+
+```{r}
+#not subject to major coef: samp_catch_coef |> filter(FisheryID==47)
+er_fram_rmis |>
+  filter(StockID==164, between(run_year, 2010, 2019), FisheryID==47) |> 
+  select(sidnm, fidnm, run_year, contains("_yr_fsh"), contains("_yr_tot"), contains("escp"), contains("er_fsh")) |> 
+  mutate(
+    ratio_fsh = rmis_est_num_yr_fsh / fram_lnd_yr_fsh,
+    ratio_escp = rmis_escp / fram_escp
+    )
+```
+
 
 ## Columbia
 
 ### Early
 
+- **Total across fisheries** 
+  - pseudo-ER differences less than 0.01, 0.05 and 0.1 in 2, 7 and 8 years respectively
+  - differences larger since 2016, with RMIS values more consistently larger 
+
+- **Fishery-specific**
+  - largest difference in Buoy10 sport, but do not account for post-2016 larger RMIS total pseudo-ER
+  - Newport sport shifts from mostly larger FRAM values to larger RMIS after 2016
+    - 2018 RMIS fishery pseudo ER ~10.8% considerably larger than previous and FRAM
+    - 2019 RMIS fishery pseudo ER ~10.8% persists and FRAM nearly identical (with smaller difference in 2019 total)
+  
+- **Rank agreement**
+  - both FRAM and current RMIS associate the greatest proportion of impacts to the same 6 fisheries
+    - very little indication in recent RMIS recoveries of different distribution of impacts relative to FRAM
+
+
 ```{r}
 gg_stk(166)
+ggsave(file.path(dir_proj,"f_166_ColEarly.png"), width = 9, height = 10)
+
+#not subject to major coef: samp_catch_coef |> filter(FisheryID==23)
+er_fram_rmis |>
+  filter(StockID==166, between(run_year, 2010, 2019), FisheryID==23) |> 
+  select(sidnm, fidnm, run_year, contains("_yr_fsh"), contains("_yr_tot"), contains("escp"), contains("er_fsh")) |> 
+  mutate(
+    ratio_fsh = rmis_est_num_yr_fsh / fram_lnd_yr_fsh,
+    ratio_escp = rmis_escp / fram_escp
+    )
+
+#not subject to major coef: samp_catch_coef |> filter(FisheryID==17)
+#but 2018 and 2019 jump out
+er_fram_rmis |>
+  filter(StockID==166, between(run_year, 2010, 2019), FisheryID==17) |> 
+  select(sidnm, fidnm, run_year, contains("_yr_fsh"), contains("_yr_tot"), contains("escp"), contains("er_fsh")) |> 
+  mutate(
+    ratio_fsh = rmis_est_num_yr_fsh / fram_lnd_yr_fsh,
+    ratio_escp = rmis_escp / fram_escp
+    )
+```
+
+
+```{r}
+lu$cwt_stk |> filter(StockID==166) |> count(Hatchery_name, Stock_name) |> arrange(desc(n))
+
+#careful summing cwt_1st_mark_count over recoveries - should distinct and join (similar for n_rel) 
+rmis_rr |> drop_na(estimated_number) |> filter(StockID==166, age==3) |> #count(hatchery_location_name) |> arrange(desc(n))
+  group_by(StockID,
+           #tag_code,
+           hatchery_location_name, 
+           #Stock_name,
+           run_year, f_type) |> 
+  summarise(
+    across(c(estimated_number), sum), .groups = "drop"
+  ) |> 
+  #filter(str_detect(hatchery_location_name, "DWOR"))
+  drop_na(f_type) |> 
+  filter(estimated_number > 10) |> 
+  filter(f_type != "escp", between(run_year, 2010, 2019)) |> 
+  ggplot(aes(run_year, estimated_number, fill = f_type)) + geom_col() + facet_wrap(~hatchery_location_name)
+
 ```
 
 ### Late
 
+- **Total across fisheries** 
+  - pseudo-ER differences less than 0.01, 0.05 and 0.1 in 0, 0 and 2 years respectively
+  - RMIS value larger in all years; differences likely related to missing recoveries and/or mapping errors
+    - ratio of RMIS:FRAM for fisheries larger than RMIS:FRAM for escapement in all years
+    - largest deviation in these ratios occurred in 2017 and 2019, when total pseudo ER difference also largest 
+
+- **Fishery-specific**
+  - consistency across fisheries points to handling of stock in FRAM and/or RMIS
+
+- **Rank agreement**
+  - despite differences in pseudo-ER magnitude, both FRAM and current RMIS associate the greatest proportion of impacts to similar fisheries
+  
 ```{r}
 gg_stk(176)
+ggsave(file.path(dir_proj,"f_176_ColLate.png"), width = 9, height = 10)
 ```
 
-## Oregon
-
-### South Coast
-
 ```{r}
-gg_stk(194)
+er_fram_rmis |>
+  drop_na(rmis_est_num_yr_tot, fram_lnd_yr_tot) |> 
+  filter(StockID==176, between(run_year, 2010, 2019)) |> 
+  distinct(run_year, sidnm, fram_lnd_yr_tot, fram_escp, rmis_est_num_yr_tot, rmis_escp) |> 
+  mutate(
+    ratio_fsh = rmis_est_num_yr_tot / fram_lnd_yr_tot,
+    ratio_escp = rmis_escp / fram_escp
+    )
 ```
 
 ## British Columbia
 
+### Strait of Georgia mainland
+
+- **Total across fisheries** 
+  - pseudo-ER differences less than 0.01, 0.05 and 0.1 in 1, 2 and 3 years respectively, comparison possible in 6 years
+  - RMIS escapement missing entirely in several years and almost completely in 2011 and 2012
+
+- **Fishery-specific**
+  - several Canadian fisheries excluded entirely due to limited sampling and very few recoveries for those included limit possible comparison
+  - absence of recoveries for Area 7BCD net and larger FRAM values for 4/4B troll despite otherwise larger RMIS values may indicate shifts since the coho FRAM base period 
+  
+- **Rank agreement**
+  - Of the fisheries included and with recoveries, both FRAM and current RMIS associate substantial proportions to Area 5 sport and Area 6-7A net
+  - N BC troll has the highest ranked proportional impacts in recent RMIS recoveries but accounts for a considerably lower portion of FRAM catches
+  
+```{r}
+gg_stk(206)
+ggsave(file.path(dir_proj,"f_206_GeorgiaMain.png"), width = 9, height = 10)
+```
+
+```{r}
+er_fram_rmis |>
+  drop_na(rmis_est_num_yr_tot, fram_lnd_yr_tot) |> 
+  filter(StockID==206, between(run_year, 2010, 2019)) |> 
+  distinct(run_year, sidnm, fram_lnd_yr_tot, fram_escp, rmis_est_num_yr_tot, rmis_escp) |> 
+  mutate(
+    ratio_fsh = rmis_est_num_yr_tot / fram_lnd_yr_tot,
+    ratio_escp = rmis_escp / fram_escp
+    )
+```
+
+### Strait of Georgia Van. Isl.
+
+- **Total across fisheries** 
+  - pseudo-ER differences less than 0.01, 0.05 and 0.1 in 1, 7 and 8 years respectively
+  - overall lower values result in small absolute differences but large proportional differences, particularly before 2017
+  - missing escapement recoveries appear to be partially addressed in 2017-19, but FRAM values still larger, suggesting mapping errors and/or missing fishery recoveries
+
+- **Fishery-specific**
+  - several Canadian fisheries excluded entirely due to limited sampling
+  - compared to SoG Mainland, fewer fishery-years with FRAM catch assigned in the absence of any RMIS
+  
+- **Rank agreement**
+  - Of the fisheries included and with recoveries, both FRAM and current RMIS associate substantial proportions to N BC troll and Area 5 sport
+  - Area 6-7 Net is assigned a considerably higher proportion of impacts in FRAM than is seen in recent RMIS recoveries
+  - Conversely, NW AK troll is assigned a trace proportion of impacts in FRAM but has the third greatest proportion of recent RMIS recoveries
+  
+```{r}
+gg_stk(210)
+ggsave(file.path(dir_proj,"f_210_GeorgiaMain.png"), width = 9, height = 10)
+```
+
+### Fraser lower
+
+- **Total across fisheries** 
+  - pseudo-ER differences less than 0.01, 0.05 and 0.1 in 2, 5 and 6 years respectively
+  - larger differences before 2016 may be related to supplemental escapements
+
+- **Fishery-specific**
+  - several Canadian fisheries excluded entirely due to limited sampling
+  - several fisheries missing recoveries in 2018-2019 prevent comparison
+  - overall small magnitude of pseudo-ER post-2016 results in small absolute differences
+  
+- **Rank agreement**
+  - Of the fisheries included and with recoveries, both FRAM and current RMIS associate the most impact to the same three fisheries
+  - Area 7BCD Net is assigned a considerably higher proportion of impacts in FRAM than is seen in recent RMIS recoveries
+  - Conversely, Area 4, 6 and 2 sport exhibit higher proportion in RMIS than in FRAM
+  
+```{r}
+gg_stk(226)
+ggsave(file.path(dir_proj,"f_226_FraserLower.png"), width = 9, height = 10)
+```
+
+### Fraser upper
+
+- **Total across fisheries** 
+  - pseudo-ER differences less than 0.01, 0.05 and 0.1 in 2, 5 and 8 years respectively
+  - since 2016, FRAM value larger; varied differences before 2016
+  - Limited or missing RMIS fishery and/or escapement recoveries may affect differences
+
+- **Fishery-specific**
+  - several Canadian fisheries excluded entirely due to limited sampling, and only a few fishery-years allow comparison for those included
+  - overall small magnitude of pseudo-ER post-2016 results in small absolute differences
+  
+- **Rank agreement**
+  - Of the fisheries included and with recoveries, both FRAM and current RMIS associate the most impact to Area 5 sport (but this fishery has the greatest number of years for comparison)
+  - However, the relative ranks of many other included fisheries deviate appreciably
+    - Area 4/4B troll and Area 7BCD net account for a considerably lower proportion of impact in RMIS than in FRAM
+    - Area 2 and 4 sport account a considerably lower proportion of impact in RMIS than in FRAM, but are driven by only a few years of comparison
+  
+```{r}
+gg_stk(230)
+ggsave(file.path(dir_proj,"f_230_FraserUpper.png"), width = 9, height = 10)
+```
 
 
 ## By stock: Annual and mean total pseudo-ERs 
