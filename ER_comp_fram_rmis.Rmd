@@ -931,7 +931,7 @@ er_fram_rmis |>
   filter(StockID==84, between(run_year, 2010, 2019)) |> 
   distinct(run_year, sidnm, fram_lnd_yr_tot, fram_escp, rmis_est_num_yr_tot, rmis_escp)
 
-escp |> filter(StockID == 84, year == 2019) #2019 5869+1583=7452
+#escp |> filter(StockID == 84, year == 2019) #2019 5869+1583=7452
 ```
 
 ### Green 
@@ -1166,7 +1166,7 @@ ggsave(file.path(dir_proj,"f_166_ColEarly.png"), width = 9, height = 10)
 ```
 
 
-```{r}
+```{r col_early_eda, eval=FALSE}
 #not subject to major coef: samp_catch_coef |> filter(FisheryID==23)
 er_fram_rmis |>
   filter(StockID==166, between(run_year, 2010, 2019), FisheryID==23) |> 
@@ -1185,10 +1185,8 @@ er_fram_rmis |>
     ratio_fsh = rmis_est_num_yr_fsh / fram_lnd_yr_fsh,
     ratio_escp = rmis_escp / fram_escp
     )
-```
 
 
-```{r}
 lu$cwt_stk |> filter(StockID==166) |> count(Hatchery_name, Stock_name) |> arrange(desc(n))
 
 #careful summing cwt_1st_mark_count over recoveries - should distinct and join (similar for n_rel) 
@@ -1335,18 +1333,43 @@ gg_stk(230)
 ggsave(file.path(dir_proj,"f_230_FraserUpper.png"), width = 9, height = 10)
 ```
 
+### BC N Coast H/W
 
-## Across stocks: Annual and mean total pseudo-ERs 
+- **Total across fisheries** 
+  - pseudo-ER differences less than 0.01, 0.05 and 0.1 in 1, 2 and 3 years respectively, comparison only possible up to 2017
+  - RMIS value larger in all years; likely affected by limited or missing RMIS fishery and/or escapement recoveries
+
+- **Fishery-specific**
+  - several Canadian fisheries excluded entirely due to limited sampling, and only a few fishery-years allow comparison for those included
+  - majority of information drawn from Alaskan fisheries which may be subject to mapping error
+  
+- **Rank agreement**
+  - Of the fisheries included and with recoveries, both FRAM and current RMIS rank many equivalently, but with NW AK troll largest in RMIS versus N BC troll largest in FRAM
+
+```{r}
+gg_stk(236)
+ggsave(file.path(dir_proj,"f_236_BC_Ncoast_HW.png"), width = 9, height = 10)
+```
+
+## Across stocks
+
+### Annual and mean total pseudo-ERs 
+
+The generally fewer recoveries for Canadian stocks appear to contribute to characteristically larger differences within British Columbia populations. This pattern could be related to rearing and release practices (i.e., limited tagging and/or marking), the type and coverage of fishery and escapement sampling, errors in mapping to FRAM stocks and/or fisheries, and/or errors in the validation run inputs.
+
+However, for the stocks with the most years in which comparison was possible, the FRAM values were larger, possibly due to the addition of supplemental escapement recoveries provided by DFO outside of RMIS. Notably, the "total" picture for a stock such as "BC North Coast Hatchery/Wild" is strongly driven by a few (mostly Alaskan) fisheries during the earlier years of the series considered here.
 
 ```{r gg_total_er_boxes}
 er_fram_rmis |> 
   drop_na(d_er_tot) |>
   group_by(sidnm) |> 
   distinct(sidnm, run_year, fram_er_tot, rmis_er_tot, d_er_tot) |> 
-  mutate(across(contains("er_tot"), list(med = median))) |> 
+  mutate(
+    across(contains("er_tot"), list(med = median)),
+    n = n()) |> 
   ggplot(aes(fct_rev(sidnm), d_er_tot, fill = d_er_tot_med)) +
-  geom_boxplot(outlier.shape = NA, show.legend = F) +
-  geom_jitter(aes(color = d_er_tot_med), alpha = 0.4, show.legend = F) +
+  geom_boxplot(aes(weight = n), outlier.shape = NA, varwidth = T, show.legend = F) +
+  geom_jitter(aes(color = d_er_tot_med), alpha = 0.6, show.legend = F) +
   coord_flip() +
   geom_hline(yintercept = 0, size = 1.3) + 
   geom_hline(yintercept = c(-0.05, 0.05), linetype = 2) +
@@ -1417,7 +1440,7 @@ er_fram_rmis |>
 
 ```
 
-## By stock: Annual fishery impacts relative rank disagreement
+### Annual fishery impact relative ranks
 
 ```{r}
 er_fram_rmis_rnk <- er_fram_rmis |> 
@@ -1463,154 +1486,16 @@ er_fram_rmis_rnk |>
     top3_same = sum(d_rnk == 0),
     top3_close = sum(d_rnk <= 3)) 
 
-```
 
-
-Per stock year, calculate the proportion of total, either landed catch (FRAM) or estimated number 
-
-```{r er_fram_rmis_rnk}
-er_fram_rmis_rnk <- er_fram_rmis |> 
-  filter(fram_lnd_yr_fsh > 0) |> 
-  group_by(sidnm, run_year) |> 
-  mutate(
-    fram_fsh_tot = fram_lnd_yr_fsh / fram_lnd_yr_tot,
-    rmis_fsh_tot = rmis_est_num_yr_fsh / rmis_est_num_yr_tot,
-    across(ends_with("_fsh_tot"), list(rnk = ~min_rank(-.))),
-    d_rnk = abs(fram_fsh_tot_rnk - rmis_fsh_tot_rnk)
-    ) |> 
-  arrange(sidnm, run_year, fram_fsh_tot_rnk)
-
-er_fram_rmis_rnk |> 
-  select(run_year, StockID, FisheryID, sidnm, fidnm, ends_with("_fsh"), contains("_fsh_tot"), d_rnk) |> 
-  filter(fram_fsh_tot_rnk <= 5) 
-```
-
-Illustrating "top 5 alignment": per stock, of the FRAM fisheries with the 5 largest catches in a year, how many of those fisheries were also in the RMIS top 5 of summed recoveries?
-
-Note however that this is quite "fuzzy" or loose, insofar as FRAM 1:5 could be RMIS 5:1 and still score "5".
-
-```{r gt_fsh_rnk_rmis5_in_fram5}
-#leaving for now, but this tab_style() approach is probably superseded by data_color() method below in the (better) weighted rank diffs table
-er_fram_rmis_rnk |> 
-  filter(fram_fsh_tot_rnk <= 5) |> 
-  summarise(in5 = sum(rmis_fsh_tot_rnk %in% 1:5, na.rm = T), .groups = "drop") |> 
-  pivot_wider(names_from = run_year, values_from = in5) |> 
-  gt(caption = "Fishery relative rank correspondence: RMIS top 5 in FRAM top 5") |> 
-  tab_style(
-    style = cell_fill("grey30", 0.5),
-    locations = list(cells_body(columns = c(`2015`, `2016`)))
-  ) |> 
-  tab_style(
-    style = cell_fill("forestgreen", 0.5),
-    locations = list(
-      cells_body(columns = `2019`, rows = `2019`==5),
-      cells_body(columns = `2018`, rows = `2018`==5),
-      cells_body(columns = `2017`, rows = `2017`==5),
-      
-      cells_body(columns = `2014`, rows = `2014`==5),
-      cells_body(columns = `2013`, rows = `2013`==5),
-      cells_body(columns = `2012`, rows = `2012`==5),
-      cells_body(columns = `2011`, rows = `2011`==5),
-      cells_body(columns = `2010`, rows = `2010`==5)
-    )
-  ) |> 
-  tab_style(
-    style = cell_fill("forestgreen", 0.2),
-    locations = list(
-      cells_body(columns = `2019`, rows = `2019`==4),
-      cells_body(columns = `2018`, rows = `2018`==4),
-      cells_body(columns = `2017`, rows = `2017`==4),
-      
-      cells_body(columns = `2014`, rows = `2014`==4),
-      cells_body(columns = `2013`, rows = `2013`==4),
-      cells_body(columns = `2012`, rows = `2012`==4),
-      cells_body(columns = `2011`, rows = `2011`==4),
-      cells_body(columns = `2010`, rows = `2010`==4)
-    )
-  ) |> 
-  tab_style(
-    style = cell_fill("orange", 0.5),
-    locations = list(
-      cells_body(columns = `2019`, rows = `2019`<=2),
-      cells_body(columns = `2018`, rows = `2018`<=2),
-      cells_body(columns = `2017`, rows = `2017`<=2),
-      
-      cells_body(columns = `2014`, rows = `2014`<=2),
-      cells_body(columns = `2013`, rows = `2013`<=2),
-      cells_body(columns = `2012`, rows = `2012`<=2),
-      cells_body(columns = `2011`, rows = `2011`<=2),
-      cells_body(columns = `2010`, rows = `2010`<=2)
-    )
-  )
-
-```
-
-Moving to a conceptually related but tighter rank-specific comparison based on the (weighted) difference in ranks, with weights increasing the importance of divergence in larger fisheries. 
-
-```{r gt_fsh_rnk_weighted_diff}
-er_fram_rmis_rnk |>
-  filter(fram_fsh_tot_rnk <= 10, fram_lnd_yr_fsh > 5) |> 
-  select(run_year, StockID, FisheryID, sidnm, fidnm, ends_with("_fsh"), contains("_fsh_tot"), d_rnk) |> 
-  filter(str_detect(sidnm, "20"), run_year==2016)
-
-er_fram_rmis_rnk |> 
-  filter(rmis_fsh_tot_rnk <= 3) |> 
-  select(run_year, StockID, FisheryID, sidnm, fidnm, ends_with("_fsh"), contains("_fsh_tot"), d_rnk)
-
-#illustrating a couple of options to compare stock-years in terms of rank (dis)agreement
-#weighting the difference in ranks by the inverse of
-# - the sum of FRAM and RMIS relative ranks of catch/recoveries
-# - the RMIS rank
-#the second alt better highlights cases such as 20:Skag in 115:8-2 Spt
-#which seems to be consistently underestimated in FRAM
-
-er_fram_rmis_rnk |> 
-  mutate(
-    d_rnk_sum_wt = d_rnk * (1/(fram_fsh_tot_rnk+rmis_fsh_tot_rnk)),
-    d_rnk_rmis_wt = d_rnk * (1/(1+rmis_fsh_tot_rnk))
-  ) |> 
-  filter(rmis_fsh_tot_rnk <= 3) |> 
-  group_by(sidnm, run_year) |> 
-  mutate(
-    d_rnk_sum_wt_tot = sum(d_rnk_sum_wt),
-    d_rnk_rmis_wt_tot = sum(d_rnk_rmis_wt)
-  ) |> 
-  select(run_year, sidnm, fidnm, ends_with("_fsh"), contains("_fsh_tot"), contains("d_rnk"))
-
-
-stock_ids_keep <- er_fram_rmis |>
-  #drop_na(rmis_est_num_yr_tot) |> count(StockID, sidnm) |> print(n=200)
-  group_by(StockID, sidnm, run_year) |> 
-  summarise(rmis_na = all(is.na(rmis_est_num_yr_fsh)), .groups = "drop") |> 
-  group_by(StockID, sidnm) |> summarise(rmis_yrs = sum(!rmis_na), .groups = "drop") |> 
-  filter(rmis_yrs > 5) |> 
-  pluck("StockID")
-
-er_fram_rmis_rnk |> 
-  filter(StockID %in% stock_ids_keep) |> 
-  mutate(d_rnk_rmis_wt = d_rnk * (1/(1+rmis_fsh_tot_rnk))) |> 
-  filter(rmis_fsh_tot_rnk <= 5) |> 
-  group_by(sidnm, run_year) |> 
-  summarise(d_rnk_rmis_wt_tot = sum(d_rnk_rmis_wt), .groups = "drop") |> 
-  pivot_wider(names_from = run_year, values_from = d_rnk_rmis_wt_tot) |> 
-  gt(caption = "Fishery relative rank disagreement: weighted rank differences for RMIS fisheries with largest annual est_num") |> 
-  fmt_number(columns = -sidnm) |> 
-  data_color(
-    columns = c(`2010`:`2014`, `2017`:`2019`), 
-    colors = scales::col_bin(
-      palette = c("forestgreen", "orange", "red"), domain = c(0, Inf), bins = c(0,0.5, 2, 4, 6,Inf) #c(0,0.1,seq(0.25,1.5,by=0.5), seq(2,8,by=1),Inf)
-    )) |> 
-  tab_style(
-    style = cell_fill("grey30", 0.5),
-    locations = list(cells_body(columns = c(`2015`, `2016`)))
-  ) 
-
-
-#what about combining ER diff magnitude with rank?
-er_fram_rmis_rnk |> 
-  filter(StockID %in% stock_ids_keep) |> 
-  filter(StockID == 68) |> select(sidnm, fidnm, run_year, fram_lnd_yr_fsh, rmis_est_num_yr_fsh, fram_er_fsh, rmis_er_fsh, d_er_fsh, fram_fsh_tot_rnk, rmis_fsh_tot_rnk, d_rnk)
-
+# er_fram_rmis_rnk |> 
+#   drop_na(d_rnk) |> 
+#   rowwise() |> 
+#   mutate(d_rnk_wt = d_rnk * mean(c(fram_fsh_tot, rmis_fsh_tot), na.rm=T)) |> 
+#   #filter(is.na(d_rnk)) |> 
+#   group_by(sidnm) |> 
+#   summarise(d_rnk_wt_tot = sum(d_rnk_wt, na.rm = T), .groups = "drop") |> 
+#   ggplot(aes(fct_reorder(sidnm, d_rnk_wt_tot), d_rnk_wt_tot)) + 
+#   geom_col() + coord_flip()
 
 ```
 
@@ -1675,7 +1560,7 @@ er_fram_rmis |>
 
 Where larger differences occur for a fishery, the result may follow from one or a few stocks in one or several years in which errors can be traced to FRAM (input values, input flagging, stock mapping) and/or RMIS (sampling, reporting).
 
-```{r}
+```{r a10_focal}
 er_fram_rmis |> 
   filter(
     FisheryID %in% c(118),
@@ -1699,64 +1584,9 @@ er_fram_rmis |>
 ```
 
 
-```{r}
-er_fram_rmis_fsh_bias <- er_fram_rmis |> 
-  filter(
-    fram_lnd_yr_fsh >= 10
-    #abs(d_er_fsh) > 0.005
-    ) |> 
-  group_by(fidnm, run_year) |> 
-  summarise(
-    n = n(),
-    across(d_er_fsh, 
-           list(
-             fram_greater = ~sum((. > 0)|(is.na(rmis_est_num_yr_fsh)), na.rm = T), #n-stocks per year with d(FRAM-RMIS) > 0 
-             rmis_greater = ~sum(. < 0, na.rm = T), #n-stocks per year with d(FRAM-RMIS) < 0 
-             sum = ~sum(., na.rm = T),
-             mean = ~mean(., na.rm = T)
-           )),
-    .groups = "drop"
-  ) |> 
-  mutate(
-    run_year = as.character(run_year),
-    d_er_fsh_fram_greater_pct = d_er_fsh_fram_greater / n,
-    d_er_fsh_rmis_greater_pct = d_er_fsh_rmis_greater / n
-    ) 
-
-
-er_fram_rmis |> filter(fram_lnd_yr_fsh >= 10, run_year==2012, FisheryID==15) |> select(run_year, fidnm, sidnm, fram_lnd_yr_fsh, rmis_est_num_yr_fsh, fram_er_fsh, rmis_er_fsh, d_er_fsh)
-er_fram_rmis |> filter(fram_lnd_yr_fsh >= 10, run_year==2010, FisheryID==17) |> select(run_year, fidnm, sidnm, fram_lnd_yr_fsh, rmis_est_num_yr_fsh, fram_er_fsh, rmis_er_fsh, d_er_fsh)
-
-##mean over years of the annual sum of differences...?
-##gets at both direction and magnitude of characteristic bias if/where it occurs
-##but maybe too weird a measure?
-#table
-er_fram_rmis_fsh_bias |> 
-  group_by(fidnm) |> 
-  summarise(across(c(d_er_fsh_sum, d_er_fsh_mean), list(mean = ~mean(., na.rm=T))), .groups = "drop") |> 
-  arrange(desc(d_er_fsh_sum_mean)) |> 
-  filter(abs(d_er_fsh_sum_mean) > 0.02) |> 
-  gt() |> 
-  data_color(
-    columns = d_er_fsh_sum_mean,
-    colors = scales::col_bin(palette = c("purple","white","orange"), bins = c(-0.5,-0.25,-0.1,-0.05,0,0.05,0.1,0.25,0.5), domain = c(-0.5, 0.5))
-  )
-#bar ramps
-er_fram_rmis_fsh_bias |> 
-  group_by(fidnm) |> 
-  summarise(across(c(d_er_fsh_sum, d_er_fsh_mean), list(mean = ~mean(., na.rm=T))), .groups = "drop") |> 
-  arrange(desc(d_er_fsh_sum_mean)) |> 
-  filter(abs(d_er_fsh_sum_mean) < 1) |> #exclude BC JDF Spt
-  ggplot(aes(d_er_fsh_sum_mean, fct_reorder(fidnm, d_er_fsh_sum_mean), fill = d_er_fsh_sum_mean)) + 
-  geom_col() + 
-  scale_fill_gradient2(low = "purple", mid = "white", high = "orange", midpoint = 0)
-
-
-```
-
 # Discussion
 
-We hypothesized that results of coho FRAM validation runs for the fishing years 2010-2019 would not correspond well to those calculated directly from RMIS recoveries during the same time span. Contrary to this expectation, for the stocks and fisheries with adequate data included in this analysis, we found that the 1986-1992 base period parameterization yielded output with mostly modest differences in pseduo-ERs and with mostly good agreement in terms of the relative ranking of impacts among per-terminal fisheries. In addition, most larger differences between the two datasets were plausibly explained by limited sampling and/or recoveries from fisheries, escapement or both. However, in most cases, determining the more accurate of the two values was difficult or impossible for both the fewer, larger differences and the more common, smaller ones. 
+We hypothesized that results of coho FRAM validation runs for the fishing years 2010-2019 would correspond poorly with those calculated directly from RMIS recoveries during the same time span. Contrary to this expectation, for the stocks and fisheries with adequate data included in this analysis, we found that the 1986-1992 FRAM base period parameterization yielded output with mostly modest differences in pseduo-ERs and with mostly good agreement in terms of the relative ranking of impacts among per-terminal fisheries. In addition, most larger differences between the two datasets were plausibly explained by sampling limitations in fisheries, escapement or both. Nonetheless, determining with certainty the more accurate of the two values was difficult or impossible in almost all cases. 
 
-This analysis clearly underscores the need for additional auditing of both the post-seaon coho FRAM and RMIS datasets. At minimum, additional careful review is warranted for the Backwards FRAM escapement targets (i.e., the numeric values of unharvested, returning adults) as well as the flagging to control mark rate composition of the cohorts constructed from those targets (i.e., were regionally-estimated values maintained as supplied, or did flagging to use pre-season or other mark rates alter the marked to unmarked ratio in the starting cohort). The catch values that are the other primary input to post-season coho FRAM runs would also benefit from additional cross-checking against those reported elsewhere in, among other sources, annual Pacific Fishery Management Council tables, RMIS catch and escapement, and agency-specific published values. Although still subject to observation error, the estimates of catch should be the least uncertain input to the post-season modeling effort, particularly for commercial fisheries.
+This analysis may suggest a few specific stock-fishery interactions that warrant further scrutiny for possible adjustments in pre- and post-season modeling (e.g., how impacts are assigned among several Puget Sound sport fisheries). However, it clearly underscores the need for additional auditing of both the post-seaon coho FRAM and RMIS datasets. At minimum, additional careful review is warranted for the Backwards FRAM escapement targets (i.e., the numeric values of unharvested, returning adults) as well as the flagging to control mark rate composition of the cohorts constructed from those targets (i.e., were regionally-estimated values maintained as supplied, or did flagging to use pre-season or other mark rates alter the marked to unmarked ratio in the starting cohort). The catch values that are the other primary input to post-season coho FRAM runs would also benefit from additional cross-checking against those reported elsewhere in, among other sources, annual Pacific Fishery Management Council tables, RMIS catch and escapement, and agency-specific published values. Although still subject to observation error, the estimates of catch should be the least uncertain input to the post-season modeling effort, particularly for commercial fisheries.
 
