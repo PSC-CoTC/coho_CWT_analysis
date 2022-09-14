@@ -632,13 +632,18 @@ gg_stk <- function(sid = 20, min_fram_landed = 10){
         fram_fsh_tot = fram_fsh / fram_tot,
         rmis_fsh_tot = rmis_fsh / rmis_tot,
         across(ends_with("_fsh_tot"), list(rnk = ~min_rank(-.))),
-        d_rnk = abs(fram_fsh_tot_rnk - rmis_fsh_tot_rnk)
+        d_rnk = fram_fsh_tot_rnk - rmis_fsh_tot_rnk,
+        d_rnk_color = case_when(
+          fram_fsh_tot_rnk == rmis_fsh_tot_rnk ~ "darkgreen", #d_rnk == 0
+          fram_fsh_tot_rnk < rmis_fsh_tot_rnk  ~ "orange", #d_rnk < 0
+          fram_fsh_tot_rnk > rmis_fsh_tot_rnk  ~ "purple" #d_rnk > 0
+        ),
+        d_rnk_color = if_else(round(fram_fsh_tot, 3) == 0 & rmis_fsh_tot == 0, "grey50", d_rnk_color)
       ) |> 
       ungroup() |> 
       arrange(sidnm, fram_fsh_tot_rnk) |> 
       mutate(across(c(fram_fsh_tot, rmis_fsh_tot), ~round(.,3))) |> 
-      filter(fram_fsh_tot > 0) |> 
-      select(sidnm, fidnm, contains("fsh_tot")) |> 
+      select(sidnm, fidnm, contains("fsh_tot"), contains("d_rnk")) |> 
       unite("FRAM", starts_with("fram_")) |> 
       unite("RMIS", starts_with("rmis_")) |> 
       pivot_longer(c(FRAM, RMIS), names_to = "var", values_to = "val") |> 
@@ -646,8 +651,8 @@ gg_stk <- function(sid = 20, min_fram_landed = 10){
       mutate(
         pct = as.numeric(pct),
         rnk = factor(as.numeric(rnk))
-        )
-
+      )
+    
     snm <- tot$sidnm[1]
       
     gg_tot_bars <- bind_rows(
@@ -696,8 +701,15 @@ gg_stk <- function(sid = 20, min_fram_landed = 10){
         subtitle = paste("FRAM - RMIS, min. annual FRAM landed >=", min_fram_landed, "coho")
       )
 
-    gg_rnk <- rnk |> 
-      ggplot(aes(var, rnk, color = fidnm, group = fidnm)) + 
+    gg_rnk_col <- rnk |>
+      ggplot(aes(fct_reorder(fidnm, pct, max), pct, group = var, fill = var)) +
+      geom_col(position = position_dodge(width = 0.3), alpha = 0.5) +
+      coord_flip() +
+      scale_fill_manual(values = c(FRAM = "orange", RMIS = "purple")) + #scale_fill_grey() +
+      theme(legend.position = "bottom")
+
+    gg_rnk_ladder <- rnk |> 
+      ggplot(aes(var, rnk, color = d_rnk_color, alpha = pct, group = fidnm)) + 
       geom_point(aes(size = pct), show.legend = F) + 
       geom_line(show.legend = F) +
       geom_text(
@@ -710,21 +722,46 @@ gg_stk <- function(sid = 20, min_fram_landed = 10){
         size= 1.8, hjust = -0.1, vjust = -0.2, show.legend = F) +
       scale_x_discrete("") +
       scale_y_discrete("Rank", limits = rev) +
-      scale_size(range = c(0.5, 3)) +
-      labs(title = "Proportional ranks, 2010-2019")
+      scale_size(range = c(0.2, 4)) +
+      scale_color_manual(values = c(darkgreen = "darkgreen", orange = "orange", purple = "purple")) +
+      scale_alpha_continuous(range = c(0.4, 1)) #+labs(title = "Proportional ranks, 2010-2019")
 
+    # #rainbow sprinkles if reverting...
+    # gg_rnk_ladder <- rnk |> 
+    #   ggplot(aes(var, rnk, color = fidnm, group = fidnm)) + 
+    #   geom_point(aes(size = pct), show.legend = F) + 
+    #   geom_line(show.legend = F) +
+    #   geom_text(
+    #     data = filter(rnk, var == "FRAM"),
+    #     aes(label = paste(fidnm, scales::percent(pct), sep = "  ")),
+    #     size= 1.8, hjust = 1, vjust = -0.2, show.legend = F) +
+    #   geom_text(
+    #     data = filter(rnk, var == "RMIS"),
+    #     aes(label = paste(fidnm, scales::percent(pct), sep = "  ")),
+    #     size= 1.8, hjust = -0.1, vjust = -0.2, show.legend = F) +
+    #   scale_x_discrete("") +
+    #   scale_y_discrete("Rank", limits = rev) +
+    #   scale_size(range = c(0.5, 3)) +
+    #   labs(title = "Proportional ranks, 2010-2019")
+    
+    # gg_tot_bars + gg_fsh + gg_rnk_ladder + 
+    #   plot_layout(
+    #     heights = c(1/4, 3/4),
+    #     design = "
+    #     13
+    #     23
+    #     "
+    #     ) +
+    #   plot_annotation(title = snm)
 
-  
-    gg_tot_bars + gg_fsh + gg_rnk + 
-      plot_layout(
-        #ncol = 2, nrow = 2,
-        heights = c(1/4, 3/4),
-        design = "
-        13
-        23
-        "
-        ) +
-      plot_annotation(title = snm)
+    return(list(
+      pseudo_er = gg_tot_bars + gg_fsh +
+        plot_layout(ncol = 1, heights = c(1/4, 3/4)) +
+        plot_annotation(title = snm),
+      rel_rank = gg_rnk_col + gg_rnk_ladder + 
+        plot_layout(ncol = 2) +
+        plot_annotation(title = paste(snm, "Proportional ranking, 2010-2019"))
+    ))
     
 }
 
@@ -790,8 +827,9 @@ gg_stk <- function(sid = 20, min_fram_landed = 10){
   - Counter misalignment in 8-1 & 8-2 may be due to errors in datasets and/or mapping
 
 ```{r}
-gg_stk(20) 
-ggsave(file.path(dir_proj,"f_20_Skagit.png"), width = 9, height = 10)
+g <- gg_stk(20) 
+g$pseudo_er; ggsave(file.path(dir_proj,"f_20_Skagit.png"), width = 9, height = 10)
+g$rel_rank; ggsave(file.path(dir_proj,"f_20_Skagit_rel_rank.png"), width = 9, height = 10)
 ```
 
 ```{r}
@@ -818,8 +856,9 @@ er_fram_rmis |>
   - both have A5 and A9 sport as third or fourth largest, and 8-2 as fifth; other fisheries are relatively minor in both
 
 ```{r}
-gg_stk(34)
-ggsave(file.path(dir_proj,"f_34_Tulalip.png"), width = 9, height = 10)
+g <- gg_stk(34)
+g$pseudo_er; ggsave(file.path(dir_proj,"f_34_Tulalip.png"), width = 9, height = 10)
+g$rel_rank; ggsave(file.path(dir_proj,"f_34_Tulalip_rel_rank.png"), width = 9, height = 10)
 ```
 
 ```{r}
@@ -849,8 +888,9 @@ er_fram_rmis |>
   - 9/9A net second for RMIS but 5th for FRAM, while 12/12B is third for FRAM but minor for RMIS 
 
 ```{r}
-gg_stk(48)
-ggsave(file.path(dir_proj,"f_48_Quilcene.png"), width = 9, height = 10)
+g <- gg_stk(48)
+g$pseudo_er; ggsave(file.path(dir_proj,"f_48_Quilcene.png"), width = 9, height = 10)
+g$rel_rank; ggsave(file.path(dir_proj,"f_48_Quilcene_rel_rank.png"), width = 9, height = 10)
 ```
 
 ```{r}
@@ -875,8 +915,9 @@ er_fram_rmis |>
   - Area 12/12B net (FRAM higher) and Area 9/9A Net (RMIS higher) countering differences suggests mapping or reporting error
 
 ```{r}
-gg_stk(58)
-ggsave(file.path(dir_proj,"f_58_GeorgeAdams.png"), width = 9, height = 10)
+g <- gg_stk(58)
+g$pseudo_er; ggsave(file.path(dir_proj,"f_58_GeorgeAdams.png"), width = 9, height = 10)
+g$rel_rank; ggsave(file.path(dir_proj,"f_58_GeorgeAdams_rel_rank.png"), width = 9, height = 10)
 ```
 
 ```{r}
@@ -900,8 +941,9 @@ er_fram_rmis |>
   - contrasting ranks for A13 (FRAM higher) and A6 (RMIS higher) may be related to sampling intensity
 
 ```{r}
-gg_stk(68)
-ggsave(file.path(dir_proj,"f_68_Nisqually.png"), width = 9, height = 10)
+g <- gg_stk(68)
+g$pseudo_er; ggsave(file.path(dir_proj,"f_68_Nisqually.png"), width = 9, height = 10)
+g$rel_rank; ggsave(file.path(dir_proj,"f_68_Nisqually_rel_rank.png"), width = 9, height = 10)
 ```
 
 ### Puyallup
@@ -920,10 +962,10 @@ ggsave(file.path(dir_proj,"f_68_Nisqually.png"), width = 9, height = 10)
   - both FRAM and current RMIS associate the greatest (pre-terminal) impacts to A10, A5 and A9 sport (first, second and third respectively), with A6 and A11 also appreciable 
 
 ```{r}
-gg_stk(84)
-ggsave(file.path(dir_proj,"f_84_Puyallup.png"), width = 9, height = 10)
+g <- gg_stk(84)
+g$pseudo_er; ggsave(file.path(dir_proj,"f_84_Puyallup.png"), width = 9, height = 10)
+g$rel_rank; ggsave(file.path(dir_proj,"f_84_Puyallup_rel_rank.png"), width = 9, height = 10)
 ```
-
 
 ```{r}
 er_fram_rmis |>
@@ -951,8 +993,9 @@ er_fram_rmis |>
   - Area 10A net and Area 4/4B troll account for a relatively lower proportion of RMIS recoveries, possibly related to differences in sampling intensity.
 
 ```{r}
-gg_stk(96)
-ggsave(file.path(dir_proj,"f_96_Green.png"), width = 9, height = 10)
+g <- gg_stk(96)
+g$pseudo_er; ggsave(file.path(dir_proj,"f_96_Green.png"), width = 9, height = 10)
+g$rel_rank; ggsave(file.path(dir_proj,"f_96_Green_rel_rank.png"), width = 9, height = 10)
 ```
 
 ```{r}
@@ -987,8 +1030,9 @@ er_fram_rmis |>
   - both FRAM and current RMIS associate the greatest proportion of impacts to the same three fisheries: A2 and A1 sport and Area 4/4B troll
 
 ```{r}
-gg_stk(134)
-ggsave(file.path(dir_proj,"f_134_QuillayuteFall.png"), width = 9, height = 10)
+g <- gg_stk(134)
+g$pseudo_er; ggsave(file.path(dir_proj,"f_134_QuillayuteFall.png"), width = 9, height = 10)
+g$rel_rank; ggsave(file.path(dir_proj,"f_134_QuillayuteFall_rel_rank.png"), width = 9, height = 10)
 ```
 
 ### Queets
@@ -1008,8 +1052,9 @@ ggsave(file.path(dir_proj,"f_134_QuillayuteFall.png"), width = 9, height = 10)
   - no recent recoveries in SW VI troll despite FRAM assigning ~7% of impacts over 2010-2019 
 
 ```{r}
-gg_stk(142)
-ggsave(file.path(dir_proj,"f_142_Queets.png"), width = 9, height = 10)
+g <- gg_stk(142)
+g$pseudo_er; ggsave(file.path(dir_proj,"f_142_Queets.png"), width = 9, height = 10)
+g$rel_rank; ggsave(file.path(dir_proj,"f_142_Queets_rel_rank.png"), width = 9, height = 10)
 ```
 
 ```{r}
@@ -1046,8 +1091,9 @@ er_fram_rmis |>
   - Area 2 and 3 NT troll show higher proportion of recent RMIS recoveries relative to FRAM catch assignments
 
 ```{r}
-gg_stk(148)
-ggsave(file.path(dir_proj,"f_148_Quinault.png"), width = 9, height = 10)
+g <- gg_stk(148)
+g$pseudo_er; ggsave(file.path(dir_proj,"f_148_Quinault.png"), width = 9, height = 10)
+g$rel_rank; ggsave(file.path(dir_proj,"f_148_Quinault_rel_rank.png"), width = 9, height = 10)
 ```
 
 ```{r}
@@ -1080,8 +1126,9 @@ er_fram_rmis |>
   - Willapa Bay net exhibits higher proportion of recent RMIS recoveries relative to FRAM catch assignments, but fishery is a relatively minor overall element of catch, and year-fishery pseudo-ERs are not uniformly higher in RMIS
 
 ```{r}
-gg_stk(152)
-ggsave(file.path(dir_proj,"f_152_Chehalis.png"), width = 9, height = 10)
+g <- gg_stk(152)
+g$pseudo_er; ggsave(file.path(dir_proj,"f_152_Chehalis.png"), width = 9, height = 10)
+g$rel_rank; ggsave(file.path(dir_proj,"f_152_Chehalis_rel_rank.png"), width = 9, height = 10)
 ```
 
 ```{r}
@@ -1102,7 +1149,6 @@ er_fram_rmis |>
 er_fram_rmis |>
   filter(StockID==152, between(run_year, 2010, 2019), FisheryID==47) |> 
   select(sidnm, fidnm, run_year, contains("er_fsh"))
-
 
 ```
 
@@ -1125,8 +1171,9 @@ er_fram_rmis |>
   - both FRAM and current RMIS associate the greatest proportion of impacts to the same three fisheries: Willapa net, A2 and A1 sport; Willapa sport also appreciable in both
 
 ```{r}
-gg_stk(164)
-ggsave(file.path(dir_proj,"f_164_Willapa.png"), width = 9, height = 10)
+g <- gg_stk(164)
+g$pseudo_er; ggsave(file.path(dir_proj,"f_164_Willapa.png"), width = 9, height = 10)
+g$rel_rank; ggsave(file.path(dir_proj,"f_164_Willapa_rel_rank.png"), width = 9, height = 10)
 ```
 
 ```{r}
@@ -1138,6 +1185,8 @@ er_fram_rmis |>
     ratio_fsh = rmis_est_num_yr_fsh / fram_lnd_yr_fsh,
     ratio_escp = rmis_escp / fram_escp
     )
+
+#note 2019 fram_escp 885 reflects TargetFlag==2 on BackwardsFRAM.TargetEscAge3 of 23995
 ```
 
 
@@ -1161,8 +1210,9 @@ er_fram_rmis |>
 
 
 ```{r}
-gg_stk(166)
-ggsave(file.path(dir_proj,"f_166_ColEarly.png"), width = 9, height = 10)
+g <- gg_stk(166)
+g$pseudo_er; ggsave(file.path(dir_proj,"f_166_ColEarly.png"), width = 9, height = 10)
+g$rel_rank; ggsave(file.path(dir_proj,"f_166_ColEarly_rel_rank.png"), width = 9, height = 10)
 ```
 
 
@@ -1222,8 +1272,9 @@ rmis_rr |> drop_na(estimated_number) |> filter(StockID==166, age==3) |> #count(h
   - despite differences in pseudo-ER magnitude, both FRAM and current RMIS associate the greatest proportion of impacts to similar fisheries
   
 ```{r}
-gg_stk(176)
-ggsave(file.path(dir_proj,"f_176_ColLate.png"), width = 9, height = 10)
+g <- gg_stk(176)
+g$pseudo_er; ggsave(file.path(dir_proj,"f_176_ColLate.png"), width = 9, height = 10)
+g$rel_rank; ggsave(file.path(dir_proj,"f_176_ColLate_rel_rank.png"), width = 9, height = 10)
 ```
 
 ```{r}
@@ -1254,8 +1305,9 @@ er_fram_rmis |>
   - N BC troll has the highest ranked proportional impacts in recent RMIS recoveries but accounts for a considerably lower portion of FRAM catches
   
 ```{r}
-gg_stk(206)
-ggsave(file.path(dir_proj,"f_206_GeorgiaMain.png"), width = 9, height = 10)
+g <- gg_stk(206)
+g$pseudo_er; ggsave(file.path(dir_proj,"f_206_GeorgiaMain.png"), width = 9, height = 10)
+g$rel_rank; ggsave(file.path(dir_proj,"f_206_GeorgiaMain_rel_rank.png"), width = 9, height = 10)
 ```
 
 ```{r}
@@ -1286,8 +1338,9 @@ er_fram_rmis |>
   - Conversely, NW AK troll is assigned a trace proportion of impacts in FRAM but has the third greatest proportion of recent RMIS recoveries
   
 ```{r}
-gg_stk(210)
-ggsave(file.path(dir_proj,"f_210_GeorgiaMain.png"), width = 9, height = 10)
+g <- gg_stk(210)
+g$pseudo_er; ggsave(file.path(dir_proj,"f_210_GeorgiaVI.png"), width = 9, height = 10)
+g$rel_rank; ggsave(file.path(dir_proj,"f_210_GeorgiaVI_rel_rank.png"), width = 9, height = 10)
 ```
 
 ### Fraser lower
@@ -1307,8 +1360,9 @@ ggsave(file.path(dir_proj,"f_210_GeorgiaMain.png"), width = 9, height = 10)
   - Conversely, Area 4, 6 and 2 sport exhibit higher proportion in RMIS than in FRAM
   
 ```{r}
-gg_stk(226)
-ggsave(file.path(dir_proj,"f_226_FraserLower.png"), width = 9, height = 10)
+g <- gg_stk(226)
+g$pseudo_er; ggsave(file.path(dir_proj,"f_226_FraserLower.png"), width = 9, height = 10)
+g$rel_rank; ggsave(file.path(dir_proj,"f_226_FraserLower_rel_rank.png"), width = 9, height = 10)
 ```
 
 ### Fraser upper
@@ -1329,8 +1383,9 @@ ggsave(file.path(dir_proj,"f_226_FraserLower.png"), width = 9, height = 10)
     - Area 2 and 4 sport account a considerably lower proportion of impact in RMIS than in FRAM, but are driven by only a few years of comparison
   
 ```{r}
-gg_stk(230)
-ggsave(file.path(dir_proj,"f_230_FraserUpper.png"), width = 9, height = 10)
+g <- gg_stk(230)
+g$pseudo_er; ggsave(file.path(dir_proj,"f_230_FraserUpper.png"), width = 9, height = 10)
+g$rel_rank; ggsave(file.path(dir_proj,"f_230_FraserUpper_rel_rank.png"), width = 9, height = 10)
 ```
 
 ### BC N Coast H/W
@@ -1347,8 +1402,9 @@ ggsave(file.path(dir_proj,"f_230_FraserUpper.png"), width = 9, height = 10)
   - Of the fisheries included and with recoveries, both FRAM and current RMIS rank many equivalently, but with NW AK troll largest in RMIS versus N BC troll largest in FRAM
 
 ```{r}
-gg_stk(236)
-ggsave(file.path(dir_proj,"f_236_BC_Ncoast_HW.png"), width = 9, height = 10)
+g <- gg_stk(236)
+g$pseudo_er; ggsave(file.path(dir_proj,"f_236_BC_Ncoast_HW.png"), width = 9, height = 10)
+g$rel_rank; ggsave(file.path(dir_proj,"f_236_BC_Ncoast_HW_rel_rank.png"), width = 9, height = 10)
 ```
 
 ## Across stocks
@@ -1367,6 +1423,34 @@ er_fram_rmis |>
   mutate(
     across(contains("er_tot"), list(med = median)),
     n = n()) |> 
+  ggplot(aes(fct_rev(sidnm), d_er_tot, fill = d_er_tot_med)) +
+  geom_boxplot(aes(weight = n), outlier.shape = NA, varwidth = T, show.legend = F) +
+  geom_jitter(aes(color = d_er_tot_med), alpha = 0.6, show.legend = F) +
+  coord_flip() +
+  geom_hline(yintercept = 0, size = 1.3) + 
+  geom_hline(yintercept = c(-0.05, 0.05), linetype = 2) +
+  geom_hline(yintercept = c(-0.1, 0.1), linetype = 3) + 
+  scale_fill_fermenter(type = "div", palette = "PuOr", breaks = c(-0.1, -0.05, 0, 0.05, 0.1), limits = c(-.2, .2), aesthetics = c("fill", "color")) +
+  guides(
+    fill = guide_colorbar(title="ER difference"),
+    x = guide_axis(""),
+    y = guide_axis("")) +
+  labs(
+    title = "Differences in annual total pre-terminal pseudo-ER", subtitle = "FRAM - RMIS; positive value if FRAM larger"
+  )
+
+```
+
+```{r gg_total_er_boxes_focal}
+er_fram_rmis |> 
+  drop_na(d_er_tot) |>
+  filter(StockID %in% c(20, 38, 48, 58, 68, 96, 134, 142, 148, 152, 164, 166, 176, 226, 230)) |> 
+  group_by(sidnm) |> 
+  distinct(sidnm, run_year, fram_er_tot, rmis_er_tot, d_er_tot) |> 
+  mutate(
+    across(contains("er_tot"), list(med = median)),
+    n = n()) |> 
+  #filter(n > 9) |> 
   ggplot(aes(fct_rev(sidnm), d_er_tot, fill = d_er_tot_med)) +
   geom_boxplot(aes(weight = n), outlier.shape = NA, varwidth = T, show.legend = F) +
   geom_jitter(aes(color = d_er_tot_med), alpha = 0.6, show.legend = F) +
@@ -1580,6 +1664,125 @@ er_fram_rmis |>
     title = "Fishery specific pseudo-ER differences",
     subtitle = "Area 10 Sport"
   )
+
+```
+
+# Longer term, single-stock, single-fishery
+
+```{r}
+rmis_rr |> 
+  drop_na(estimated_number) |>
+  filter(
+    age == 3,
+    str_detect(hatchery_location_name, "MARBLEMOUNT HATCHERY"),
+    str_detect(stock_location_name, "SKAGIT R     03.0176"),
+    !str_detect(release_location_name, "BAKER")
+    ) |> 
+  group_by(
+    run_year, #starts_with("release_location_"), #starts_with("recovery_location_"), 
+    stock_location_name,
+    f_type, FisheryID, FisheryName
+    ) |> 
+  summarise(across(estimated_number, sum), .groups = "drop") |> 
+  group_by(run_year, stock_location_name) |> 
+  mutate(est_num_yr = sum(estimated_number)) |> 
+  ungroup() |> 
+  mutate(est_num_yr_pct = round(estimated_number / est_num_yr, 4)) |> 
+  filter(FisheryID %in% c(43, 91:92, 103)) |> 
+  ggplot(aes(run_year, est_num_yr_pct)) +
+  geom_point(aes(size = est_num_yr), alpha = 0.6) +
+  geom_smooth(method = "lm") +
+  facet_wrap(~FisheryID +FisheryName, nrow = 1) +
+    labs(
+    title = "MARBLEMOUNT HATCHERY - SKAGIT R     03.0176, excl. BAKER rel",
+    subtitle = "Annual fishery recoveries / total fishery recoveries"
+  )
+
+
+
+#many unmapped to 96 are pre-1997, but also many 1999-2018...
+#but both 0000s and 5000s mapped and unmapped to 96
+rmis_rr |> drop_na(estimated_number) |>
+  filter(
+    age == 3,
+    str_detect(hatchery_location_name, "SOOS CREEK HATCHERY"), 
+    str_detect(stock_location_name, "BIG SOOS CR  09.0072"),
+    recorded_mark %in% c("5000", "0000")
+    ) |> 
+  count(hatchery_location_name, stock_location_name, StockID, run_year, recorded_mark) |> print(n=80)
+
+rmis_rr |> drop_na(estimated_number) |> 
+  filter(
+    age == 3,
+    str_detect(hatchery_location_name, "SOOS CREEK HATCHERY"), 
+    str_detect(stock_location_name, "BIG SOOS CR  09.0072"),
+    recorded_mark %in% c("5000", "0000")
+  ) |> 
+  count(recovery_location_name, recovery_location_code, f_type, FisheryID) |> 
+  arrange(desc(n)) |> print(n=30)
+
+rmis_rr |> 
+  drop_na(estimated_number) |>
+  filter(
+    age == 3,
+    str_detect(hatchery_location_name, "SOOS CREEK HATCHERY"), 
+    str_detect(stock_location_name, "BIG SOOS CR  09.0072"),
+    recorded_mark %in% c("5000", "0000")
+    ) |> 
+  group_by(
+    run_year, #starts_with("release_location_"), #starts_with("recovery_location_"), 
+    stock_location_name,
+    f_type, FisheryID, FisheryName
+    ) |> 
+  summarise(across(estimated_number, sum), .groups = "drop") |> 
+  group_by(run_year, stock_location_name) |> 
+  mutate(est_num_yr = sum(estimated_number)) |> 
+  ungroup() |> 
+  mutate(est_num_yr_pct = round(estimated_number / est_num_yr, 4)) |> 
+  filter(FisheryID %in% c(43, 91, 120, 122, 126)) |> 
+  ggplot(aes(run_year, est_num_yr_pct)) +
+  geom_point(aes(size = est_num_yr), alpha = 0.6) +
+  geom_smooth(method = "lm") +
+  facet_wrap(~FisheryID +FisheryName, nrow = 1) +
+  labs(
+    title = "SOOS CREEK HATCHERY - BIG SOOS CR  09.0072",
+    subtitle = "Annual fishery recoveries / total fishery recoveries"
+  )
+
+
+```
+
+# BackwardsFRAM v Escapement 
+
+```{r}
+db_con <- DBI::dbConnect(
+  drv = odbc::odbc(),
+  .connection_string = paste0(
+    "Driver={Microsoft Access Driver (*.mdb, *.accdb)};DBQ=",
+    fp$mdb_pst, ";")
+  )
+
+fram$backwards <- tbl(db_con, "BackwardsFRAM") |> 
+  filter(RunID %in% run_ids, StockID %in% stock_ids) |> 
+  select(RunID, StockID, target = TargetEscAge3, flag = TargetFlag) |> 
+  collect()
+
+DBI::dbDisconnect(db_con)
+
+```
+
+```{r}
+left_join(
+  fram$escp, 
+  fram$backwards, 
+  by = c("RunID", "StockID")
+  ) |> 
+  drop_na(target) |> 
+  mutate(
+    d = target - escp,
+    d_pct = d / target
+  ) |> 
+  filter(abs(d_pct) > 0.15) |> split(~flag) |> walk(~print(.x, n=200))
 
 ```
 
