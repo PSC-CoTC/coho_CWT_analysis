@@ -6,6 +6,7 @@ editor_options:
   chunk_output_type: console
 output: 
   bookdown::html_document2:
+    self_contained: true
     fig_caption: yes
     theme: cerulean
     toc: yes
@@ -22,6 +23,8 @@ library("gt")
 library("patchwork")
 library("odbc"); library("DBI")
 theme_set(theme_light())
+
+pal_ftype <- c("escp" = "#483778", "net" = "#D2A554", "sport" = "#626B5D", "troll" = "#8C8F9E")
 
 dir_proj <- "T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Projects/Coho FRAM MSM CWT analysis"
 
@@ -63,14 +66,12 @@ Coho FRAM predicts impacts to modeled stocks according to a "base period" drawn 
 
 Comparing a dataset of recent recovery patterns with results based on older CWT recoveries does not address the fundamental assumption that inferences about the harvest of non-hatchery stocks are adequately informed by coded wire tagging that is overwhelmingly focused on hatchery production. Nor does this analysis attempt to determine whether recent year coho FRAM post-season exploitation rates (ER) are quantitatively accurate relative to those that might be reconstructed outside of FRAM: arriving at a "true" stock ER requires data from robust sampling throughout all phases of harvest and post-harvest escapement, and these data are not readily available for most of the coho FRAM stock units.
 
-Instead, this investigation focuses on (dis)agreements in the relative assignment of catch mortality in primarily pre-terminal, highly mixed stock fisheries, seeking to understand how well the FRAM representation accords with current observations in RMIS. That is, we ask, "For a given stock, how well do the magnitude and relative ranks of annual per-fishery exploitation align between datasets?" Attempting to answer this seemingly straightforward question also highlights discrepancies that warrant additional auditing to ensure data are sufficiently high quality to support management decisions and risk considerations.
+Instead, this investigation focuses on (dis)agreements in the relative assignment of catch mortality in primarily pre-terminal, highly mixed stock fisheries, seeking to understand how well the FRAM representation accords with current observations in RMIS. That is, we ask, "For a given stock, how well do the magnitude and relative ranks of annual per-fishery exploitation align between datasets?" Attempting to answer this seemingly straightforward question also highlights discrepancies that warrant additional auditing to ensure that data are sufficiently high quality to support management decisions and risk considerations.
 
 
 # Data
 
-Coho FRAM includes net, troll and sport fisheries that occur in pre-terminal, terminal and freshwater areas. Freshwater sport, most freshwater net and some near-terminal net were excluded from the analysis due to the practical constraint of limited and inconsistent sampling and the conceptual presumption that the stock composition of these fisheries is subject to much less uncertainty, notwithstanding some amount of "dip-ins" from neighboring river systems. 
-
-*Language describing the RMIS proportion of catch sampled coefficients?*
+Coho FRAM includes net, troll and sport fisheries that occur in pre-terminal, terminal and freshwater areas. Freshwater sport, most freshwater net and some near-terminal net were excluded from the analysis due to the practical constraint of limited and inconsistent sampling and the conceptual presumption that the stock composition of these fisheries is subject to much less uncertainty, notwithstanding some amount of "dip-ins" from neighboring river systems. In addition, RMIS Catch & Sample data were inspected and compared with fishery catch values used in post-season FRAM runs. Individual fishery-year combinations were removed when the sampled portion of catch diverged substantially from the total reported catch, and fisheries were excluded entirely if the proportion of catch that was sampled was chronically low. Where smaller annual differences occurred more sporadically, an expansion coefficent was generated based on the ratio of sampled to total reported catch (e.g., a total reported catch of 1600 and sampled catch totaling 1300 produced an adjustment coefficient of ~1.23). These coefficients were then applied to the sampling-expansion based "estimated_number" values reported for individual recoveries, thereby better aligning the fishery totals between FRAM and RMIS. See section "Handling of RMIS Catch/Sample data" in the accompanying report for additional description and code. 
 
 ```{r included_fisheries}
 # #excluding:
@@ -198,15 +199,7 @@ fram$fishery |> filter(FisheryID %in% fishery_ids) |> gt()
 
 ## RMIS
 
-*Better description?*
-
-All recoveries of marked coho between the years 1986 and 2020 were queried from RMIS, and these were joined with the release data associated with the distinct tag codes in this set.
-
-This core dataset was augmented with recent year Canadian stock escapement recovery records provided by DFO...?
-
-An age field was calculated as the difference between `run_year` and `brood_year`, allowing later limitation to the 3 year old fish tracked in FRAM, and records with a `sample_type` 5 were excluded as uninformative. 
-
-Finally, the individual records were mapped to FRAM stocks according to a `tag_code` lookup table and to FRAM fisheries via reference to the `recovery_location_code` and `fishery` fields.
+All recoveries of marked coho between the years 1986 and 2020 were queried from RMIS, and these were joined with the release data associated with the distinct tag codes in this set.  This core dataset was augmented with recent year Canadian stock escapement recovery records provided by DFO. An age field was calculated as the difference between `run_year` and `brood_year`, allowing later limitation to the 3 year old fish tracked in FRAM, and records with a `sample_type` 5 were excluded as uninformative. Finally, the individual records were mapped to FRAM stocks according to a `tag_code` lookup table and to FRAM fisheries via reference to the `recovery_location_code` and `fishery` fields.
 
 The first three chunks preserve one-time operations to generate starting datasets from RMIS, and the fourth performs the stock and fishery mapping.
 
@@ -411,15 +404,95 @@ rmis_rr <- rmis_rr |>
 # rmis_rr |> filter(FisheryID %in% c(35, 36, 38, 39, 42, 43)) |> distinct(FisheryID, FisheryName, fishery, gear)
 ```
 
+### Recovery patterns since 1986
+
+As others have noted, recent years have generally seen fewer coho CWT recoveries than during the coho FRAM base period years, within both sampled fisheries and escapement (to hatcheries and in-river). 
+
+```{r recs_by_yrs, fig.height=6, fig.width=7}
+rmis_rr |> 
+  mutate(
+    yrs = case_when(
+      between(run_year, 1986, 1992) ~ "1986-1992",
+      between(run_year, 2010, 2019) ~ "2010-2019"
+    )
+  ) |> 
+  drop_na(yrs, f_type) |> 
+  ggplot(aes(yrs, fill = f_type)) +
+  geom_bar(position = position_dodge()) +
+  scale_fill_manual(values = pal_ftype, name = "") +
+  scale_x_discrete("") +
+  scale_y_continuous("CWT count", labels = scales::comma) +
+  labs(title = "Recovery counts by time period and type")
+  
+```
+
+These decreases can be differentiated relative to the locations of tagged releases.
+
+```{r recs_by_rgn_series_cols, fig.height=11, fig.width=9}
+rmis_rr_rgn <- rmis_rr |> 
+  filter(between(run_year, 1986, 2019)) |> 
+  count(run_year, f_type, release_location_state, release_location_rmis_region, release_location_rmis_basin) |> 
+  mutate(
+    rgn = case_when(
+      release_location_state == "AK" ~ "AK",
+      release_location_state == "BC" | (is.na(release_location_state) & f_type == "escp") ~ "BC",
+      
+      release_location_rmis_region == "CECR" | release_location_rmis_region == "CRGN" |
+        release_location_rmis_region == "LOCR" | release_location_rmis_region == "UPCR" ~ "Columbia R.",
+      
+      release_location_rmis_region == "HOOD" | release_location_rmis_region == "JUAN" |
+        release_location_rmis_region == "MPS" | release_location_rmis_region == "NOWA" |
+        release_location_rmis_region == "NPS" | release_location_rmis_region == "SKAG" |
+        release_location_rmis_region == "SPS" ~ "WA Puget Sound",
+      
+      release_location_rmis_region == "GRAY" | release_location_rmis_region  == "NWC" |
+        release_location_rmis_region =="WAGN" | release_location_rmis_region == "WILP" ~ "WA Coastal",
+      
+      release_location_rmis_region == "SOOR" | release_location_rmis_region == "KLTR" |
+        release_location_rmis_region == "NOCA"  ~ "SONCC",
+      
+      release_location_rmis_region == "NOOR" | release_location_rmis_region == "ORGN" |
+        release_location_rmis_region == "CECA" | release_location_rmis_region == "SAFA" |
+        release_location_rmis_region == "SNAK" ~ "OR,CA,SNAK"
+    )
+  )
+
+
+(
+rmis_rr_rgn |>  
+  filter(f_type != "escp") |> 
+  ggplot(aes(run_year, n, fill = f_type)) + 
+  geom_col() +
+  scale_x_continuous("", n.breaks = 8, guide = guide_axis(n.dodge = 2)) +
+  scale_y_continuous("CWT count", labels = scales::comma) +
+  scale_fill_manual(values = pal_ftype, name = "") + #wacolors::scale_fill_wa_d(palette = "larch", name = "") +
+  facet_wrap(~rgn, ncol = 1) +
+  labs(title = "Fishery recoveries")
+) + (
+rmis_rr_rgn |>  
+  filter(f_type == "escp") |> 
+  ggplot(aes(run_year, n, fill = f_type)) + 
+  geom_col(show.legend = F) +
+  scale_x_continuous("", n.breaks = 8, guide = guide_axis(n.dodge = 2)) +
+  scale_y_continuous("", labels = scales::comma) +
+  scale_fill_manual(values = pal_ftype) + #wacolors::scale_fill_wa_d(palette = "uw") +
+  facet_wrap(~rgn, ncol = 1) +
+  labs(title = "Escapement recoveries") #+ theme(legend = element_blank())
+) +
+  plot_layout(nrow = 1, guides = 'collect')
+  
+
+```
+
 # Exploitation calculations
 
 Per stock, per year, a "pseudo-ER" was calculated by dividing the annual per-fishery landed catch (FRAM, non-selective + mark-selective, timesteps 1 to 5) or `estimated_number` (RMIS, summed over individual recoveries) by the sum of the total across fisheries and the non-fishery escapement. For the FRAM case:
 
-$ pseudoER_{s,f,y} = \frac{LC_{s,f,y}}{Escp_{s,y} + \sum_{f}LC_{s,f,y}} $
+$pseudoER_{s,f,y} = \frac{LC_{s,f,y}}{Escp_{s,y} + \sum_{f}LC_{s,f,y}}$
 
 In addition, the "total pseudo-ER" was calculated similarly by dividing the across-fishery total by the sum of this value and escapement. For the RMIS case:
 
-$ pseudoER_{s,y} = \frac{\sum_{f}EstNum_{s,f,y}}{Escp_{s,y} + \sum_{f}EstNum_{s,f,y}} $
+$pseudoER_{s,y} = \frac{\sum_{f}EstNum_{s,f,y}}{Escp_{s,y} + \sum_{f}EstNum_{s,f,y}}$
 
 These values were then joined by year, stock and fishery to allow comparison between the two data sources.
 
@@ -604,18 +677,26 @@ gg_stk <- function(sid = 20, min_fram_landed = 10){
         mutate(run_year = as.character(run_year)),
       #across years, end of fishery row
       filter(er_fram_rmis, StockID == sid, fram_lnd_yr_fsh >= min_fram_landed) |> 
+        mutate(
+          d_er_fsh = if_else(is.na(rmis_er_fsh), fram_er_fsh, d_er_fsh),
+          d_er_fsh = if_else(is.na(fram_er_fsh), -1*rmis_er_fsh, d_er_fsh)
+          ) |> 
         group_by(sidnm, fidnm) |>
         summarise(
           run_year = "mean",
           d_er_fsh = mean(d_er_fsh, na.rm=T), .groups = "drop"),
       #across fisheries, bottom of year col
       filter(er_fram_rmis, StockID == sid, fram_lnd_yr_fsh >= min_fram_landed) |> 
+        mutate(
+          d_er_fsh = if_else(is.na(rmis_er_fsh), fram_er_fsh, d_er_fsh),
+          d_er_fsh = if_else(is.na(fram_er_fsh), -1*rmis_er_fsh, d_er_fsh)
+        ) |> 
         mutate(run_year = as.character(run_year)) |> 
         group_by(sidnm, run_year) |>
         summarise(
           fidnm = "0: annual mean",
           d_er_fsh = mean(d_er_fsh, na.rm=T), .groups = "drop")
-      )
+      ) 
     
     #fishery ranks as all-years summed percentages: sum per fishery / sum all fisheries
     #meant to stabilize year-to-year fluctuations in sampling etc.
@@ -682,14 +763,15 @@ gg_stk <- function(sid = 20, min_fram_landed = 10){
           is.na(rmis_er_fsh) ~ "FRAM-only",
           is.na(fram_er_fsh) ~ "RMIS-only"
         ),
-        sze = if_else(!is.na(d_er_fsh), abs(d_er_fsh), 0)
+        #sze = if_else(!is.na(d_er_fsh), abs(d_er_fsh), 0)
+        sze = if_else(!is.na(d_er_fsh), abs(d_er_fsh), fram_er_fsh)
       ) |>
       ggplot(aes(run_year, fidnm)) +
-      geom_point(aes(shape = shp), size = 2) +
+      geom_point(aes(shape = shp), size = 1) +
       geom_point(aes(shape = shp, size = sze, fill = d_er_fsh)) +
       geom_text(aes(label = if_else(is.na(d_er_fsh), "", paste0(round(100*d_er_fsh, digits = 0), "%"))), vjust = -0.5, size = 3) +
       scale_shape_manual(name = "", values = c("FRAM > RMIS" = 24, "FRAM < RMIS" = 25, "FRAM = RMIS" = 22, "FRAM-only" = 20, "RMIS-only" = 3)) +
-      scale_size("ER diff. abs.", range = c(2, 5)) +
+      scale_size("ER diff. abs.", range = c(1.5, 5)) +
       scale_fill_fermenter(type = "div", palette = "PuOr", breaks = c(-0.1, -0.05, 0, 0.05, 0.1), limits = c(-.2, .2)) +
       guides(
         fill = guide_colorbar(title="ER difference"),
@@ -737,6 +819,7 @@ gg_stk <- function(sid = 20, min_fram_landed = 10){
     
 }
 
+gg_stk()
 
 ##ranks still stratified by run_year
     # rnk <- filter(er_fram_rmis, StockID == sid, fram_lnd_yr_fsh > 0) |> 
@@ -1639,7 +1722,7 @@ er_fram_rmis |>
 
 ```
 
-# Longer term, single-stock, single-fishery
+## Longer term, single-stock, single-fishery
 
 This section demonstrates a potential further analysis based only on RMIS recoveries. Focusing on a single RMIS `hatchery_location_name` and `stock_location_name` (possibly further constrained by `release_location_name`), the annual among-fishery proportional recoveries can be calculated. Conceptually, this corresponds to and extends the "rank impact" results above, comparing against FRAM. This approach reduces considerations related to mapping to FRAM stock (e.g., were all `tag_code` groups captured and correctly assigned) and allows for consideration of a longer time series (up to the full 1986-2020 starting RMIS dataset). These calculations do not directly take into account any changes in rearing and release practices, nor among-fishery changes in sampling practices. These could affect interpretation of any long term trends, but would not be expected to impact results for any given year. Regardless, the comparison of differences in time series attributes between fisheries may indicate patterns that merit further study. Note that the `group`ing and plotting uses the mapping to FRAM fisheries, but RMIS `recovery_location_*` values could be substituted straightforwardly.
 
@@ -1727,7 +1810,7 @@ rmis_rr |>
 
 ```
 
-# BackwardsFRAM v Escapement 
+# Next steps:  BackwardsFRAM v Escapement 
 
 This section demonstrates an approach to identify an area of high-priority input review: agreement between the "realized" escapement values in post-season runs (i.e., those used throughout this analysis) and the BackwardsFRAM target escapement values, used to establish the "recruit scalers" that set starting cohorts (see [FRAM documentation](https://framverse.github.io/fram_doc) for more details). The latter are compiled from various regional expert sources and data stewards, and while they are subject to revision outside of FRAM post-season runs, are considered to represent the best available estimates. Backwards runs are specified to meet convergence criteria that ensure agreement with these targets, but only for those stock units where the provided value is understood to correspond directly; for some aggregates, a BackwardsFRAM `TargetFlag` value of 2 means that the provided value is disaggregated (i.e., across mark status) using other values. In this case, the provided target value and the forward run realized escapement value can and do diverge, but further examination is required to determine Whether or not this is the correct/desirable outcome.
 
@@ -1764,7 +1847,7 @@ left_join(
 ```
 
 
-# Discussion
+# Conclusion
 
 We hypothesized that results of coho FRAM validation runs for the fishing years 2010-2019 would correspond poorly with those calculated directly from RMIS recoveries during the same time span. Contrary to this expectation, for the stocks and fisheries with adequate data included in this analysis, we found that the 1986-1992 FRAM base period parameterization yielded output with mostly modest differences in pseduo-ERs and with mostly good agreement in terms of the relative ranking of impacts among per-terminal fisheries. In addition, most larger differences between the two datasets were plausibly explained by sampling limitations in fisheries, escapement or both. Nonetheless, determining with certainty the more accurate of the two values was difficult or impossible in almost all cases. 
 
