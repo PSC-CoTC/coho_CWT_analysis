@@ -2372,7 +2372,7 @@ FRAMorder <- mr_fram_samp_aggs |>
 
 Table 9.3 places fisheries in three categories. Agreement is listed as 'good' when mark rates have an absolute difference of less than 10%, 'moderate' below 30%, and poor above 30%.
 
-```{r t93 results='asis'}
+```{r t93, results='asis'}
 # Calculates the relative difference by fishery and ranks fisheries
 
 Rank_RelDiff_Fish <-bar1|>
@@ -3500,8 +3500,8 @@ er_fram_rmis |>
   filter(StockID==142, between(run_year, 2010, 2019)) |> 
   distinct(run_year, sidnm, fram_lnd_yr_tot, fram_escp, rmis_est_num_yr_tot, rmis_escp)
 
-#SW VI Trl only 2 recoveries, both in 2005, despite appreciable proportion in FRAM
-rmis_rr |> filter(StockID==142, FisheryID==175)
+# #SW VI Trl only 2 recoveries, both in 2005, despite appreciable proportion in FRAM
+# rmis_rr |> filter(StockID==142, FisheryID==175)
 #at least in 2014, this fishery contributes appreciably to total catch and ER
 er_fram_rmis |>
   filter(StockID==142, between(run_year, 2014, 2015), FisheryID==175)
