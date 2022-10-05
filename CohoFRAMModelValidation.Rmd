@@ -1,6 +1,7 @@
 ---
 title: "DRAFT: Coho FRAM Model Validation and Mixed Stock Model Updating"
 author: "A Hagen-Breaux, Carrie Cook-Tabor, Dan Auerbach"
+
 date: "`r Sys.Date()`"
 output:
   bookdown::html_document2:
@@ -507,8 +508,12 @@ colnames(mr_rmis_samp_long)[3]<-"FisheryName"
 
 ```
 
+\newpage
 
 # Acknowledgements
+Financial support for this project was provided by the Southern Endowment Fund, with support from the Washington Department of Fish and Wildlife, U.S. Fish and Wildlife Service, and members of the Coho Technical Committee.
+
+\newpage
 
 # Glossary
 
@@ -521,14 +526,17 @@ A FRAM utility that reconstructs starting Cohorts by adding fisheries mortalitie
 <a id='CWT'></a>**Coded-Wire Tag (CWT)** <br>
 Coded micro-wire implanted in juvenile salmon prior to release. When recovered, the binary code on the tag identifies the tag group, and thus provides information such as location and timing of release, special hatchery treatments, etc.
 
+<a id='CoTC'></a>**Coho Technical Committee (CoTC)** <br>
+Technical committee formed by the [Pacific Salmon Commission](#PSC), providing the panels with scientific data to make effective decisions affecting Southern Coho salmon.
+
 <a id='ER'></a>**Exploitation Rate (ER)**<br>
 The mortality (landed or total) of a stock or stock aggregate in a fishery(s) divided by the stock's abundance (fishery mortality + escapement).
 
-<a id='ET'></a>Extreme Terminal**<br>
+<a id='ET'></a>**Extreme Terminal**<br>
 Marine area directly adjacent to salmon native streams with a very high proportion of catch made up of the "local stocks" due to river mouth proximity; i.e., Elliott Bay is the extreme terminal area for Green River Chinook and Coho.
 
 <a id='FRAM'></a>**Fisheries Regulation Assessment Model (FRAM)** <br>
-Model used by the Pacific Salmon Commission[^1], Pacific Fishery Management Council, Washington Department of Fish and Wildlife, and Puget Sound Treaty Tribes to evaluate the effects of fisheries on Chinook and Coho salmon.
+Model used by the Pacific Salmon Commission[^1], Pacific Fishery Management Council, Washington Department of Fish and Wildlife, and Puget Sound Treaty Tribes to evaluate the effects of fisheries on Chinook and Coho salmon and to evaluate managment objectives.
 
 <a id='fulljoin'></a>**Full Join** <br>
 A data join returning all the rows from the joined tables, whether they are matched or not.
@@ -536,13 +544,13 @@ A data join returning all the rows from the joined tables, whether they are matc
 [^1]: The PSC Coho Technical Committee uses FRAM to evaluate exploitation rates on Coho whereas PSC Chinook Technical Committee uses a different model for Chinook. 
 
 <a id='MR'></a>**Mark Rate** <br>
-The mark rate of a fishery is computed as adipose marked landed catch or encounters divided by total landed catch or total encounters in the fishery.
+The mark rate of a fishery is computed as [adipose marked](#M) landed catch or encounters divided by total landed catch or total encounters in the fishery.
 
 <a id='MSF'></a>**Mark-Selective Fishery (MSF)** <br>
 A fishery in which only marked (adipose fin clipped) fish can be retained.
 
 <a id='MSM'></a>**Mixed Stock Model (MSM)** <br>
-Main computer program used to build the current Coho base period from 1986-1992 coded-wire-tags, resulting in the base period exploitation rates utilized in [FRAM](#FRAM) runs.
+Main computer program used to build the current Coho base period. Model inputs included coded-wire-tags and estimated catches and escapements of Coho coast-wide from catch years 1986-1999. Model outputs resulted in base period exploitation rates utilized in contemporary [FRAM](#FRAM) runs.
 
 <a id='NOF'></a>**North of Falcon (NOF)**<br>
 Co-manager, annual, pre-season Puget Sound salmon fishery planning process; referencing the region North of Cape Falcon, Oregon, which marks the southern border of active management for Washington salmon stocks.
@@ -550,14 +558,14 @@ Co-manager, annual, pre-season Puget Sound salmon fishery planning process; refe
 <a id='PSC'></a>**Pacific Salmon Commission (PSC)** <br>
 A commission composed of Canadian and United States representatives tasked with developing and upholding the PST.
 
-<a id='PST'></a>**Pacific Salmon Treaty**<br> [(PST):](https://www.psc.org/about-us/history-purpose/pacific-salmon-treaty/) 
+<a id='PST'></a>**Pacific SalmonTreaty [(PST)](https://www.psc.org/about-us/history-purpose/pacific-salmon-treaty/)** <br>
 Treaty between the Governments of Canada and the United States of America concerning Pacific Salmon.
 
-<a id='RMIS'></a>**Regional Mark Information System (RMIS)** <>
-Regional Mark Information System – the databases of the Regional Mark Processing Center storing Pacific Coast-wide anadromous salmon adipose marking information, coded-wire tag releases and recoveries, recovery locations, and sampling information.
+<a id='RMIS'></a>**Regional Mark Information System (RMIS)** <br>
+The databases of the Regional Mark Processing Center storing Pacific Coast-wide anadromous salmon adipose marking information, coded-wire tag releases and recoveries, recovery locations, and sampling information.
 
 <a id='SOF'></a> **South of Falcon (SOF)**<br>
-Referencing the region South of Cape Falcon (OR) which marks the southern border of active management for Washington salmon stocks.
+Referencing the region South of Cape Falcon, Oregon, which marks the southern border of active management for Washington salmon stocks.
 
 <a id='SC'></a> **Starting Cohort**<br>
 Initial run sizes before natural mortality and fishing mortality at the beginning of the run year.
@@ -568,7 +576,7 @@ Coho FRAM has 5 time steps.<br>
 - Time 2: July<br>
 - Time 3: August<br>
 - Time 4: September<br>
-- Time 5: October - December
+- Time 5: October-December
 
 <a id='VR'></a>**Validation Runs** <br>
 Post-season FRAM model runs populated with observed mortalities and escapements, reflecting the "best information". Exploitation rates resulting from these runs are compared to pre-season exploitation rates to assess whether management objectives were achieved. 
@@ -583,55 +591,56 @@ $(document).ready(function() {
   $('.footnotes').remove();
 });
 ```
+\newpage
 
 # List of Figures
 
+\newpage
+
 # List of Tables
+
+\newpage
 
 # Executive Summary
 
 Evaluations of Coho exploitation rates ([ERs](#ER)) in fisheries along the Canadian and U.S. West Coast rely on the [Fisheries Regulation Assessment Model (FRAM)](#FRAM). [Coded-wire-tag (CWT)](#CWT) recoveries from 1986-1992, also referred to as the base-period, were used to calculate stock-fishery-time period specific exploitation rates, the foundational data of the FRAM. 
 
-This project's main goal was to assess whether the exploitation rates derived from FRAM's 40+ year-old base-period are still reflective of current stock distribution patterns (1) by direct comparison to rates derived from contemporary CWT recoveries, (2) through indirect assessments by comparing fishery mark-rates produced by FRAM to observed mark rates. Further, depending on the outcome of these assessments, investigate methods to update the existing base-period with contemporary CWT recoveries. A secondary goal of this project was to study the effect of abundances changes of stock aggregates on the exploitation rates of key co-migrating stocks through sensitivity analyses.
+This project's main goal was to assess whether the exploitation rates derived from FRAM's 40+ year-old base-period are still reflective of current stock distribution patterns (1) by direct comparison to rates derived from contemporary CWT recoveries, (2) through indirect assessments by comparing fishery mark-rates produced by FRAM to observed mark rates. Another goal, depending on the outcome of assessments 1 and 2, was to investigate methods to update the existing base-period with contemporary CWT recoveries. The final goal of this project was to study the effect of abundances changes of stock aggregates on the exploitation rates of key co-migrating stocks through sensitivity analyses.
 
-**Exploitation Rate Analysis**
-A portion of hatchery Coho released along the West-Coast and Salish Sea are injected with [CWTs](#CWT). These contain coded information about the salmon, release location, and the hatchery program. When these tagged Coho are recovered by fishery samplers, the CWTs are excised and analyzed to provide information about the salmon and their origin. 
+**Exploitation Rate Analysis**<br>
+CWT data from the [Regional Mark Information System (RMIS)](#RMIS) was used for the exploitation rate comparison to FRAM. A significant portion of this project was spent error checking these data and mapping CWT recoveries to FRAM stocks and fisheries. Next stocks with a high number of CWT recoveries in mixed-stock fisheries (focal stocks) were selected for further analysis. Likewise, fisheries that were adequately sampled were chosen for inclusion in the analysis. All freshwater fisheries were excluded, as they were frequently poorly sampled and of little information value due to their predominantly local-stock nature. A simple exploitation rate was then calculated, as the CWT recoveries in a fishery divided by the CWT recoveries in all included fisheries plus escapement. These same stocks and fisheries were summarized in FRAM to calculate an exploitation rate analog. Various summary statistics and graphs were produce to compare ERs from the two different sources.
 
-CWT data from the [Regional Mark Information System (RMIS)](#RMIS) was used for the exploitation rate comparison to FRAM. A significant portion of this project was spent error checking these data and mapping CWT recoveries to FRAM stocks and fisheries. Next stocks with a high number of CWT recoveries in mixed-stock fisheries (focal stocks) were selected for further analysis. Likewise, fisheries that were adequately sampled were chosen for inclusion in the analysis. All freshwater fisheries were excluded, as they were frequently poorly sampled and of little information value due to their predominantly local-stock nature. A simple exploitation rate was then calculated, as the CWT recoveries in a fishery divided by the CWT recoveries in all included fisheries plus escapement. These same stocks and fisheries were summarized in FRAM to calculate an exploitation rate analog. Various summary statistics and graphs were then produce to compare ERs from the two different sources.
+Although initially hypothesized that results of coho FRAM validation runs for the fishing years 2010-2019 would correspond poorly with those calculated directly from RMIS recoveries during the same time span, we found that for the stocks and fisheries with adequate data the 1986-1992 FRAM base period parameterization yielded output with mostly modest differences in pseduo-ERs and with mostly good agreement in terms of the relative ranking of impacts among pre-terminal fisheries. In addition, most larger differences between the two datasets were plausibly explained by sampling limitations in fisheries, escapement or both. Nonetheless, determining with certainty the more accurate of the two values was difficult or impossible in almost all cases. 
 
-**Mark Rate Analysis**
-Mark status information of Coho is generally collected by professional fishery samplers and reported to RMIS. For the mark rate analysis [adipose marked](#M) statistics from RMIS' Catch/Sample database were summarized by FRAM fishery and time period and compared to FRAM output for the same fishery and time period. [Mark rates] (#MR) were calculated for each fishery as the number of marked Coho encountered/and or landed divided by all Coho encountered/and or landed.
+**Mark Rate Analysis** <br>
+Mark status information of Coho is generally collected by professional fishery samplers and reported to RMIS. For the mark rate analysis [adipose marked](#M) statistics from RMIS' Catch/Sample database were summarized by FRAM fishery and time period and compared to FRAM output for the same fishery and time period. [Mark rates](#MR) were calculated for each fishery as the number of marked Coho encountered/and or landed divided by all Coho encountered/and or landed.
 
-For many fisheries, agreement between FRAM mark rates and sampling mark rates is moderate or poor. Although when aggregating over fisheries and years within large geographic areas, mark rate differences can be quite small.
+For many fisheries, agreement between FRAM mark rates and sampling mark rates was moderate or poor. 
 
-For some fisheries FRAM mark rates are consistently higher than sampling mark rates. This is especially apparent for Washington coastal and ocean fisheries and warrants [further investigation](#casestudy).
+For some fisheries FRAM mark rates were consistently higher than sampling mark rates. This was particularly apparent for Washington coastal and ocean fisheries and warrants [further investigation](#casestudy).
 
-Mark rate comparisons are just one parameter useful in assessing the accuracy of the FRAM model. As mentioned earlier, FRAM mark rates are a function of base period exploitation rates and stock specific abundances. It is often difficult to assess whether mark rate differences are caused by a change in stock distributions or erroneous data. Both data sources, FRAM and RMIS have many potential sources of error. We found mistakes in FRAM abundance data, an annual input, that resulted in significant mark rate errors for some stocks and years. Conversely, the sampling data had many instances of problematic sampling sizes or highly improbable mark rate observations. Well sampled fisheries are crucial to [additional more in-dept analyses](#casestudy).
+It was difficult to assess whether mark rate differences were caused by inaccurate stock distributions, incorrect abundance inputs, or other data errors, as both data sources, FRAM and RMIS, have many potential sources of inaccuracies. Preliminary findings suggest that in some cases missing wild escapements may be responsible for some higher than observed FRAM mark rates (see [Case Study](#casestudy)) .
 
-**Sensitivity Analysis**
+**Sensitivity Analysis**<br>
 To evaluate the effects of abundance changes of influential Coho stocks on the exploitation rates of other model stocks, abundances of stock aggregates (test stocks) in the FRAM model were adjusted upward and downward, one aggregate at a time. FRAM output from the resulting model runs was produced to evaluate the effect of these abundance adjustment on the mortalities and exploitation rates of co-migrating, key wild model stocks (response stocks).
 
 Except for Lower Fraser, the Canadian Coho stocks included in the Pacific Salmon Treaty have a relatively minor effect on the exploitation rates of U.S. Puget Sound and Coastal stocks.
 
 Several of the Puget Sound stocks have a significant effect on Canadian stocks, as well as other Puget Sound stocks, in particular Nooksack/Samish, Hood Canal, and South Puget Sound stock aggregates.
 
-Investing in improved forecast assessments to improve the accuracy of FRAM exploitation rate estimates would be most beneficial for Nooksack/Samish, Hood Canal, South Puget Sound, and Lower Fraser Coho stocks. 
+Investing in forecast assessments to improve the accuracy of FRAM exploitation rate estimates would be most beneficial for Nooksack/Samish, Hood Canal, South Puget Sound, and Lower Fraser Coho stocks. 
 
-**Updating the Mixed Stock Model**
+**Updating the Mixed Stock Model**<br>
 The [Mixed Stock Model (MSM)](#MSM)program estimates stock composition in pre-terminal mixed stock fisheries using coded-wire tag recovery data. Output from the MSM is combined with terminal fishery data before producing cohort reconstructions and calculating the base period exploitation rates; the foundational data of the FRAM model.
 
 This project investigated steps associated with combining contemporary coded wire tags with old base period coded wire tags to update base period exploitation rates. However, we identified several potential challenges and considerations.The main hurdle was poor/no CWT sampling in some contemporary fisheries. To calculate base period exploitation rates for contemporary tags, modelers must develop estimates of cohort size (denominator in the base period exploitation rate calculation).  Because cohort size is a combination of escapement and mortality, it is not possible to exclude fisheries that are poorly sampled and achieve correct cohort sizes.  Incorrect cohort sizes influence base period exploitation rate calculations for all fishery-time steps in the model, and therefore, even fisheries that are sampled well will require correct cohort sizes to estimate base exploitation rates.
 
-To nevertheless deliver a product helpful for future base period development and updates, the following products were developed:
-1. A description of challenges to updating the base period and where possible potential solutions.
-2. Development of Mixed Stock Model documentation
-4. Updated instructions to map RMIS recoveries to FRAM fisheries
+To nevertheless deliver a product helpful for future base period development and updates, the following products were developed:<br>
+1. A description of challenges to updating the base period and where possible, potential solutions.<br>
+2. Development of Mixed Stock Model documentation<br>
+4. Updated instructions to map RMIS recoveries to FRAM stocks and fisheries<br>
 
-
-
-### Sensitivity Analysis
-
-### Mixed Stock Model Updating
+\newpage
 
 # Introduction
 
@@ -644,11 +653,6 @@ Unfortunately, CWT recoveries have been in steep decline for the past two decade
 3. A comparison of contemporary exploitation rates to base period exploitation rates
 4. Development of methods to address fisheries and stocks with low levels of CWT recoveries. Coding of chosen methods into the Mixed Stock Model (MSM). 
 
-
-
-talk about mixed stock model
-
-Add more here-----
 ```{r}
 # focal_cols_recs <- c("recovery_id", "tag_code", "run_year", "recovery_location_code", "recovery_location_name", "fishery", "gear", "estimated_number")
 # 
@@ -787,19 +791,17 @@ Add more here-----
 # ggsave("cwtsovertime.png", plot=plot3, height=7, width=10)
 ```
 
+\newpage
 
 # Data Preparation
 
-## Assigning Coded-Wire-Tagged Groups to Mixed-Stock Model Stocks
+## Assigning Coded-Wire-Tagged Groups to FRAM Model Stocks
 
-x: Explain changes to CWT summary due to not using MSM for the analysis
+This section describes the steps taken to identify and map available Coho Salmon CWTs to the stocks in FRAM. All available Coho Salmon Release and Recovery data were downloaded from the Regional Mark Processing Center [(RMIS)](https://www.rmis.org/cgi-bin/queryfrm.mpl?Table=catch_sample&Version=4.1) in July of 2020 and uploaded into a Microsoft Access Database called 'MappingDatabase.mdb'.  A total of 17,268 CWT groups were downloaded and ranged from brood year 1969 to 2019.  Once the data was loaded, the following steps were taken to create the stock assignments:
 
-In order to estimate stock composition in pre-terminal mixed stock fisheries, the 'User' must identify: (1) The Production Regions (PRs) or Management Units (MUs) and associated coded-wire tag (CWT) codes selected to characterize fishery composition profiles for each modeled stock; and (2) The fishery strata to be used for estimation.
-This section describes the steps taken to identify and map available Coho Salmon CWTs to the list of PRs and MUs within FRAM.  All available Coho Salmon Release and Recovery data were downloaded from the Regional Mark Processing Center [(RMIS)](https://www.rmis.org/cgi-bin/queryfrm.mpl?Table=catch_sample&Version=4.1) in July of 2020 and uploaded into a Microsoft Access Database called 'MappingDatabase.mdb'.  A total of 17,268 CWT groups were downloaded and ranged from brood year 1969 to 2019.  Once the data was loaded, the following steps were taken to create the stock assignments:
+1.'Mark Status' was determined for each CWT group released. Release and recovery data were examined to determine the intended mark status of each of the CWT release groups.  For release groups identified as being marked, the estimated number of CWTs recovered from fisheries were summarized by 'recorded_mark' and compared to the mark type listed under 'cwt_1st_mark'. The CWT was flagged for further review if more than 20% of the fishery recoveries were identified as having a different mark than what was listed in the release data.  Final review of all of these flagged CWTs yielded a total of 15 tag codes with the intended mark type differing from the mark type listed under 'cwt_1st_mark' (see Appendix Table 13.4 for the list of these tags).  A table called 'CWT_1st_mark_fixes' was created in the Access database and a query titled 'Step1- Fix CWT_1st_Mark value' was used to update the release data that was downloaded from RMIS into the database to correct the 'cwt_1st_mark'.
 
-1.	'Mark Status' was determined for each CWT group released.  Release and recovery data were examined to determine the intended mark status of each of the CWT release groups.  For release groups identified as being marked, the estimated number of CWTs recovered from fisheries were summarized by 'recorded_mark' and compared to the mark type listed under 'cwt_1st_mark'. The CWT was flagged for further review if more than 20% of the fishery recoveries were identified as having a different mark than what was listed in the release data.  Final review of all of these flagged CWTs yielded a total of 15 tag codes with the intended mark type differing from the mark type listed under 'cwt_1st_mark' (see Appendix Table 9.4 for the list of these tags).  A table called 'CWT_1st_mark_fixes' was created in the Access database and a query titled 'Step1- Fix CWT_1st_Mark value' was used to update the release data that was downloaded from RMIS into the database to correct the 'cwt_1st_mark'.
-
-2.	Releases were grouped and assigned to PRs and MUs. To streamline assigning release groups to PRs and MUs, a list of unique combinations of the following data was generated and saved in a table titled 'RMIS_UniqueReleaseCodes' within the Access database: 
+2.Releases were grouped and assigned to Production Regions (PRs) and Managment Units (MUs). To streamline assigning release groups to PRs and MUs, a list of unique combinations of the following data was generated and saved in a table titled 'RMIS_UniqueReleaseCodes' within the Access database: 
 *	release_location_state
 *	release_location_rmis_region
 *	release_location_rmis_basin
@@ -807,7 +809,7 @@ This section describes the steps taken to identify and map available Coho Salmon
 *	hatchery_location_name
 *	stock_location_name
 
-This table consisting of a total of 2,058 unique combinations was then copied to a table titled 'RMIS_UniqueReleaseCodesMapped' and a column containing the assigned PR and another containing the MU were added.  Production Regions and Management Units were manually assigned to each unique record.  The PRs and MUs available to use are listed in Appendix Table 9.5. For a list of mapped CWT codes see Appendix Table 9.6. Here is an example of a unique combination within the 'RMIS_UniqueReleaseCodesMapped' table that was mapped to a PR and an MU:
+This table consisting of a total of 2,058 unique combinations was then copied to a table titled 'RMIS_UniqueReleaseCodesMapped' and a column containing the assigned PR and another containing the MU were added.  Production Regions and Management Units were manually assigned to each unique record.  The PRs and MUs available to use are listed in Appendix Table 13.5. For a list of mapped CWT codes see Appendix Table 13.6. Here is an example of a unique combination within the 'RMIS_UniqueReleaseCodesMapped' table that was mapped to a PR and an MU:
 
 ```{r t41, results ='asis'}
 tibble(
@@ -821,12 +823,12 @@ tibble(
   `MU` = "Alaska Northern Outside Hat/Wild",
 ) |> 
   gt::gt() |> 
-  gt::tab_header(title = "Table 4.1. Unique Release Codes Mapped")
+  gt::tab_header(title = "Table 7.1. Unique Release Codes Mapped")
 
 ```
   
 <br>
-3.	Assign MUs to the Columbia River releases.  The Columbia River Production Region consists of two types of Coho Salmon – the South or Early returning stocks (also known as A-Type or fall type run) and the North or Late returning stocks (also known as B-Type or late-fall run).  While there is a field in RMIS that provides the run type, this data was missing for many of the releases.  Over 1,500 CWT releases within the Columbia River Basin did not have a run type associated with them.  Because of this, a summary of these tag codes was provided to Eric Kinne and Jillian Cady of WDFW to review.  They provided MU assignments for the CWTs with blank MUs and confirmed all of the preliminary assignments for the remaining records.   This resulted in the following assignments summarized by MU:
+3.Assign MUs to the Columbia River releases.  The Columbia River Production Region consists of two types of Coho Salmon – the South or Early returning stocks (also known as A-Type or fall type run) and the North or Late returning stocks (also known as B-Type or late-fall run).  While there is a field in RMIS that provides the run type, this data was missing for many of the releases.  Over 1,500 CWT releases within the Columbia River Basin did not have a run type associated with them.  Because of this, a summary of these tag codes was provided to Eric Kinne and Jillian Cady of WDFW to review.  They provided MU assignments for the CWTs with blank MUs and confirmed all of the preliminary assignments for the remaining records.  This resulted in the following assignments summarized by MU:
 
 ```{r t42, results ='asis'}
 tibble(
@@ -842,14 +844,13 @@ tibble(
     locations = gt::cells_body(
       columns = everything(),
       rows=7))|>                        
-  gt::tab_header(title = "Table 4.2. Columbia River Stock Assignments and Numbers Released")
+  gt::tab_header(title = "Table 7.2. Columbia River Stock Assignments and Numbers Released")
 
 ```
 <br>
 The next step was to run a query in the Access database to update all of the Columbia River CWTs with these newly assigned MUs.
 
-
-4. Create CWT data input files for use in the Mixed Stock Model (MSM).  A query titled 'Map releases to PR and MU number' was used to link information on PRs and MU numbers and the brood year for the individual CWTs and assigns them to RunIDs, which are unique to a catch year.  The use of this query creates MSM input files containing the following data:
+4.Use assigned PRs and MUs to map coded wire tag codes to FRAM stocks through a look-up table containing a one-to-one correspondence to FRAM stocks. This created the input file used by the "Coho FRAM Model Validation Program" to map CWT recoveries. The input file contains the following fields:
 <br>
 ```{r t43, results ='asis'}
 tibble(
@@ -864,7 +865,7 @@ tibble(
   `brood year` = 1995
 ) |> 
   gt::gt() |> 
-  gt::tab_header(title = "Table 4.3. MSM Stock CWT 1998")
+  gt::tab_header(title = "Table 7.3. Stock CWT 1998")
 ```
 
 ## Assigning Coded-Wire-Tagged Recoveries to FRAM Fisheries {#fishmap}
@@ -875,52 +876,49 @@ Explain why fishery 199 is missing
 ## Data Quality Issues
 
 ### List of Data Issues Confounding Analyses
-Exploitation rate analyses for the purpose of constructing and populating coast-wide salmon models are extremely data intense, requiring millions of data points. FRAM and the Mixed-Stock-Model integrate the many staff hours of salmon monitoring data, rolling them up into literally thousands of inputs upon which the model runs; in a sense, FRAM is the center of the Coho monitoring data universe. The majority of the data is either reported using sophisticated reporting and data storing mechanisms or sampled by coast-wide monitoring programs. Frequently, the data is manipulated, adjusted, and expanded to arrive at final estimates. The most important data sources are recreational and commercial mortality estimates, escapement estimates, coded-wire-tag information, mark-rate estimates, and age data. 
-In the course of this project we encountered many data issues. Some of these are listed below in hopes of investing additional resources to improve future analyses.
+Exploitation rate analyses for the purpose of constructing and populating coast-wide salmon models are extremely data intense, requiring millions of data points. FRAM and the Mixed-Stock-Model integrate the many staff hours of salmon monitoring data, rolling them up into literally thousands of inputs upon which the model runs; in a sense, FRAM is the center of the Coho monitoring data universe. The majority of the data is either sampled by coast-wide monitoring programs or reported using sophisticated reporting and data storing mechanisms. Frequently, the data is manipulated, adjusted, and expanded to arrive at final estimates. The most important data sources are recreational and commercial mortality estimates, escapement estimates, coded-wire-tag information, mark-rate estimates, and age data. 
+In the course of this project we encountered many data issues. Some of these are listed below:
 
 #### Catch Reporting and Accounting
 The list of sport and commercial catch reporting issues is generally well known and deserves its own paper. We will not expand on this issue, as there are currently many experts involved in improving the data quality.
 
-For the purpose of the exploitation rate analysis catch is critical to compute coded-wire-tag expansions as the number caught divided by number sampled. Catch is also essential for  calculating exploitation rates in FRAM.
+For the purpose of the exploitation rate analysis based upon CWTs, catch is critical to compute CWT expansions as the number caught divided by number sampled. Catch is also essential for  calculating exploitation rates in FRAM.
 
-This project was impacted by errors in catch reporting and accounting.
+This project was impacted by errors in catch reporting and accounting and extremely low sampling rates or no sampling of some catch and escapement.
 
 #### Backwards FRAM Data
-[Backwards FRAM](#BkFRAM) is conducted to create a post-season validation run using actual catches and escapements. Errors in the source data propagate to the final exploitation rate estimates.
+[Backwards FRAM](#BkFRAM) is conducted to create a post-season validation run using actual catches and escapements by mark type. These catch and escapement estimates are collected from agency data managers and are often in addition to the data stored in the Regional Mark Information System (RMIS). Errors in the source data propagate to the final exploitation rate estimates.
 
 ##### Escapement
-Stock specific escapements are entered into BkFRAM to reconstruct pre-fishing abundances. We found errors in BkFRAM esacpements and recommend that the recent time-series of post-season runs is updated using 'best escapement' estimates.
+Stock specific escapements are entered into BkFRAM to reconstruct pre-fishing abundances. We found errors in BkFRAM esacpements and recommend that the recent time-series of post-season runs be updated using 'best escapement' estimates.
 
 ##### Mark Rates
-BkFRAM has several methods for modeling adipose mark rates. We found errors in mark rates significantly impacting this project, as the analysis was only conducted on marked stock components. We recommend a review of mark rate estimates by regional experts. Special attention should be given to escapements flagged as "2"in BkFRAM. This flagging indicates the use of pre-season mark rates, which were not intensively error checked. 
+BkFRAM has several methods for modeling adipose mark rates. We found errors in user-defined mark rates significantly impacting this project, as the analysis was only conducted on marked stock components. We recommend a review of mark rate estimates by regional experts. Special attention should be given to escapements flagged as "2"in BkFRAM. This flagging is used when post-season mark rates are not provided. The flagging instructs the program to apply pre-season mark-rates to total (marked + unmarked) escapements. 
 
 ##### Catch
-There were several instances where the modeled landed catch did not match the catch reported to RMIS' Catch/Sample data. Once fisheries mapping issues were ruled out, there still remained a few mismatched fishery catches. On further investigations we found that official catch estimates were updated a couple of years after being published. Therefore, we suggest annually re-querying and updating the most current 2-3 years to populate BkFRAM or conducting periodic reports every 5 years. We also suggest periodically simalr procedures for catches reported to RMIS.
+There were several instances where the modeled landed catch within FRAM did not match the catch reported to RMIS' Catch/Sample data. Once fisheries mapping issues were ruled out, there still remained a few mismatched fishery catches. On further investigations we found that official catch estimates were updated in RMIS a couple of years after the [CoTC](#CoTC) completes the annual ER analyses using [BkFRAM](#BkFRAM). Therefore, we suggest annually re-querying and updating the most current 2-3 years to populate BkFRAM or conducting periodic reports every 5 years. We also suggest similar procedures for catches reported to RMIS.
 
 #### Sampling
-Accurate sampling data is critical for the integrity of the CWT system, execution of mark-selective fisheries, production of mark rate and catch estimates, and collection of biological information. Hundreds of dedicated samplers annually collect these data, often under difficult circumstances. Several factors can lead to inaccurate results such as sampler error, equipment failure, sampling stratification, low sampling rates, etc. We encountered many instances where sampling was inadequate due to no or insufficient sampling, relying on voluntary tag recoveries, sampling without electronic CWT detection equipment, etc. Additionally, some fisheries, even if well sampled, exhibited highly improbable mark or tag rates. 
+Accurate sampling data is critical for the integrity of the CWT system, execution of mark-selective fisheries, production of mark rate and catch estimates, and collection of biological information. Hundreds of dedicated samplers annually collect these data, often under difficult circumstances. Several factors can lead to inaccurate results such as sampler error, equipment failure, sampling stratification that differs from fishery stratification, low sampling rates, etc. We encountered many instances where sampling was inadequate due to no or insufficient sampling, relying on voluntary tag recoveries, sampling without electronic CWT detection equipment, etc. Additionally, some fisheries, even if well sampled, exhibited highly improbable mark or tag rates. 
 Since sampling is the backbone of CWT information flowing into exploitation rate estimates, poor sampling can have a very detrimental effect on these types of analyses.
 Perhaps a feedback loop between RMIS and sampling programs could address some of these shortcomings by providing sampling supervisors with annual RMIS summary reports of sampling rates, CWT recoveries and mark rates. 
 
 #### [RMIS Data](#RMIS)
 The Regional Mark Information System is the data system where vast amounts of information associated with coded-wire-tags is stored and summarized for the entire West Coast. This project relied heavily on RMIS data. Similar to the catch data, issues associated with RMIS data are generally well known and go beyond the scope of this task, except for some example instances where the data became problematic for this project.
-As a general comment we would recommend that RMIS staff conduct intensive training sessions at lease once a year as the complexity of the data is often not suitable for the casual consumer.
+As a general comment we would recommend that RMIS staff conduct intensive training sessions at least once a year as the complexity of the data is often not suitable for the casual consumer.
 
-##### Release Data (CCT help)
-RMIS release data contains information about all salmon releases associated with coded wire tagged fish. The exploitation rate analysis was solely conducted on marked stock. Analysts used the tag codes assigned to marked releases to select the marked FRAM stocks included in the project. However, some of the salmon with tags codes from marked releases were assessed to be predominantly unmarked by field samplers. Either the tag codes were miss-assigned or the adipose clip was insufficient.
-Another problem in the release data were fields left blank that would have been important to make stock assignments such as the "Run" field needed to designate a stock as a "Summer" or "Fall" run or "Early" versus "Late".
+##### Release Data 
+RMIS release data contains information about all salmon released from hatcheries as well as wild fish that were caught and marked or tagged prior to release. The exploitation rate analyses were conducted solely on adipose-fin-clipped (marked) and coded-wire-tagged fish. Analysts first used the tag codes assigned as marked releases to select the marked FRAM stocks included in the project. However, some of the salmon with tag codes from marked releases were assessed to be predominantly unmarked by field samplers. Either the tag codes were miss-assigned a mark status or the adipose clip was insufficient. Other problems encountered in the release data were optional fields left blank that would have allowed us to much more easily assign CWTs to FRAM stocks. For example, the optional and often blank "Run" data field was needed to easily designate a Columbia River or WA Coast Coho stock as a "Summer" or "Fall" run or "Early" versus "Late". 
 
-##### Recovery Data (CCT & DA help)
-Every recovered salmon with a coded-wire-tag creates a field in the recovery database. Many deficiencies in the recovery data were caused by sampling issues. This database contains many fields with fairly complex flagging options. There are many pitfalls that can lead an uninformed user to wrong conclusions. For this database in particular user training is highly recommended.
-The principal concerns with this database are problematic CWT expansions (see next bullet) and/or missing recoveries. Some entities fail to report their CWT recoveries to RMIS, sometimes resulting in entire fisheries and escapements missing from the database. In the case of missing escapements this can leave a large amount of uncertainty when conducting cohort reconstructions or exploitation rate analyses. 
-We also found may instances of errors in recovery data fields, such as the 'adclip_selective_fishery' field, where fisheries were mark-selective fisheries (S) incorrectly flagged as non-selective (N).
+##### Recovery Data 
+Every salmon recovered with a coded-wire tag (and subsequently decoded and reported) is a data record in the recovery database. This database contains many fields with fairly complex flagging options. There are a number of pitfalls that can lead an uninformed user to the wrong conclusions. For the database containing recovery data in particular, user training is highly recommended. In addition to the complexity of the database, deficiencies encountered in the recovery data were often caused by sampling issues. The principal concerns with this database are problematic CWT expansions (see next bullet) and/or missing recoveries. Some entities fail to report CWT recoveries to RMIS, sometimes resulting in entire fisheries and escapements missing from the database. In the case of missing escapements this can leave a large amount of uncertainty when conducting cohort reconstructions or exploitation rate analyses. We also found may instances of errors in recovery data fields, such as the 'adclip_selective_fishery' field, where mark-selective fisheries (S) were incorrectly flagged as non-selective (N).
 
 ##### Catch/Sample Data
 The Catch/Sample data is vital to the recovery data as coded-wire-tag sampling expansions are calculated from the data. Inaccurately or non-reported catches or escapements can have a huge impact on CWT analyses.  
 Additionally, the stratification used in RMIS can be problematic. Generally RMIS data is stratified by management or statistical  weeks and months, while fisheries are commonly scheduled on a calendar month basis. This can result in miss-alignment of strata. Moreover, un-sampled strata can lead to missing CWT expansions (see [Handling of RMIS Catch/Sample data](#Handling)) and hence missing expanded recoveries.   
 
 #### MSM User Guide and Code Documentation
-The [Mixed Stock Model](#MSM) was rewritten in Visual Basic in 2007. Although the document ["Coho FRAM Base Development"](#MSMDoc) descibes the project, the current MSM  lacks code documentation and a user guide, thus requiring a great deal of initiative by a new user to understand the code, the data requirements and re-(run) analyses. 
+The [Mixed Stock Model](#MSM) was rewritten in Visual Basic in 2007. Although the document ["Coho FRAM Base Development"](#MSMDoc) descibes the project, the current MSM  lacks code documentation and a user guide, thus requiring a great deal of initiative by a new user to understand the code, the data requirements, and re-(run) analyses. 
 Although a new program "CohoFRAMModelValidation.Rmd" was written for this project in R Markdown, a [user guide](#MSMGuide) of the MSM was developed during the early stages of this project.
 
 ##### Stock Mapping
@@ -932,7 +930,6 @@ was similarly as labor intensive as the stock mapping. We followed the mapping a
 
 
 ### Handling of RMIS Catch/Sample data {#Handling}
-
 RMIS Catch/Sample data requires carefully examined before analyzing the
 coded-wire-tags associated with a sample. The Catch/Sample data is
 stratified into time periods ranging from a few days to several months
@@ -1016,6 +1013,10 @@ For Area 5 sport neither the FRAM modeled catch nor the RMIS catch matched the o
 **Southeast Alaska net (fishery 198):**
 The average annual FRAM catch for southeast Alaska of 648,000 was significantly smaller than the RMIS catch of 784,000. Fishery mapping issues were ruled out as a source of the discrepancy. Since the catch associated with sampling was similar to the FRAM catch each year (average 644,000), the CWTs were not adjusted.
 
+**Columbia River Net and Sport (fisheries 24-32):**
+Columbia River stock  abundances (StockID 165-176) enter FRAM in units of "Return to the River". Pre-fishing abundances are calculated by adding marine fisheries mortalities to this abundance. In-river fisheries are not modeled in a FRAM forward run. Therefore, the resulting FRAM escapement is actually the abundance entering the Columbia River, prior to in-river sport and net fisheries. When comparing FRAM exploitation rates to those derived using RMIS CWT recoveries, RMIS recoveries from in-river fisheries are added to escapement to reconstruct a "Return to the River" run size that is in the same units as FRAM.
+
+\newpage
 
 # Sensitivity of Exploitation Rates of Key Stocks to Abundance Changes
 
@@ -1029,7 +1030,7 @@ The goal of this project is to evaluate the effects of abundance changes of infl
 
 The basic method consists of varying the abundances of stock aggregates (test stocks) in the FRAM model, one aggregate at a time, running FRAM, and evaluating mortalities of key wild model stocks (response stocks). For more information about the FRAM model please see [FRAM documentation](https://framverse.github.io/fram_doc/).
 
-The Coho Technical Committee annually produces post-season Coho model runs. These runs start with the final pre-season model run and are subsequently updated with best estimates of stock-specific escapements and post-season assessments of landed and non-landed fisheries mortalities. The most current database is housed on the Pacific Salmon Commission's (PSC) [Extranet website](https://extranet.psc.org/SitePages/Home.aspx). Model runs are updated through 2020 and contained in an Access database called "PSC_CoTC_PostSeason_CohoFRAMDB_thru2020_021622.mdb". 
+The Coho Technical Committee [(CoTC)](#CoTC) annually produces post-season Coho model runs. These runs start with the final pre-season model run and are subsequently updated with best estimates of stock-specific escapements and post-season assessments of landed and non-landed fisheries mortalities. The most current database is housed on the Pacific Salmon Commission's (PSC) [Extranet website](https://extranet.psc.org/SitePages/Home.aspx). Model runs are updated through 2020 and contained in an Access database called "PSC_CoTC_PostSeason_CohoFRAMDB_thru2020_021622.mdb". 
 
 This evaluation was conducted using post-season Coho model runs (BkFRAM runs) by adjusting stock specific starting Cohorts. Post-season model runs use actual catches and non-retention mortalities; hence fisheries are modeled at fixed values regardless of the abundance of model stocks. Each stock aggregate was modeled at a 'low and a high' abundance.
 
@@ -1811,7 +1812,7 @@ Except for Lower Fraser, the Canadian Coho stocks included in the Pacific Salmon
 Several of the Puget Sound stocks have a significant effect on Canadian stocks, as well as other Puget Sound stocks, in particular Nooksack/Samish, Hood Canal, and South Puget Sound stock aggregates.
 
 Investing in improved forecast assessments to improve the accuracy of FRAM exploitation rate estimates would be most beneficial for Nooksack/Samish, Hood Canal, South Puget Sound, and Lower Fraser Coho stocks. 
-
+\newpage
 
 # Comparison of Fishery Adipose Mark Rates from FRAM [Validation Runs](#VR) to Mark Rates from Sampling
 
@@ -2479,6 +2480,87 @@ the analysis, this resulted in some time steps exceeding the sample size
 threshold for one data source and being retained while falling short in
 the other data source and being eliminated.
 
+## Case Study: Area 4/4B Treaty Troll {#casestudy}
+The Washington North Coast Treat troll fishery in ocean areas 4/4B is a well sampled, non-selective fishery. Average Coho catch exceeds 20,000 (excluding 2015, 2016) in the past decade. 
+Due to these characteristics, the fishery was chosen as a test case to investigate mark rate differences between FRAM and RMIS. 
+
+From 2010 to 2020 the FRAM mark rate averages 49% and RMIS mark rate 33%. This study examines whether the lower observed mark rates are likely due to missing unmarked wild fish or substantial differences in the stock composition of marked hatchery Coho.
+
+For the purpose of computing pseudo-exploitation rates the same subset of fisheries was utilized in the denominator as for the exploitation rate comparison to FRAM (see paragraph x).
+
+### Steps for conducting the analysis:
+<br>
+1. Summarize the marked FRAM abundances by stock and year used to calculate FRAM and RMIS exploitation rates. For a calculation of marked abundances see section x.
+
+$$MarkedAbundance_{Stk,Yr} = {\sum_{fish \in Study}Mortalities_{Stk,Yr} + Escapement_{Stk,Yr}}$$
+2. Calculate the associated unmarked abundance. 
+Unmarked abundances could not be calculated as mortalities plus catch, because of the bias introduced by releasing unmarked Coho in mark-selective fisheries. 
+The stock- and year-specific mark rate was summarized from post-season FRAM validation runs using the time 4 'working cohort' from FRAM's "Cohort" table. This mark rate was then applied to the marked abundance from step 1 to calculate the associated unmarked abundance.
+$$UnmarkedAbundance_{Stk,Yr} = \frac{MarkedAbundance_{Stk,Yr}}{MarkRate_{Stk,Yr}}-MarkedAbundance_{Stk,Yr}$$
+3. Compute FRAM and RMIS catches as abundance times pseudo-exploitation rate. For a calculation of pseudo [exploitation rates]{} see x.
+
+$$MarkedFRAMCatch_{Stk,Yr}=MarkedAbundance_{Stk,Yr} * ER.FRAM_{Stk,Yr}$$
+$$UnMarkedFRAMCatch_{Stk,Yr}=UnMarkedAbundance_{Stk,Yr} * ER.FRAM_{Stk,Yr}$$
+$$MarkedRMISCatch_{Stk,Yr}=MarkedAbundance_{Stk,Yr} * ER.RMIS_{Stk,Yr}$$
+$$UnMarkedRMISCatch_{Stk,Yr}=UnMarkedAbundance_{Stk,Yr} * ER.RMIS_{Stk,Yr}$$
+4. Sum catches over stocks by year for Area 4/4B treaty troll for marked and unmarked FRAM and RMIS catches.
+
+$$Catch_{Yr}= {\sum_{Stk}Catch_{Stk,Yr} }$$
+5. Summarize FRAM catches of marked and unmarked hatchery fish and marked and unmarked wild fish in the treaty troll fishery. The catches can be retrieved from standard FRAM output and were summarized by year.
+The total annual FRAM catch was summed over hatchery as well as wild stocks landed in the fishery. Values summarized from post-season FRAM runs matched the values calculated in step 4 above. This provides a validation of the methods uses to calculate FRAM pseudo-exploitation rates. Furthermore, the FRAM database also provided the wild catch and total catch of the fishery.
+
+$$FRAMTotCatch_{Yr}=\sum{(AllStockCatch_{HatMrkd}+AllStockCatch_{HatUM}+AllStockCatch_{WildMrkd}+AllStockCatch_{WildUM})}$$
+<br>
+6. Calculate FRAM and RMIS mark rates by dividing the marked catch by the total FRAM catch.
+$$MR_{FRAM}=\frac{FRAMMrkdCatch_{Yr}}{FRAMTotCatch_{Yr}}$$
+$$MR_{RMIS}=\frac{RMISMrkdCatch_{Yr}}{FRAMTotCatch_{Yr}}$$
+Where, <br>
+  Stk       = Stock<br>
+  Yr        = Year<br>
+  Mrkd      = Marked<br>
+  UM        = Unmarked
+
+### Results
+
+Table 7.1 displays FRAM and RMIS landed catches by mark status, observed mark rates from sampling programs, and FRAM and RMIS mark rates as calculated in steps 1-6 above. 
+```{r results ='asis'}
+CaseStudyTable<-d_ERtrollsum|>
+   # DT::datatable(filter = 'top', 
+   #                   extensions = 'Buttons', 
+   #                   options = list(
+   #                     dom = 'Bfrtip',
+   #                buttons = c('copy', 'csv', 'excel', 'pdf', 'print')))
+  
+  #DA help. Can't get table to render
+  
+  gt::gt() |> 
+  gt::cols_label(.list = list(`Year` = gt::md("**Year**"),
+                              `FRAM.Mrkd.Hatchery.Catch` = gt::md("**FRAM Markd Hatchery Catch**"), 
+                              `FRAM..UM.Hatchery.Catch` = gt::md("**FRAM UM Hatchery Catch**"),
+                              `FRAM.Hatchery.Mark.Rate`=gt::md("**FRAM Hatchery Mark Rate**"),
+                              `RMIS.Mrkd.Hatchery.Catch` = gt::md("**RMIS Markd Hatchery Catch**"), 
+                              `RMIS.UM.Hatchery.Catch` = gt::md("**RMIS UM Hatchery Catch**"),
+                              `RMIS.Hatchery.Mark.Rate`=gt::md("**RMIS Hatchery Mark Rate**"),
+                              `All.Stocks.FRAM.Catch` = gt::md("**All Stocks FRAM Catch**"), 
+                              `Observed.Mark.Rate` = gt::md("**Observed Mark Rate**"),
+                              `FRAM.Mark.Rate`=gt::md("**FRAM Mark Rate**"),
+                              `RMIS.Reconstructed.Mark.Rate` = gt::md("**RMIS Reconstructed Mark Rate**")                  
+                              )) |> 
+  gt::tab_header(title = "Table 7.1 ") 
+```
+
+Although the hatchery stock composition displayed some differences between FRAM and RMIS (see table x), the mark rate of the hatchery stocks was very similar and averaged 89% for both data sources. 
+
+```{r results ='asis'}
+#DA help. can't get table to render
+tbltop10<-d_top10|>
+  gt::gt()
+```
+
+The mean percent error between observed marked catches and FRAM marked catches is 55% and between observed marked catches and RMIS is -2%. The average RMIS marked catch deviates only 100 Coho from the observed catch of 6700. There is also good agreement in observed marked and RMIS catches on an annual basis (R Square=0.89). 
+Given that there is good agreement between RMIS and FRAM hatchery mark rates and RMIS and observed marked catches, will leave only unmarked wild Coho unaccounted for. This points towards missing/underestimated wild abundance as the source of the discrepancy. The average composition of the catch based on sampling and hatchery mark rates is approximately 32% hatchery marked, 2% hatchery unmarked, and 64% wild unmarked. Given these proportions and assumptions, FRAM misses approximately 30% of the wild abundance. Since the mark rate discrepancies diminish for fisheries further South, Washington South Coast and Columbia River stocks are less likely to be the cause of the mark rate differences.  
+We recommend additional evaluations and if possible Genetic Stock Identification (GSI) studies to investigate further.
+
 ## Conclusions
 
 For many fisheries, agreement between FRAM mark rates and sampling mark rates is moderate or poor. Although when aggregating over fisheries and years within large geographic areas, mark rate differences can be quite small (see table 9.4).
@@ -2492,7 +2574,9 @@ Surprisingly, some of the greatest mark rate differences can be observed in fres
 Mention possibility that stock comp can be correct, but forecast may be wrong; i.e. consistently observing lower sampled mark rates may point towards missing natural escapement
 Mark rate comparisons are just one parameter useful in assessing the accuracy of the FRAM model. As mentioned earlier, FRAM mark rates are a function of base period exploitation rates and stock specific abundances. It is often difficult to assess whether mark rate differences are caused by a change in stock distributions or erroneous data. Both data sources, FRAM and RMIS have many potential sources of error. We found mistakes in FRAM abundance data, an annual input, that resulted in significant mark rate errors for some stocks and years. Conversely, the sampling data had many instances of problematic sampling sizes or highly improbable mark rate observations. Well sampled fisheries are crucial to [additional more in-dept analyses](#casestudy).
 
-# Comparing post-season FRAM with RMIS recovery patterns
+\newpage
+
+# Comparing Post-season FRAM with RMIS Recovery Patterns
 
 This analysis examines post-season ("validation") estimates of stock and fishery specific mortality generated by [coho FRAM](https://framverse.github.io/fram_doc/calcs_data_coho.html), comparing them to patterns of coded wire tag (CWT) recoveries housed in the Regional Mark Information System [(RMIS)](https://www.rmpc.org/).
 
@@ -4048,96 +4132,7 @@ We hypothesized that results of coho FRAM validation runs for the fishing years 
 
 This analysis may suggest a few specific stock-fishery interactions that warrant further scrutiny for possible adjustments in pre- and post-season modeling (e.g., how impacts are assigned among several Puget Sound sport fisheries). However, it clearly underscores the need for additional auditing of both the post-seaon coho FRAM and RMIS datasets. At minimum, additional careful review is warranted for the Backwards FRAM escapement targets (i.e., the numeric values of unharvested, returning adults) as well as the flagging to control mark rate composition of the cohorts constructed from those targets (i.e., were regionally-estimated values maintained as supplied, or did flagging to use pre-season or other mark rates alter the marked to unmarked ratio in the starting cohort). The catch values that are the other primary input to post-season coho FRAM runs would also benefit from additional cross-checking against those reported elsewhere in, among other sources, annual Pacific Fishery Management Council tables, RMIS catch and escapement, and agency-specific published values. Although still subject to observation error, the estimates of catch should be the least uncertain input to the post-season modeling effort, particularly for commercial fisheries.
 
-# Exploitation Rate Analysis
-
-Explain why marked only
-## Introduction
-
-## Trends in CWT Recoveries
-insert graphs from ealier powerpoint
-
-## Results
-
-### Case Study: Area 4/4B Treaty Troll {#casestudy}
-The Washington North Coast Treat troll fishery in ocean areas 4/4B is a well sampled, non-selective fishery. Average Coho catch exceeds 20,000 (excluding 2015, 2016) in the past decade. 
-Due to these characteristics, the fishery was chosen as a test case to investigate mark rate differences between FRAM and RMIS. 
-
-From 2010 to 2020 the FRAM mark rate averages 49% and RMIS mark rate 33%. This study examines whether the lower observed mark rates are likely due to missing unmarked wild fish or substantial differences in the stock composition of marked hatchery Coho.
-
-For the purpose of computing pseudo-exploitation rates the same subset of fisheries was utilized in the denominator as for the exploitation rate comparison to FRAM (see paragraph x).
-
-#### Steps for conducting the analysis:
-<br>
-1. Summarize the marked FRAM abundances by stock and year used to calculate FRAM and RMIS exploitation rates. For a calculation of marked abundances see section x.
-
-$$MarkedAbundance_{Stk,Yr} = {\sum_{fish \in Study}Mortalities_{Stk,Yr} + Escapement_{Stk,Yr}}$$
-2. Calculate the associated unmarked abundance. 
-Unmarked abundances could not be calculated as mortalities plus catch, because of the bias introduced by releasing unmarked Coho in mark-selective fisheries. 
-The stock- and year-specific mark rate was summarized from post-season FRAM validation runs using the time 4 'working cohort' from FRAM's "Cohort" table. This mark rate was then applied to the marked abundance from step 1 to calculate the associated unmarked abundance.
-$$UnmarkedAbundance_{Stk,Yr} = \frac{MarkedAbundance_{Stk,Yr}}{MarkRate_{Stk,Yr}}-MarkedAbundance_{Stk,Yr}$$
-3. Compute FRAM and RMIS catches as abundance times pseudo-exploitation rate. For a calculation of pseudo [exploitation rates]{} see x.
-
-$$MarkedFRAMCatch_{Stk,Yr}=MarkedAbundance_{Stk,Yr} * ER.FRAM_{Stk,Yr}$$
-$$UnMarkedFRAMCatch_{Stk,Yr}=UnMarkedAbundance_{Stk,Yr} * ER.FRAM_{Stk,Yr}$$
-$$MarkedRMISCatch_{Stk,Yr}=MarkedAbundance_{Stk,Yr} * ER.RMIS_{Stk,Yr}$$
-$$UnMarkedRMISCatch_{Stk,Yr}=UnMarkedAbundance_{Stk,Yr} * ER.RMIS_{Stk,Yr}$$
-4. Sum catches over stocks by year for Area 4/4B treaty troll for marked and unmarked FRAM and RMIS catches.
-
-$$Catch_{Yr}= {\sum_{Stk}Catch_{Stk,Yr} }$$
-5. Summarize FRAM catches of marked and unmarked hatchery fish and marked and unmarked wild fish in the treaty troll fishery. The catches can be retrieved from standard FRAM output and were summarized by year.
-The total annual FRAM catch was summed over hatchery as well as wild stocks landed in the fishery. Values summarized from post-season FRAM runs matched the values calculated in step 4 above. This provides a validation of the methods uses to calculate FRAM pseudo-exploitation rates. Furthermore, the FRAM database also provided the wild catch and total catch of the fishery.
-
-$$FRAMTotCatch_{Yr}=\sum{(AllStockCatch_{HatMrkd}+AllStockCatch_{HatUM}+AllStockCatch_{WildMrkd}+AllStockCatch_{WildUM})}$$
-<br>
-6. Calculate FRAM and RMIS mark rates by dividing the marked catch by the total FRAM catch.
-$$MR_{FRAM}=\frac{FRAMMrkdCatch_{Yr}}{FRAMTotCatch_{Yr}}$$
-$$MR_{RMIS}=\frac{RMISMrkdCatch_{Yr}}{FRAMTotCatch_{Yr}}$$
-Where, <br>
-  Stk       = Stock<br>
-  Yr        = Year<br>
-  Mrkd      = Marked<br>
-  UM        = Unmarked
-
-#### Results
-
-Table 7.1 displays FRAM and RMIS landed catches by mark status, observed mark rates from sampling programs, and FRAM and RMIS mark rates as calculated in steps 1-6 above. 
-```{r results ='asis'}
-CaseStudyTable<-d_ERtrollsum|>
-   # DT::datatable(filter = 'top', 
-   #                   extensions = 'Buttons', 
-   #                   options = list(
-   #                     dom = 'Bfrtip',
-   #                buttons = c('copy', 'csv', 'excel', 'pdf', 'print')))
-  
-  #DA help. Can't get table to render
-  
-  gt::gt() |> 
-  gt::cols_label(.list = list(`Year` = gt::md("**Year**"),
-                              `FRAM.Mrkd.Hatchery.Catch` = gt::md("**FRAM Markd Hatchery Catch**"), 
-                              `FRAM..UM.Hatchery.Catch` = gt::md("**FRAM UM Hatchery Catch**"),
-                              `FRAM.Hatchery.Mark.Rate`=gt::md("**FRAM Hatchery Mark Rate**"),
-                              `RMIS.Mrkd.Hatchery.Catch` = gt::md("**RMIS Markd Hatchery Catch**"), 
-                              `RMIS.UM.Hatchery.Catch` = gt::md("**RMIS UM Hatchery Catch**"),
-                              `RMIS.Hatchery.Mark.Rate`=gt::md("**RMIS Hatchery Mark Rate**"),
-                              `All.Stocks.FRAM.Catch` = gt::md("**All Stocks FRAM Catch**"), 
-                              `Observed.Mark.Rate` = gt::md("**Observed Mark Rate**"),
-                              `FRAM.Mark.Rate`=gt::md("**FRAM Mark Rate**"),
-                              `RMIS.Reconstructed.Mark.Rate` = gt::md("**RMIS Reconstructed Mark Rate**")                  
-                              )) |> 
-  gt::tab_header(title = "Table 7.1 ") 
-```
-
-Although the hatchery stock composition displayed some differences between FRAM and RMIS (see table x), the mark rate of the hatchery stocks was very similar and averaged 89% for both data sources. 
-
-```{r results ='asis'}
-#DA help. can't get table to render
-tbltop10<-d_top10|>
-  gt::gt()
-```
-
-The mean percent error between observed marked catches and FRAM marked catches is 55% and between observed marked catches and RMIS is -2%. The average RMIS marked catch deviates only 100 Coho from the observed catch of 6700. There is also good agreement in observed marked and RMIS catches on an annual basis (R Square=0.89). 
-Given that there is good agreement between RMIS and FRAM hatchery mark rates and RMIS and observed marked catches, will leave only unmarked wild Coho unaccounted for. This points towards missing/underestimated wild abundance as the source of the discrepancy. The average composition of the catch based on sampling and hatchery mark rates is approximately 32% hatchery marked, 2% hatchery unmarked, and 64% wild unmarked. Given these proportions and assumptions, FRAM misses approximately 30% of the wild abundance. Since the mark rate discrepancies diminish for fisheries further South, Washington South Coast and Columbia River stocks are less likely to be the cause of the mark rate differences.  
-We recommend additional evaluations and if possible Genetic Stock Identification (GSI) studies to investigate further.
+\newpage
 
 # Mixed Stock Model (MSM)
 
@@ -4220,6 +4215,8 @@ Description: If there is a contemporary fishery that was not fished during the b
 <br>
 Potential Solutions: It may be possible to add the contemporary impacts to the old base period via CWTs that have been scaled by dividing by a large number (e.g., 10,000).  The resulting impacts to the cohort size would be negligible and it would be possible to scale the fishery in subsequent years using a fishery scaler.  
 
+\newpage
+
 # Appendix
 
 ## List of Coho FRAM Fisheries
@@ -4256,6 +4253,9 @@ fram_samp_full<-rmis_landed[,c(1:2,4:5)]|>
  
 
 action <- na.omit(read.csv(paste0(table_dir,"/MR_Action.csv")))
+
+#ColRiver fisheries are included in FRAM escapement and need to be reassigned to RMIS escapement for comparison to FRAM
+ColR<-c(24,25,26,31,32)
 
 fram_samp_fulla <- fram_samp_full |>
   select(-c(Kept_M_fram, Sampled_rmis)) |>
@@ -4298,12 +4298,15 @@ fram_samp_fulla <- fram_samp_full |>
                         FisheryID == 198 ~ 1,
                         FisheryID == 98 ~ 0,
                         FisheryID == 91 ~ FRAM / RMIS,
-                        (abs(FRAM - RMIS) > 400 & abs(FRAM - RMIS) / RMIS > 0.095)|FRAM<=10|is.na(FRAM)|RMIS<=10|is.na(RMIS)|is.na(Sampled)|Sampled<=10|RMIS/Sampled>8 ~ 0,
+                       (abs(FRAM - RMIS) > 400 & abs(FRAM - RMIS) / RMIS > 0.095)|FRAM<=10|is.na(FRAM)|RMIS<=10|is.na(RMIS)|is.na(Sampled)|Sampled<=10|RMIS/Sampled>8 ~ 0,
                         is.na(RMIS) ~ 0,
                         is.na(Sampled) ~ 0,
                         TRUE ~ RMIS / Sampled
                     )
               ) |> 
+              mutate(Expansion = if_else(FisheryID %in% ColR,RMIS/Sampled,Expansion))|>
+              mutate(Expansion = if_else(FisheryID ==31 ,3,Expansion))|> # approximate sampling expansion when summing over all years
+              mutate(Expansion = if_else(FisheryID %in% ColR & Expansion >8,8,Expansion))|># this will prevent the expansion of 10 for fishery 24 in 2010 from being excluded from Dan's code
               group_by(Year) |> 
               mutate(Expansion = if_else(FisheryID == 97, 
                                          (RMIS[FisheryID == 98] + RMIS) / (Sampled[FisheryID == 98] + Sampled),
@@ -4316,6 +4319,7 @@ fram_samp_fulla <- fram_samp_full |>
               pivot_wider(names_from = Year, values_from = Expansion) |> 
               mutate(Source = "Xpansion")
   ) |> 
+  
   arrange(FisheryID, Source)
 write.csv(fram_samp_fulla, "fram_samp_fulla.csv", na = "")
 ```
@@ -4987,6 +4991,8 @@ dplyr::tibble(`Time Step` = c(1,2,3,4,5),
                       buttons = c('copy', 'csv', 'excel', 'pdf', 'print')))
     
 ```
+
+\newpage
 
 # Bibliography
 
