@@ -1,7 +1,9 @@
 ---
-title: "DRAFT: Coho FRAM Model Validation and Mixed Stock Model Updating"
-author: "A Hagen-Breaux, Carrie Cook-Tabor, Dan Auerbach"
-
+title: "Coho FRAM Model Validation and Mixed Stock Model Updating<br><br>"
+author:
+- A Hagen-Breaux^[Washington Department of Fish and Wildlife, hagenafh@dfw.wa.gov]
+- Carrie Cook-Tabor^[U.S. Fish and Wildlife Service, carrie_cook-tabor@fws.gov],
+- Dan Auerbach^[Washington Department of Fish and Wildlife, Daniel.Auerbach@dfw.wa.gov]
 date: "`r Sys.Date()`"
 output:
   bookdown::html_document2:
@@ -11,14 +13,34 @@ output:
     toc_depth: 3
     toc_float: yes
     code_folding: hide
+  html_document:
+    toc: yes
+    toc_depth: '3'
+    df_print: paged
   word_document: null
 always_allow_html: yes
 editor_options:
   chunk_output_type: console
   markdown:
     wrap: 72
-subtitle: Southern Fund Project 2019-SP-3A
+subtitle: Southern Fund Project 2019-SP-3A<br><br><br>
 ---
+
+<style type="text/css">
+h1.title {
+  text-align: center;
+}
+h3.subtitle {
+  text-align: center;
+}
+h4.author { /* Header 4 - and the author and data headers use this too  */
+  text-align: center;
+}
+h4.date { /* Header 4 - and the author and data headers use this too  */
+  text-align: center;
+}
+</style>
+
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, results = FALSE, warning = FALSE, message = FALSE, fig.width = 9, fig.height = 9)
@@ -490,13 +512,16 @@ colnames(mr_rmis_samp_long)[3]<-"FisheryName"
 
 \newpage
 
-# Acknowledgements
+# {.unlisted}
 
-Financial support for this project was provided by the Southern Endowment Fund, with support from the Washington Department of Fish and Wildlife, U.S. Fish and Wildlife Service, and members of the Coho Technical Committee.
+## Acknowledgements
+
+Financial support for this project was provided by the Southern Endowment Fund, with support from the Washington Department of Fish and Wildlife, U.S. Fish and Wildlife Service, and members of the Coho Technical Committee. <br>
+The authors also wish to thank Jeremiah Shrovnal, Derek Dapp, Marlene Bellman, and Jon Carey for their help and feedback.
 
 \newpage
 
-# Glossary
+## Glossary
 
 <a id='M'></a>**Adipose Mark**<br>
 A missing adipose fin on salmon as a result of clipping by a hatchery program; commonly a visual identifier of a hatchery fish that can be retained in a mark-selective fishery.
@@ -508,16 +533,16 @@ A FRAM utility that reconstructs starting Cohorts by adding fisheries mortalitie
 Coded micro-wire implanted in juvenile salmon prior to release. When recovered, the binary code on the tag identifies the tag group, and thus provides information such as location and timing of release, special hatchery treatments, etc.
 
 <a id='CoTC'></a>**Coho Technical Committee (CoTC)** <br>
-Technical committee formed by the [Pacific Salmon Commission](#PSC), providing the panels with scientific data to make effective decisions affecting Southern Coho salmon.
+Technical committee formed by the [Pacific Salmon Commission](#PSC) providing the panels with scientific data to make decisions affecting Southern Coho salmon.
 
 <a id='ER'></a>**Exploitation Rate (ER)**<br>
 The mortality (landed or total) of a stock or stock aggregate in a fishery(s) divided by the stock's abundance (fishery mortality + escapement).
 
 <a id='ET'></a>**Extreme Terminal**<br>
-Marine area directly adjacent to salmon native streams with a very high proportion of catch made up of the "local stocks" due to river mouth proximity; i.e., Elliott Bay is the extreme terminal area for Green River Chinook and Coho.
+Marine area directly adjacent to salmon native streams with a very high proportion of catch made up of the "local stock" due to river mouth proximity; i.e., Elliott Bay is the extreme terminal area for Green River Chinook and Coho.
 
 <a id='FRAM'></a>**Fisheries Regulation Assessment Model (FRAM)** <br>
-Model used by the Pacific Salmon Commission[^1], Pacific Fishery Management Council, Washington Department of Fish and Wildlife, and Puget Sound Treaty Tribes to evaluate the effects of fisheries on Chinook and Coho salmon and to evaluate managment objectives.
+[Model](https://framverse.github.io/fram_doc/index.html) used by the Pacific Salmon Commission[^1], Pacific Fishery Management Council, Washington Department of Fish and Wildlife, and Puget Sound Treaty Tribes to evaluate the effects of fisheries on Chinook and Coho salmon and to evaluate management objectives.
 
 <a id='fulljoin'></a>**Full Join** <br>
 A data join returning all the rows from the joined tables, whether they are matched or not.
@@ -536,20 +561,23 @@ Main computer program used to build the current Coho base period. Model inputs i
 <a id='NOF'></a>**North of Falcon (NOF)**<br>
 Co-manager, annual, pre-season Puget Sound salmon fishery planning process; referencing the region North of Cape Falcon, Oregon, which marks the southern border of active management for Washington salmon stocks.
  
-<a id='PSC'></a>**Pacific Salmon Commission (PSC)** <br>
+<a id='PSC'></a>**Pacific Salmon Commission [(PSC)](https://www.psc.org/)** <br>
 A commission composed of Canadian and United States representatives tasked with developing and upholding the PST.
+
+<a id='PFMC'></a>**Pacific Fishery Management Council [(PFMC)](https://www.pcouncil.org/)** <br>
+The Pacific Fishery Management Council manages fisheries for approximately 119 species of salmon, groundfish, coastal pelagic species (sardines, anchovies, and mackerel), and highly migratory species (tunas, sharks, and swordfish) on the West Coast of the United States.
 
 <a id='PST'></a>**Pacific SalmonTreaty [(PST)](https://www.psc.org/about-us/history-purpose/pacific-salmon-treaty/)** <br>
 Treaty between the Governments of Canada and the United States of America concerning Pacific Salmon.
 
 <a id='RMIS'></a>**Regional Mark Information System (RMIS)** <br>
-The databases of the Regional Mark Processing Center storing Pacific Coast-wide anadromous salmon adipose marking information, coded-wire tag releases and recoveries, recovery locations, and sampling information.
+[RMIS](https://www.rmpc.org/) stores Pacific Coast-wide anadromous salmon adipose marking information, coded-wire tag releases and recoveries, recovery locations, and sampling information.
 
 <a id='SOF'></a> **South of Falcon (SOF)**<br>
 Referencing the region South of Cape Falcon, Oregon, which marks the southern border of active management for Washington salmon stocks.
 
 <a id='SC'></a> **Starting Cohort**<br>
-Initial run sizes before natural mortality and fishing mortality at the beginning of the run year.
+Initial Coho run sizes prior to subtracting natural         and fishing mortality at the beginning of the run year.
 
 <a id='TS'></a>**Time Steps**<br>
 Coho FRAM has 5 time steps.<br>
@@ -574,19 +602,19 @@ $(document).ready(function() {
 ```
 \newpage
 
-# List of Figures
+## List of Figures
 
 \newpage
 
-# List of Tables
+## List of Tables
 
 \newpage
 
-# Executive Summary
+## Executive Summary
 
 Evaluations of Coho salmon (*Oncorhynchus kisutch*) exploitation rates ([ERs](#ER)) in fisheries along the Canadian and U.S. West Coast rely on the [Fisheries Regulation Assessment Model (FRAM)](#FRAM). [Coded-wire-tag (CWT)](#CWT) recoveries from 1986-1992, also referred to as the base-period, were used to develop the stock-fishery-time period specific exploitation rates that act as core model parameters driving FRAM calculations of the impacts associated with proposed and observed fisheries and returns.
 
-The main goal of this project was to assess whether FRAM outputs based on a decades old parameterization reflect current patterns of stock distribution within mixed stock fisheries. This objective was addressed by (1) comparison of post-season FRAM "pseudo-ER" estimates against rates derived directly from contemporary CWT recoveries, and (2) through comparison of fishery mark-rates produced by FRAM against reported values in those same fisheries. This project also aimed to use sensitivity analyses to study how changes in the abundance of FRAM stock aggregates affect the resulting modeled exploitation rates of key co-migrating stocks. Depending on these assessments, another project goal was to investigate potential pathways to updating the existing base-period. 
+The main goal of this project was to assess whether FRAM outputs based on decades old parameterization reflect current patterns of stock distribution within mixed stock fisheries. This objective was addressed by (1) comparison of post-season FRAM "pseudo-ER" estimates against rates derived directly from contemporary CWT recoveries, and (2) through comparison of fishery mark-rates produced by FRAM against reported values in those same fisheries. This project also aimed to use sensitivity analyses to study how changes in the abundance of FRAM stock aggregates affect the resulting modeled exploitation rates of key co-migrating stocks. Depending on these assessments, another project goal was to investigate potential pathways to updating the existing base-period. 
 
 **Exploitation Rate Analysis**<br>
 
@@ -600,6 +628,8 @@ It was initially hypothesized that values of these measures from coho FRAM valid
 
 External mark status (i.e., the presence or absence of an adipose fin) is collected by professional fishery samplers and reported to RMIS. For the mark rate analysis [adipose marked](#M) statistics from RMIS' Catch/Sample database were summarized by FRAM fishery and time period and compared to the corresponding FRAM output. [Mark rates](#MR) were calculated for each fishery as the number of marked Coho encountered and/or landed divided by all Coho encountered and/or landed. In FRAM, the fishery-wide mark rate results from aggregation across the stocks that are modeled as caught, and divergence of this composite rate from observations may therefore indicate errors in the modeled relative abundances and/or stock composition of the fishery.
 
+This project also compared RMIS mark rates to mark rates directly reported by the sampling programs. As RMIS mark rates are derived from these data, we found, perhaps unsurprisingly, that RMIS and sampling mark rates closely match. Upon examination, the small differences in mark rates were caused by slight differences in time step definitions.
+
 Agreement between FRAM mark rates and sampling mark rates was worse than expected in many fisheries. In particular, fishery mark rates in FRAM were consistently higher than sampled rates in several Washington coastal and ocean fisheries, and these differences warrant [further investigation](#casestudy). It was difficult to assess whether mark rate differences were caused by inaccurate stock distributions, incorrect abundance inputs, or other data errors. FRAM and RMIS data have various shared and distinct sources of inaccuracy. In some cases, preliminary findings suggest that missing wild escapements may be responsible for some higher than observed FRAM mark rates (see [Case Study](#casestudy)).
 
 **Sensitivity Analysis**<br>
@@ -610,9 +640,9 @@ With the exception of the Lower Fraser aggregate, the Canadian Coho stocks inclu
 
 **Updating the Mixed Stock Model**<br>
 
-The [Mixed Stock Model (MSM)](#MSM) computer program was developed to estimate stock composition in pre-terminal mixed stock fisheries using coded-wire tag recovery data. Output from the MSM was combined with terminal fishery data before producing cohort reconstructions and calculating the base period exploitation rates that form the foundation coho FRAM.
+The [Mixed Stock Model (MSM)](#MSM) computer program was developed to estimate stock composition in pre-terminal mixed stock fisheries using coded-wire tag recovery data. Output from the MSM was combined with terminal fishery data before producing cohort reconstructions and calculating the base period exploitation rates that form the foundation Coho FRAM.
 
-This project investigated steps associated with combining contemporary CWT recoveries with older base period CWTs to update base period exploitation rates. We identified several potential challenges and considerations, including a lack of CWT sampling in some contemporary fisheries as well as changes to marking and tagging practices. 
+This project investigated steps associated with combining contemporary CWT recoveries with older base period CWTs to update base period exploitation rates. We identified several potential challenges and considerations, including a lack of CWT sampling in some contemporary fisheries as well as changes to marking and tagging practices that ultimately prevented a model update. 
 
 To calculate base period exploitation rates for contemporary tags, modelers must develop estimates of cohort size (i.e., the ER denominator). Because cohort size combines escapement and mortality, it is not possible to accurately estimate it while excluding poorly sampled fisheries. Incorrect cohort sizes influence base period exploitation rate calculations for all fishery-time steps in the model, and therefore, even fisheries that are sampled well will require correct cohort sizes to estimate base exploitation rates.
 
@@ -626,15 +656,15 @@ Nonetheless, to facilitate future base period development and updates, the follo
 
 # Introduction
 
-FRAM is used by the Pacific Salmon Commission to estimate impacts of fisheries on Coho stocks and to evaluate bilateral management objectives. Improvement, validation, and updating of this model are high priority activities needed to ensure accurate estimates of fishery impacts for stocks ranging from Alaska to California. FRAM is based upon historical (catch years 1986 through 1992) coded wire tag (CWT) data to assess stock specific exploitation rates. Members of the Coho Technical Committee (CoTC) and Coho Workgroup have grown increasingly concerned about the ability of this 30-year-old base period to accurately reflect current stock distribution patterns. To re-establish confidence in the model and assure that changes in stock distribution and fishery patterns are accurately captured, contemporary assessments are needed. An updated assessment of stock migratory patterns is particularly relevant given concerns about changing environmental conditions.
+The Coho Fishery Regulation Assessment Model [(FRAM)](#FRAM) is a forward projecting computer application that uses estimates of stock abundances and fishery regulations scaled to a base period average.  This model is the primary tool used to evaluate performance of fisheries regimes by the Pacific Fishery Management Council [(PFMC)](#PFMC) and the parties to the Pacific Salmon Treaty [(PST)](#PST).Improvement, validation, and updating of this model are high priority activities needed to ensure accurate estimates of fishery impacts for stocks ranging from Alaska to California. FRAM is based upon historical (catch years 1986 through 1992) coded wire tag [(CWT)](#CWT) data to assess stock specific exploitation rates. Members of the Coho Technical Committee (CoTC) and Coho Workgroup have grown increasingly concerned about the ability of this 30-year-old base period to accurately reflect current stock distribution patterns. To re-establish confidence in the model and assure that changes in stock distribution and fishery patterns are accurately captured, contemporary assessments are needed. An updated assessment of stock migratory patterns is particularly relevant given concerns about changing environmental conditions.
 
-Unfortunately, CWT recoveries have been in steep decline for the past two decades, with too few recoveries to complete full-scale coast-wide cohort reconstructions. Updating stock distribution patterns, which are modeled through the use of static base period exploitation rates, is extremely data intense and time consuming, with the current base period requiring over 10 years of development time to complete. Rather than attempting to create a brand new base period, a project that previously failed due to its large scope and sparsity of data, this project partitioned the tasks into four smaller, achievable sub-components.
+Unfortunately, CWT recoveries have been in steep decline for the past two decades ([see recovery patterns since 1986](#RP)), with too few recoveries to complete full-scale coast-wide cohort reconstructions. Updating stock distribution patterns, which are modeled through the use of static base period exploitation rates, is extremely data intense and time consuming, with the current base period requiring over 10 years of development time to complete. Rather than attempting to create a brand new base period, a project that previously failed due to its large scope and sparsity of data, this project partitioned the tasks into four smaller, achievable sub-components.
 
 1. A sensitivity analysis evaluating which stocks have the greatest influence on the exploitation rates of key stocks of concern.
 2. A comparison of fishery adipose mark rates from sampling to FRAM estimated mark rates.
 3. A comparison of contemporary exploitation rates to base period exploitation rates
-4. Development of methods to address fisheries and stocks with low levels of CWT recoveries. Coding of chosen methods into the Mixed Stock Model (MSM). 
-
+4. Investigation of potential pathways to updating the existing base-period.  
+The R code for this project as well as supporting data files are located on [GitHub](https://github.com/PSC-CoTC/coho_CWT_analysis). Many data tables can also be downloaded directly from the tables in the [Appendix](#A).
 ```{r}
 # focal_cols_recs <- c("recovery_id", "tag_code", "run_year", "recovery_location_code", "recovery_location_name", "fishery", "gear", "estimated_number")
 # 
@@ -777,11 +807,11 @@ Unfortunately, CWT recoveries have been in steep decline for the past two decade
 
 # Data Preparation
 
-## Assigning Coded-Wire-Tagged Groups to FRAM Model Stocks
+## Assigning Coded-Wire-Tagged Groups to FRAM Model Stocks {#SM}
 
 This section describes the steps taken to identify and map available Coho salmon CWTs to the stocks in FRAM. All available Coho salmon release and recovery data were downloaded from the Regional Mark Processing Center [(RMIS)](https://www.rmis.org/cgi-bin/queryfrm.mpl?Table=catch_sample&Version=4.1) in July of 2020 and uploaded into a Microsoft Access Database called 'MappingDatabase.mdb'. A total of 17,268 CWT groups were downloaded and ranged from brood year 1969 to 2019. After the raw data were loaded, the following steps were taken to create the stock assignments:
 
-1. 'Mark Status' was determined for each CWT group released. Release and recovery data were examined to determine the intended mark status of each of the CWT release groups. For release groups identified as being marked, the estimated number of CWTs recovered from fisheries were summarized by 'recorded_mark' and compared to the mark type listed under 'cwt_1st_mark'. The CWT was flagged for further review if more than 20% of the fishery recoveries were identified as having a different mark than what was listed in the release data. Final review of all of these flagged CWTs yielded a total of 15 tag codes with the intended mark type differing from the mark type listed under 'cwt_1st_mark' (see Appendix Table 13.4 for the list of these tags). A table called 'CWT_1st_mark_fixes' was created in the Access database and a query titled 'Step1- Fix CWT_1st_Mark value' was used to update the release data that was downloaded from RMIS into the database to correct the 'cwt_1st_mark'.
+1. Mark Status was determined for each CWT group released. Release and recovery data were examined to determine the intended mark status of each of the CWT release groups. For release groups identified as being marked, the estimated number of CWTs recovered from fisheries were summarized by 'recorded_mark' and compared to the mark type listed under 'cwt_1st_mark'. The CWT was flagged for further review if more than 20% of the fishery recoveries were identified as having a different mark than what was listed in the release data. Final review of all of these flagged CWTs yielded a total of 15 tag codes with the intended mark type differing from the mark type listed under 'cwt_1st_mark' (see Appendix Table 8.4 for the list of these tags). A table called 'CWT_1st_mark_fixes' was created in the Access database and a query titled 'Step1- Fix CWT_1st_Mark value' was used to update the release data that was downloaded from RMIS into the database to correct the 'cwt_1st_mark'.
 
 2. Releases were grouped and assigned to Production Regions (PRs) and Managment Units (MUs). To streamline assigning release groups to PRs and MUs, a list of unique combinations of the following data was generated and saved in a table titled 'RMIS_UniqueReleaseCodes' within the Access database: 
  - `release_location_state`
@@ -789,10 +819,8 @@ This section describes the steps taken to identify and map available Coho salmon
  - `release_location_rmis_basin`
  - `release_location_name`
  - `hatchery_location_name`
- - `stock_location_name`
-
-This table, consisting of a total of 2,058 unique combinations, was then copied to a table titled 'RMIS_UniqueReleaseCodesMapped' and a column containing the assigned PR and another containing the MU were added.  Production Regions and Management Units were manually assigned to each unique record. An example of a unique combination within the 'RMIS_UniqueReleaseCodesMapped' table that was mapped to a PR and an MU is below. See Appendix Table 13.6 for a list of mapped CWT codes.
-
+ - `stock_location_name`<br>
+This table, consisting of a total of 2,058 unique combinations, was then copied to a table titled 'RMIS_UniqueReleaseCodesMapped' and a column containing the assigned PR and another containing the MU were added.  Production Regions and Management Units were manually assigned to each unique record. An example of a unique combination within the 'RMIS_UniqueReleaseCodesMapped' table that was mapped to a PR and an MU is below. See Appendix Table 8.6 for a list of mapped CWT codes.
 ```{r t41, results ='asis'}
 tibble(
   `release location state` = "AK",
@@ -807,10 +835,8 @@ tibble(
   gt::gt() |> 
   gt::tab_header(title = "Table 7.1. Unique Release Codes Mapped")
 ```
-  
 <br>
 3. Assign MUs to the Columbia River releases. The Columbia River Production Region consists of two types of Coho Salmon: South or Early returning stocks (also known as A-Type or fall type run) and North or Late returning stocks (also known as B-Type or late-fall run). While there is a field in RMIS that provides the run type, this data was missing for many of the releases. Over 1,500 CWT releases within the Columbia River Basin did not have a run type associated with them. Because of this, a summary of these tag codes was provided to Eric Kinne and Jillian Cady of WDFW to review. They provided MU assignments for the CWTs with blank MUs and confirmed all of the preliminary assignments for the remaining records. This resulted in the following assignments summarized by MU, and an Access query updated all of the Columbia River CWTs with these newly assigned MUs.
-
 ```{r t42, results ='asis'}
 tibble(
   `Management Unit` = c("Columbia River Early Hatchery", "Columbia River Late Hatchery", "Lower Col R Oregon Wild","Wash Early Wild","Wash Late Wild","Youngs Bay Hatchery", "Grand Total"),
@@ -824,11 +850,9 @@ tibble(
     locations = gt::cells_body(columns = everything(), rows=7))|>                        
   gt::tab_header(title = "Table 7.2. Columbia River Stock Assignments and Numbers Released")
 ```
-
 <br>
 4. Assigned PRs and MUs were used to map coded wire tag codes to FRAM stocks through a look-up table with the following fields:
 <br>
-
 ```{r t43, results ='asis'}
 tibble(
   `Run ID` = 9,
@@ -844,24 +868,24 @@ tibble(
   gt::gt() |> 
   gt::tab_header(title = "Table 7.3. Stock CWT 1998")
 ```
+<br>
+The look-up file to map RMIS recoveries to FRAM stocks is included on the [GitHub site](https://github.com/PSC-CoTC/coho_CWT_analysis/blob/main/lu_cct_MSM_Stock_CWT_20220913.csv) for this project. 
 
-## Assigning Coded-Wire-Tagged Recoveries to FRAM Fisheries {#fishmap}
+## Assigning Coded-Wire-Tagged Recoveries to FRAM Fisheries {#FM}
 
-Fishery definitions are located in Appendix X. 
-Recoveries with a gear code between 50 and 59 were assigned to escapement.
-Explain why fishery 199 is missing
+Coho FRAM contains [198 fisheries](#F) for complete West-Coast-wide Coho fishery coverage. FRAM fisheries are assigned by geographic areas and gear type. Generally, geographic fishing areas overlap with important management boundaries. Fisheries in the same geographic area are usually divided into troll, net, and sport fisheries. Frequently, treaty (first nations) and non-treaty (all citizen) fisheries are also separated into discrete fisheries. An assignment of RMIS CWT recovery information to FRAM fisheries is usually possible by examining RMIS' 'fishery' and 'recovery_location_code' fields. RMIS 'fishery' coding specifies the gear type, while the 'recovery_location_code' designates a geographic area. RMIS contains 90 unique 'fishery' codes and apporximately 5,000 unique 'recovery_location_codes', potentially designating tens of thousands of unique fisheries. A 19-character location code strip is used by all parties to the [Pacific Salmon Treaty] (#PST) to geographically identify locations (see Lapi et al. 1989). Assignments of RMIS recoveries to FRAM fisheries are accomplished through a mix of a look-up on 'fishery' and 'recovery_location_code' fields and some coded logic. The coded logic relies on the hierarchical nature of the 'recovery_location_code', where the location code string narrows down the geographic area going from left to right in the coded sequence; e.g., the first character specifies the state or country, the second freshwater or marine, the third the management region, etc. When developing the look-up, the analyst determines the minimum number of 'recovery_location_code' characters needed to make a distinct FRAM location assignment. A similar approach is taken to make FRAM gear assignments from RMIS' 'fishery' field; e.g., a 'fishery' code between 40 and 49 identifies a sport fishery. Recoveries with a 'fishery' code between 50 and 59 are automatically assigned to escapement. Thus, the final fishery look-up table contains only 537 records. This is possible because the R code developed to map to FRAM fisheries truncates the 'recovery_location_code' sequence to just the characters needed to make a unique FRAM fishery assignment, significantly reducing the number of possible permutations. The look-up file is included on the [GitHub site](https://github.com/PSC-CoTC/coho_CWT_analysis/blob/main/lu_ahb_FishMap_20220826.csv) for this project. 
 
 ## Data Issues
 
-Despite the dedication of staff involved in data collection and management across organizations, the sheer number of records involved in constructing and populating a coast-wide model of salmon harvest means that problems will arise. The following briefly describe some of the major issues related to data acquisition and preparation that were encountered during this project. Some concerns cannot be remedied (e.g., past year fisheries cannot be retrospectively sampled), but further collective review efforts may improve the quality of key FRAM datasets and thereby any inferences based on model runs. In particular, we observed a need to ensure recent time-series of post-season runs reflect current catch and escapement estimates, some of which appear to have changed since originally compilied.
+Despite the dedication of staff involved in data collection and management across organizations, the sheer number of records involved in constructing and populating a coast-wide model of salmon harvest means that problems will arise. The following briefly describe some of the major issues related to data acquisition and preparation that were encountered during this project. Some concerns cannot be remedied (e.g., past year fisheries cannot be retrospectively sampled), but further collective review efforts may improve the quality of key FRAM datasets and thereby any inferences based on model runs. In particular, we observed a need to ensure recent time-series of post-season runs reflect current catch and escapement estimates, some of which appear to have changed since being originally compiled.
 
-Reported catch values are essential inputs to post-season FRAM and are critical to computing CWT expansions. This project was impacted by inaccurate, uncertain, and missing values in catch reporting and accounting, and by extremely low or no sampling in some fisheries. In several instances, the modeled landed catch within FRAM did not match the catch reported to RMIS' Catch/Sample data, and in which mismatches persisted after fisheries mapping issues were ruled out. Further investigation showed that official catch estimates were updated in RMIS after the [CoTC](#CoTC) completes the annual ER analyses using [BkFRAM](#BkFRAM). Therefore, we suggest annually re-querying and updating the most current 2-3 years to populate BkFRAM or conducting periodic reports every 5 years. We also suggest similar procedures for catches reported to RMIS.
+Reported catch values are essential inputs to post-season FRAM and are critical to computing CWT expansions. This project was impacted by inaccurate, uncertain, and missing values in catch reporting and accounting, and by extremely low or no sampling in some fisheries. In several instances, the modeled landed catch within FRAM did not match the catch reported to RMIS' Catch/Sample data, and mismatches persisted even after fisheries mapping issues were ruled out. Further investigation showed that official catch estimates were updated in RMIS after the [CoTC](#CoTC) completes the annual ER analyses using [BkFRAM](#BkFRAM). Therefore, we suggest annually re-querying and updating the most current 2-3 years to populate BkFRAM. We also suggest similar procedures for catches reported to RMIS.
 
-Stock specific escapements are entered into post-season FRAM to reconstruct pre-fishing cohort abundances, and escapement recoveries are required to calculate exploitation rates. As for catches, missing and uncertain estimates of escapement related to lack of sampling and/or reporting hindered the number of comparisons that were possible. In addition to the escapement values "targeted" by BackwardsFRAM, the option to apply other supplied mark rates (often from pre-season forecasts) to total (marked + unmarked) escapements has the potential to create inaccuracies in stock-specific and potentially whole fishery mark rates, such as those assessed in this project. We recommend further review of mark rate estimates by regional experts, with special attention to instances where post-season escapement estimates are not provided by mark status. 
+Stock specific escapements are entered into post-season FRAM to reconstruct pre-fishing cohort abundances, and escapement recoveries are required to calculate exploitation rates. As for catches, missing and uncertain estimates of escapement related to lack of sampling and/or reporting hindered the number of comparisons that were possible. In addition to the escapement values "targeted" by BackwardsFRAM, the option to apply mark rates (often from pre-season forecasts) to total (marked + unmarked) escapements has the potential to create inaccuracies in stock-specific and potentially whole fishery mark rates, such as those assessed in this project. We recommend further review of mark rate estimates by regional experts, with special attention to instances where post-season escapement estimates are not provided by mark status. 
 
-Accurate sampling data is critical for the integrity of the CWT system, execution of mark-selective fisheries, production of mark rate and catch estimates, and collection of biological information. Hundreds of dedicated samplers annually collect these data, often under difficult circumstances. Several factors can lead to inaccurate results such as sampler error, equipment failure, sampling stratification that differs from fishery stratification, low sampling rates, etc. We encountered many instances where sampling was inadequate due to no or insufficient sampling, relying on voluntary tag recoveries, sampling without electronic CWT detection equipment, etc. Additionally, some fisheries, even if well sampled, exhibited highly improbable mark or tag rates. 
+Accurate sampling data is critical for the integrity of the CWT system, execution of mark-selective fisheries, production of mark rate and catch estimates, and collection of biological information. Hundreds of dedicated samplers annually collect these data, often under difficult circumstances. Several factors can lead to inaccurate results such as sampler error, equipment failure, sampling stratification that differs from fishery stratification, low sampling rates, etc. We encountered many instances where sampling was inadequate, relying on voluntary tag recoveries, sampling without electronic CWT detection equipment, etc. Additionally, some fisheries, even if well sampled, exhibited highly improbable mark or tag rates. 
 Since sampling is the backbone of CWT information flowing into exploitation rate estimates, poor sampling can have a very detrimental effect on these types of analyses.
-Perhaps a feedback loop between RMIS and sampling programs could address some of these shortcomings by providing sampling supervisors with annual RMIS summary reports of sampling rates, CWT recoveries and mark rates. 
+Perhaps a feedback loop between RMIS and sampling programs could address some of these shortcomings by providing sampling supervisors with annual RMIS summary reports of sampling rates, CWT recoveries, and mark rates. 
 
 ### [RMIS Data](#RMIS)
 
@@ -875,7 +899,7 @@ The Catch/Sample data is vital to the recovery data as coded-wire-tag sampling e
 
 ## MSM User Guide and Code Documentation
 
-The [Mixed Stock Model](#MSM) was rewritten in Visual Basic in 2007. Although the document ["Coho FRAM Base Development"](#MSMDoc) describes the project, the current MSM lacks code documentation and a user guide, thus requiring a great deal of initiative by a new user to understand the code, the data requirements, and re-(run) analyses. A draft [user guide](#MSMGuide) of the MSM was developed during the early stages of this project.
+The [Mixed Stock Model](#MSM) was rewritten in Visual Basic in 2007. Although the document ["Coho FRAM Base Development"](#Pac1) describes the project, the current MSM lacks code documentation and a user guide, thus requiring a great deal of initiative by a new user to understand the code, the data requirements, and re-(run) analyses. A draft [user guide](#MSMGuide) of the MSM was developed during the early stages of this project.
 
 ### Stock Mapping
 
@@ -883,10 +907,10 @@ Mapping hatchery releases to FRAM stocks was one of the most timing consuming ta
 
 ### Fisheries Mapping
 
-The tasks of mapping RMIS "recovery location codes" and "fisheries" to FRAM fisheries was similarly labor intensive as the stock mapping. We followed the mapping approach from the original MSM to allow future MSM tasks to build on the mapping efforts of this project. As with the stock mapping, developing detailed FRAM fishery profiles is highly recommended.
+The tasks of mapping RMIS "recovery location codes" and "fisheries" to FRAM fisheries was similarly labor intensive as the stock mapping. We followed the mapping approach from the original MSM to allow future MSM tasks to build on the mapping efforts of this project. While mapping to RMIS fisheries, we discovered that the Southeast Alaska sport fishery is entirely missing from FRAM. We were unable to determine the reason for this omission and urge additional investigations. As with the stock mapping, developing detailed FRAM fishery profiles is highly recommended. 
 
 
-## Handling of RMIS Catch/Sample data {#Handling}
+## Handling of Fisheries in Response to RMIS Catch/Sample data {#Handling}
 
 RMIS Catch/Sample data requires carefully examined before analyzing the coded-wire-tags associated with a sample. 
 
@@ -914,8 +938,7 @@ Fisheries that were never or rarely sampled were excluded from the exploitation 
 
 We also eliminated fisheries that were not modeled in FRAM. 
 
-Examples of unmodeled fisheries are some Columbia River fisheries that are accounted for in regional models rather than in FRAM or some South of Falcon fisheries that report a small amount of likely
-illegal catch. 
+Examples of unmodeled fisheries were some Columbia River fisheries that are accounted for in regional models rather than in FRAM or some South of Falcon fisheries that report a small amount of likely illegal catch. 
 
 Additionally, all freshwater fisheries were automatically excluded, because they were frequently not or insufficiently sampled. 
 
@@ -934,9 +957,9 @@ d_exclude_fish|>
 
 To address unsampled strata, a coefficient was calculated to adjust annual CWT recoveries to the number of recoveries that should have occurred if all the strata had been sampled. 
 
-This coefficient is referred to as an "Expansion" in Appendix table 9.3. The coefficient is computed by summing the reported RMIS catch over all the strata within a year divided by the sum of the RMIS catch associated with a sampling event.
+This coefficient is referred to as an "Expansion" in Appendix table 8.3. The coefficient is computed by summing the reported RMIS catch over all the strata within a year divided by the sum of the RMIS catch associated with a sampling event.
 
-Appendix table 9.3 contains a summary of FRAM catches, RMIS catches, sampled catches and fishery expansions by fishery and year. The expansions are computed as in below equation. Fisheries or years that are eliminated contain a zero in the "Expansion" row.
+Appendix table 8.3 contains a summary of FRAM catches, RMIS catches, sampled catches and fishery expansions by fishery and year. The expansions are computed as in below equation. Fisheries or years that are eliminated contain a zero in the "Expansion" row.
 
 $$AdjustedCWT = EstimatedCWT * \frac {\sum_{strata}NumberCaught}{\sum_{strata}(NumberCaught*b)}$$
 
@@ -969,7 +992,7 @@ For Area 5 sport neither the FRAM modeled catch nor the RMIS catch matched the o
 **Southeast Alaska net (fishery 198):**
 The average annual FRAM catch for southeast Alaska of 648,000 was significantly smaller than the RMIS catch of 784,000. Fishery mapping issues were ruled out as a source of the discrepancy. Since the catch associated with sampling was similar to the FRAM catch each year (average 644,000), the CWTs were not adjusted.
 
-**Columbia River Net and Sport (fisheries 24-32):**
+[**Columbia River Net and Sport (fisheries 24-32):**]{#CR}
 Columbia River stock abundances (StockID 165-176) enter FRAM in units of "Return to the River". Pre-fishing abundances are calculated by adding marine fisheries mortalities to this abundance. In-river fisheries are not modeled in a FRAM forward run. Therefore, the resulting FRAM escapement is actually the abundance entering the Columbia River, prior to in-river sport and net fisheries. When comparing FRAM exploitation rates to those derived using RMIS CWT recoveries, RMIS recoveries from in-river fisheries are added to escapement to reconstruct a "Return to the River" run size that is in the same units as FRAM.
 
 \newpage
@@ -982,7 +1005,7 @@ Many West Coast Coho stocks have overlapping migration paths or natal streams in
 
 The goal of this project is to evaluate the effects of abundance changes of influential Coho stocks on the exploitation rate of other model stocks to determine which forecasts of abundance have the greatest effect on key wild stocks. Results could be used to inform decision makers about prioritizing the timing and availability of forecast information and allocating limited stock assessment resources.
 
-## Method
+## Methods
 
 The basic method consists of varying the abundances of stock aggregates (test stocks) in the FRAM model, one aggregate at a time, running FRAM, and evaluating mortalities of key wild model stocks (response stocks). For more information about the FRAM model please see [FRAM documentation](https://framverse.github.io/fram_doc/).
 
@@ -1128,11 +1151,11 @@ reactable::reactable(table3_1c,
 
 ### Model Runs
 
-Abundances of stock aggregates were adjusted one production region at a time. Each stock within a production region was modeled at a low (30% of average) and at a high (170% of average) abundance. This was done for the 2013 as well as the 2015 post-season runs, resulting in a total of 64 model runs (16 production regions * 2 years * 2 abundance levels). Appendix table 9.7 contains a list of model runs.
+Abundances of stock aggregates were adjusted one production region at a time. Each stock within a production region was modeled at a low (30% of average) and at a high (170% of average) abundance. This was done for the 2013 as well as the 2015 post-season runs, resulting in a total of 64 model runs (16 production regions * 2 years * 2 abundance levels). Appendix table 8.7 contains a list of model runs.
 
 To avoid negative escapements, extreme terminal and freshwater fisheries were set to zero. These fisheries predominantly intercept local stocks with minimal interference from other test stocks; thus, providing little relevance to the sensitivity analysis.
 
-Appendix table 9.8 contains a list of fisheries set to zero in the model runs.
+Appendix table 8.8 contains a list of fisheries set to zero in the model runs.
 
 Additionally, several fisheries were modified for individual run pairs (low/high pairs) to avoid negative escapements.
 
@@ -1806,7 +1829,7 @@ compared to mark rates reported to the Regional Mark Information System
 (retained plus released Coho) from sampling programs for mark-selective
 fisheries.
 
-## Method
+## Methods
 
 For this study, mark rates from 2010- 2018 FRAM were compared to mark
 rates from fishery sampling programs. Most Coho fisheries along the
@@ -1882,7 +1905,7 @@ RMIS and sampling program estimates were removed from the analysis if fewer than
 **Sum Over Time Steps** <br>
 Landed catch and encounter data was summed over time steps within
 a year. Coho FRAM is stratified into 5 time steps ranging from 1 month
-to 6 months in duration (see Appendix 9.10). Almost all the analyses are
+to 6 months in duration (see Appendix 8.10). Almost all the analyses are
 conducted on annual data to avoid slight differences in time step
 definitions between RMIS and FRAM and to increase the power of the
 evaluations.
@@ -1892,7 +1915,7 @@ In FRAM, most net fisheries exists in treaty, non-treaty pairs; i.e., Area 10 tr
 fisheries occur in the same geographic area with similar gear, they
 should experience similar mark rates. Therefore, catch information from
 treaty/non-treaty fishing pairs was summed for FRAM and sampling
-analyses. See Appendix 9.9 for a list of fishery pairs.
+analyses. See Appendix 8.9 for a list of fishery pairs.
 
 **Wilcoxon signed-rank test** <br>
 The Wilcoxon signed-rank test is a
@@ -1956,7 +1979,7 @@ These data were mapped to FRAM fisheries based on information in the
 "catch_location_code", "fishery", and "gear" fields. See [fishery mapping description](#fishmap).
 
 RMIS fields "period_type" and "period" were utilized to map data to FRAM
-time steps (see Appendix x).
+time steps (see Appendix 8.10).
 
 During quality control procedures records where "number_caught" or
 "number_sampled" was either "na" or zero were removed. Additionally,
@@ -2035,7 +2058,7 @@ or observed mark rates. Incorporating salmon encounter information from
 mark-selective sampling programs added valuable information about mark-selective sport fisheries to the analysis.
 
 Tabular results of mark rates for all available fisheries and time steps
-can be found in Appendix table [9.11](#markrates).
+can be found in Appendix table [8.11](#markrates).
 
 Initial adipose mark rate comparisons were grouped into 7 geographical
 regions. Additionally, Puget Sound marine was separated into commercial
@@ -2533,17 +2556,17 @@ Mark rate comparisons are just one parameter useful in assessing the accuracy of
 
 # Comparison of Post-season FRAM Fishery Impacts with RMIS Recovery Patterns
 
-This analysis examines post-season ("validation") estimates of stock and fishery specific mortality generated by [coho FRAM](https://framverse.github.io/fram_doc/calcs_data_coho.html), comparing them to patterns of coded wire tag (CWT) recoveries housed in the Regional Mark Information System [(RMIS)](https://www.rmpc.org/).
+This analysis examines post-season ("validation") estimates of stock and fishery specific mortality generated by [Coho FRAM](https://framverse.github.io/fram_doc/calcs_data_coho.html), comparing them to patterns of coded wire tag (CWT) recoveries housed in [RMIS](https://www.rmpc.org/).
 
 Coho FRAM predicts impacts to modeled stocks according to a "base period" drawn from CWT recoveries in catch years 1986-1992 (see https://framverse.github.io/fram_doc/index.html for additional description). The continued applicability of this parameterization is of interest to fisheries managers concerned with meeting conservation and harvest allocation objectives.
 
-Comparing a dataset of recent recovery patterns with results based on older CWT recoveries does not address the fundamental assumption that inferences about the harvest of non-hatchery stocks are adequately informed by coded wire tagging that is overwhelmingly focused on hatchery production. Nor does this analysis attempt to determine whether recent year coho FRAM post-season exploitation rates (ER) are quantitatively accurate relative to those that might be reconstructed outside of FRAM: arriving at a "true" stock ER requires data from robust sampling throughout all phases of harvest and post-harvest escapement, and these data are not readily available for most of the coho FRAM stock units.
+Comparing a dataset of recent recovery patterns with results based on older CWT recoveries does not address the fundamental assumption that inferences about the harvest of non-hatchery stocks are adequately informed by coded wire tagging that is overwhelmingly focused on hatchery production. Nor does this analysis attempt to determine whether recent year Coho FRAM post-season exploitation rates (ER) are quantitatively accurate relative to those that might be reconstructed outside of FRAM: arriving at a "true" stock ER requires data from robust sampling throughout all phases of harvest and post-harvest escapement, and these data are not readily available for most of the Coho FRAM stock units.
 
-Instead, this investigation focuses on (dis)agreements in the relative assignment of catch mortality in primarily pre-terminal, highly mixed stock fisheries, seeking to understand how well the FRAM representation accords with current observations in RMIS. That is, we ask, "For a given stock, how well do the magnitude and relative ranks of annual per-fishery exploitation align between datasets?" Attempting to answer this seemingly straightforward question also highlights discrepancies that warrant additional auditing to ensure that data are sufficiently high quality to support management decisions and risk considerations.
+Instead, this investigation focuses on (dis)agreements in the relative assignment of catch mortality in primarily pre-terminal, highly mixed stock fisheries, seeking to understand how well the FRAM representation agrees with current observations in RMIS. That is, we ask, "For a given stock, how well do the magnitude and relative ranks of annual per-fishery exploitation align between datasets?" Attempting to answer this seemingly straightforward question also highlights discrepancies that warrant additional auditing to ensure that data are sufficiently high quality to support management decisions and risk considerations.
 
-## Data
+## Methods
 
-Coho FRAM includes net, troll and sport fisheries that occur in pre-terminal, terminal and freshwater areas. Freshwater sport, most freshwater net and some near-terminal net were excluded from the analysis due to the practical constraint of limited and inconsistent sampling and the conceptual presumption that the stock composition of these fisheries is subject to much less uncertainty, notwithstanding some amount of "dip-ins" from neighboring river systems. In addition, RMIS Catch & Sample data were inspected and compared with fishery catch values used in post-season FRAM runs. Individual fishery-year combinations were removed when the sampled portion of catch diverged substantially from the total reported catch, and fisheries were excluded entirely if the proportion of catch that was sampled was chronically low. Where smaller annual differences occurred more sporadically, an expansion coefficent was generated based on the ratio of sampled to total reported catch (e.g., a total reported catch of 1600 and sampled catch totaling 1300 produced an adjustment coefficient of ~1.23). These coefficients were then applied to the sampling-expansion based "estimated_number" values reported for individual recoveries, thereby better aligning the fishery totals between FRAM and RMIS. See section "Handling of RMIS Catch/Sample data" in the accompanying report for additional description and code. 
+Coho FRAM includes net, troll and sport fisheries that occur in pre-terminal, terminal and freshwater areas. Freshwater sport, most freshwater net and some near-terminal net were excluded from the analysis due to the practical constraint of limited and inconsistent sampling and the conceptual presumption that the stock composition of these fisheries is subject to much less uncertainty, notwithstanding some amount of straying. In addition, RMIS Catch & Sample data were inspected and compared with fishery catch values used in post-season FRAM runs. Fisheries were excluded if the proportion of catch that was sampled was chronically low. Where smaller annual differences occurred more sporadically, an expansion coefficent was generated. These coefficients were then applied to the sampling-expansion based "estimated_number" values reported for individual recoveries, thereby better aligning the fishery totals between FRAM and RMIS. See section [Handling of Fisheries in Response to RMIS Catch/Sample data](#Handling) in this report for detail descriptions of how fisheries were selected and/or adjusted for this project. 
 
 ```{r included_fisheries, eval=FALSE}
 # #excluding:
@@ -2586,7 +2609,7 @@ samp_catch_coef <- read_csv(fp$samp_catch_coef) |> select(FisheryID:Action)
 
 ### FRAM
 
-Estimates of landed catch and post-fishing escapement (from the *Mortality* and *Escapement* database tables respectively) were queried from the Pacific Salmon Commission Coho Technical Committee post-season FRAM database for run years 2010 to 2019. The 2015 "crash" and 2016 "post-crash" years were included in the dataset and some analyses but were generally considered uninformative of "typical" patterns.
+Estimates of landed catch and post-fishing escapement (from the *Mortality* and *Escapement* database tables respectively) were queried from the Pacific Salmon Commission Coho Technical Committee post-season FRAM database for run years 2010 to 2019. The 2015 "crash" and 2016 "post-crash" years were included in the dataset for some analyses but were generally considered uninformative of "typical" patterns.
 
 ```{r get_starting_fram_dataset, eval=FALSE}
 fram <- list()
@@ -2635,9 +2658,14 @@ fram$mort <- framr::read_coho_mort(fp$mdb_pst, runs = run_ids, stocks = stock_id
 
 ### RMIS
 
-All recoveries of marked coho between the years 1986 and 2020 were queried from RMIS, and these were joined with the release data associated with the distinct tag codes in this set.  This core dataset was augmented with recent year Canadian stock escapement recovery records provided by DFO. An age field was calculated as the difference between `run_year` and `brood_year`, allowing later limitation to the 3 year old fish tracked in FRAM, and records with a `sample_type` 5 were excluded as uninformative. Finally, the individual records were mapped to FRAM stocks according to a `tag_code` lookup table and to FRAM fisheries via reference to the `recovery_location_code` and `fishery` fields.
+All recoveries of marked Coho between the years 1986 and 2020 were queried from RMIS, and these were joined with the release data associated with the distinct tag codes in this set.  This core dataset was augmented with recent year Canadian stock escapement recovery records provided by DFO. An age field was calculated as the difference between `run_year` and `brood_year`, allowing later limitation to the 3 year old fish tracked in FRAM, and records with a `sample_type` 5 were excluded as uninformative. Finally, the individual records were mapped to FRAM stocks according to a `tag_code` lookup table (see section [Assigning Coded-Wire-Tagged Groups to FRAM Model Stocks](#SM) for more information) and to FRAM fisheries via reference to the `recovery_location_code` and `fishery` fields (see section [Assigning Coded-Wire-Tagged Recoveries to FRAM Fisheries](#FM)).<br>
 
-The first three chunks preserve one-time operations to generate starting datasets from RMIS, and the fourth performs the stock and fishery mapping.
+
+We then examined the recovery patterns for each stock to select a group of focal stocks for this analysis. These stocks were selected based on their importance to the [Pacific Salmon Treaty](#PST) and the number of [CWT](#CWT) recoveries in mixed stock fisheries and escapement.
+
+
+<!-- Add a focal stock table containing the number of CWT recoveries in mixed stock fisheries and escapements here!!! 
+The first three chunks preserve one-time operations to generate starting datasets from RMIS, and the fourth performs the stock and fishery mapping. -->
 
 ```{r read_in_rmis_recoveries, eval=FALSE}
 dir_rmis_recs <- "T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Projects/Coho FRAM MSM CWT analysis/ERAnalysis/RMISRecoveries/"
@@ -2660,6 +2688,8 @@ rmis_recs <- purrr::map_dfr(
 ```
 
 ```{r get_releases_by_tag_code, eval=FALSE}
+rmis_recs|>
+ distinct(recovery_location_code)
 rmis_recs |>
   distinct(tag_code) |> rownames_to_column(var = "id") |>
   mutate(
@@ -2840,9 +2870,9 @@ rmis_rr <- rmis_rr |>
 # rmis_rr |> filter(FisheryID %in% c(35, 36, 38, 39, 42, 43)) |> distinct(FisheryID, FisheryName, fishery, gear)
 ```
 
-#### Recovery patterns since 1986
+#### Recovery patterns since 1986 {#RP}
 
-As others have noted, recent years have generally seen fewer coho CWT recoveries than during the coho FRAM base period years, within both sampled fisheries and escapement (to hatcheries and in-river). 
+As commonly known, recent years have generally seen fewer Coho [CWT](#CWT) recoveries than during the Coho FRAM base period years, within both sampled fisheries and escapement (to hatcheries and in-river). 
 
 ```{r rmis_rr_rgn, eval=FALSE}
 rmis_rr_rgn <- rmis_rr |> 
@@ -2919,17 +2949,17 @@ rmis_rr_rgn |>
   plot_layout(nrow = 1, guides = 'collect')
 ```
 
-## Exploitation calculations
+### Exploitation calculations
 
-Per stock, per year, a "pseudo-ER" was calculated by dividing the annual per-fishery landed catch (FRAM, non-selective + mark-selective, timesteps 1 to 5) or `estimated_number` (RMIS, summed over individual recoveries) by the sum of the total across fisheries and the non-fishery escapement. For the FRAM case:
+Per stock, per year, a "pseudo-ER" was calculated by dividing the annual per-fishery landed catch (FRAM, non-selective + mark-selective, timesteps 1 to 5) or `estimated_number` (RMIS, summed over individual recoveries) by the sum of the total across fisheries and escapement. For the FRAM case:
 
 $pseudoER_{s,f,y} = \frac{LC_{s,f,y}}{Escp_{s,y} + \sum_{f}LC_{s,f,y}}$
 
-In addition, the "total pseudo-ER" was calculated similarly by dividing the across-fishery total by the sum of this value and escapement. For the RMIS case:
+In addition, the "total pseudo-ER" was calculated similarly by dividing the across-fishery total by the sum of the total across fisheries and escapement. For the RMIS case:
 
 $pseudoER_{s,y} = \frac{\sum_{f}EstNum_{s,f,y}}{Escp_{s,y} + \sum_{f}EstNum_{s,f,y}}$
 
-These values were then joined by year, stock and fishery to allow comparison between the two data sources.
+Using identical stocks, years, and fisheries for a direct comparison between RMIS and FRAM data sources, these values were then joined by year, stock and fishery.
 
 ```{r er_objects_included_fisheries, eval=FALSE}
 #limiting expansion to 8x, drops several Canadian fishery-years
@@ -3293,8 +3323,8 @@ er_fram_rmis |>
   - RMIS escapement may be low in some years; 2019 escp. missing entirely preventing ER calc (note no 2019 total column)
   
 - **Fishery-specific**
-  - most fisheries show negative differences where comparison possible, suggesting missing escapement 
-  - contrasting Area 8D vs 8A net differences may be related to errors in dataset or mapping
+  - most fisheries show negative differences where comparison possible.This is likely caused by missing escapement accounting and sampling at the hatchery and in the extreme terminal area.
+  - FRAM appears to overestimate Tulalip impacts in Tulalip Bay (area 8D), while RMIS assigns more impacts to fisheries outside of the bay. 
   
 - **Rank agreement**
   - both FRAM and current RMIS associate the greatest impacts to 8D net (first) and 8A net (second)
@@ -3397,7 +3427,6 @@ g$rel_rank#; ggsave(file.path("results","f_68_Nisqually_rel_rank.png"), width = 
   - pseudo-ER differences less than 0.01, 0.05 and 0.1 in 0, 3 and 5 years respectively
   - FRAM value larger in 2011 and 2012 only
   - Larger RMIS values may be related to missing escapement recoveries in some years
-  - In addition or alternatively, differences could be related to errors in BkFRAM targets and/or mark composition flagging that alter FRAM starting cohorts 
   
 - **Fishery-specific**
   - year to year fishery differences primarily in context of larger RMIS pseudo-ERs
@@ -3568,7 +3597,7 @@ er_fram_rmis |>
   
 - **Rank agreement**
   - both FRAM and current RMIS associate the greatest proportion of impacts to Area 2 sport, and similar high relative ranks to Grays Harbor net, A7 sport and Grays sport
-  - Willapa Bay net exhibits higher proportion of recent RMIS recoveries relative to FRAM catch assignments, but fishery is a relatively minor overall element of catch, and year-fishery pseudo-ERs are not uniformly higher in RMIS
+  - Willapa Bay net exhibits higher proportion of recent RMIS recoveries relative to FRAM catch assignments, but year-fishery pseudo-ERs are not uniformly higher in RMIS
 
 ```{r}
 g <- gg_stk(152)
@@ -3704,9 +3733,11 @@ rmis_rr |> drop_na(estimated_number) |> filter(StockID==166, age==3) |> #count(h
 
 #### Late
 
+[Note](#CR): We accounted for modeling river run size in BKFRAM rather than escapement by adding RMIS freshwater fishery recoveries to escapement.
+
 - **Total across fisheries** 
   - pseudo-ER differences less than 0.01, 0.05 and 0.1 in 0, 0 and 2 years respectively
-  - RMIS value larger in all years; differences likely related to missing recoveries and/or mapping errors
+  - RMIS value larger in all years; differences likely related to missing recoveries and/or stock mapping errors
     - ratio of RMIS:FRAM for fisheries larger than RMIS:FRAM for escapement in all years
     - largest deviation in these ratios occurred in 2017 and 2019, when total pseudo ER difference also largest 
 
@@ -3735,47 +3766,47 @@ er_fram_rmis |>
 
 ### British Columbia
 
-#### Strait of Georgia mainland
+<!-- #### Strait of Georgia mainland -->
 
-- **Total across fisheries** 
-  - pseudo-ER differences less than 0.01, 0.05 and 0.1 in 1, 2 and 3 years respectively, comparison possible in 6 years
-  - RMIS escapement missing entirely in several years and almost completely in 2011 and 2012
+<!-- - **Total across fisheries**  -->
+<!--   - pseudo-ER differences less than 0.01, 0.05 and 0.1 in 1, 2 and 3 years respectively, comparison possible in 6 years -->
+<!--   - RMIS escapement missing entirely in several years and almost completely in 2011 and 2012 -->
 
-- **Fishery-specific**
-  - several Canadian fisheries excluded entirely due to limited sampling and very few recoveries for those included limit possible comparison
-  - absence of recoveries for Area 7BCD net and larger FRAM values for 4/4B troll despite otherwise larger RMIS values may indicate shifts since the coho FRAM base period 
-  
-- **Rank agreement**
-  - Of the fisheries included and with recoveries, both FRAM and current RMIS associate substantial proportions to Area 5 sport and Area 6-7A net
-  - N BC troll has the highest ranked proportional impacts in recent RMIS recoveries but accounts for a considerably lower portion of FRAM catches
-  
-```{r}
-g <- gg_stk(206)
-g$pseudo_er#; ggsave(file.path("results","f_206_GeorgiaMain.png"), width = 9, height = 11)
-g$rel_rank#; ggsave(file.path("results","f_206_GeorgiaMain_rel_rank.png"), width = 9, height = 10)
-```
+<!-- - **Fishery-specific** -->
+<!--   - several Canadian fisheries excluded entirely due to limited sampling and very few recoveries for those included limit possible comparison -->
+<!--   - absence of recoveries for Area 7BCD net and larger FRAM values for 4/4B troll despite otherwise larger RMIS values may indicate shifts since the Coho FRAM base period  -->
 
-```{r}
-er_fram_rmis |>
-  drop_na(rmis_est_num_yr_tot, fram_lnd_yr_tot) |> 
-  filter(StockID==206, between(run_year, 2010, 2019)) |> 
-  distinct(run_year, sidnm, fram_lnd_yr_tot, fram_escp, rmis_est_num_yr_tot, rmis_escp) |> 
-  mutate(
-    ratio_fsh = rmis_est_num_yr_tot / fram_lnd_yr_tot,
-    ratio_escp = rmis_escp / fram_escp
-    )
-```
+<!-- - **Rank agreement** -->
+<!--   - Of the fisheries included and with recoveries, both FRAM and current RMIS associate substantial proportions to Area 5 sport and Area 6-7A net -->
+<!--   - N BC troll has the highest ranked proportional impacts in recent RMIS recoveries but accounts for a considerably lower portion of FRAM catches -->
+
+<!-- ```{r} -->
+<!-- g <- gg_stk(206) -->
+<!-- g$pseudo_er#; ggsave(file.path("results","f_206_GeorgiaMain.png"), width = 9, height = 11) -->
+<!-- g$rel_rank#; ggsave(file.path("results","f_206_GeorgiaMain_rel_rank.png"), width = 9, height = 10) -->
+<!-- ``` -->
+
+<!-- ```{r} -->
+<!-- er_fram_rmis |> -->
+<!--   drop_na(rmis_est_num_yr_tot, fram_lnd_yr_tot) |>  -->
+<!--   filter(StockID==206, between(run_year, 2010, 2019)) |>  -->
+<!--   distinct(run_year, sidnm, fram_lnd_yr_tot, fram_escp, rmis_est_num_yr_tot, rmis_escp) |>  -->
+<!--   mutate( -->
+<!--     ratio_fsh = rmis_est_num_yr_tot / fram_lnd_yr_tot, -->
+<!--     ratio_escp = rmis_escp / fram_escp -->
+<!--     ) -->
+<!-- ``` -->
 
 #### Strait of Georgia Van. Isl.
 
 - **Total across fisheries** 
   - pseudo-ER differences less than 0.01, 0.05 and 0.1 in 1, 7 and 8 years respectively
-  - overall lower values result in small absolute differences but large proportional differences, particularly before 2017
-  - missing escapement recoveries appear to be partially addressed in 2017-19, but FRAM values still larger, suggesting mapping errors and/or missing fishery recoveries
+  - overall low pseudo-ER values result in small absolute differences but large proportional differences, particularly before 2017
+  - missing fisheries recoveries appear to be partially addressed in 2017-19, but FRAM values still larger, suggesting mapping errors and/or missing fishery recoveries
 
 - **Fishery-specific**
   - several Canadian fisheries excluded entirely due to limited sampling
-  - compared to SoG Mainland, fewer fishery-years with FRAM catch assigned in the absence of any RMIS
+  - compared to GS Mainland, fewer fishery-years with FRAM catch assigned in the absence of any RMIS
   
 - **Rank agreement**
   - Of the fisheries included and with recoveries, both FRAM and current RMIS associate substantial proportions to N BC troll and Area 5 sport
@@ -3792,7 +3823,7 @@ g$rel_rank#; ggsave(file.path("results","f_210_GeorgiaVI_rel_rank.png"), width =
 
 - **Total across fisheries** 
   - pseudo-ER differences less than 0.01, 0.05 and 0.1 in 2, 5 and 6 years respectively
-  - larger differences before 2016 may be related to supplemental escapements
+  - larger differences before 2016 may be related to missing fishery recoveries
 
 - **Fishery-specific**
   - several Canadian fisheries excluded entirely due to limited sampling
@@ -3814,7 +3845,7 @@ g$rel_rank#; ggsave(file.path("results","f_226_FraserLower_rel_rank.png"), width
 
 - **Total across fisheries** 
   - pseudo-ER differences less than 0.01, 0.05 and 0.1 in 2, 5 and 8 years respectively
-  - since 2016, FRAM value larger; varied differences before 2016
+  - since 2013, FRAM value larger; varied differences before 2016
   - Limited or missing RMIS fishery and/or escapement recoveries may affect differences
 
 - **Fishery-specific**
@@ -3825,7 +3856,7 @@ g$rel_rank#; ggsave(file.path("results","f_226_FraserLower_rel_rank.png"), width
   - Of the fisheries included and with recoveries, both FRAM and current RMIS associate the most impact to Area 5 sport (but this fishery has the greatest number of years for comparison)
   - However, the relative ranks of many other included fisheries deviate appreciably
     - Area 4/4B troll and Area 7BCD net account for a considerably lower proportion of impact in RMIS than in FRAM
-    - Area 2 and 4 sport account a considerably lower proportion of impact in RMIS than in FRAM, but are driven by only a few years of comparison
+    - Area 2 and 4 sport account a considerably higher proportion of impact in RMIS than in FRAM, but are driven by only a few years of comparison
   
 ```{r}
 g <- gg_stk(230)
@@ -3833,24 +3864,24 @@ g$pseudo_er#; ggsave(file.path("results","f_230_FraserUpper.png"), width = 9, he
 g$rel_rank#; ggsave(file.path("results","f_230_FraserUpper_rel_rank.png"), width = 9, height = 10)
 ```
 
-#### BC N Coast H/W
+<!-- #### BC N Coast H/W -->
 
-- **Total across fisheries** 
-  - pseudo-ER differences less than 0.01, 0.05 and 0.1 in 1, 2 and 3 years respectively, comparison only possible up to 2017
-  - RMIS value larger in all years; likely affected by limited or missing RMIS fishery and/or escapement recoveries
+<!-- - **Total across fisheries**  -->
+<!--   - pseudo-ER differences less than 0.01, 0.05 and 0.1 in 1, 2 and 3 years respectively, comparison only possible up to 2017 -->
+<!--   - RMIS value larger in all years; likely affected by limited or missing RMIS fishery and/or escapement recoveries -->
 
-- **Fishery-specific**
-  - several Canadian fisheries excluded entirely due to limited sampling, and only a few fishery-years allow comparison for those included
-  - majority of information drawn from Alaskan fisheries which may be subject to mapping error
-  
-- **Rank agreement**
-  - Of the fisheries included and with recoveries, both FRAM and current RMIS rank many equivalently, but with NW AK troll largest in RMIS versus N BC troll largest in FRAM
+<!-- - **Fishery-specific** -->
+<!--   - several Canadian fisheries excluded entirely due to limited sampling, and only a few fishery-years allow comparison for those included -->
+<!--   - majority of information drawn from Alaskan fisheries which may be subject to mapping error -->
 
-```{r}
-g <- gg_stk(236)
-g$pseudo_er#; ggsave(file.path("results","f_236_BC_Ncoast_HW.png"), width = 9, height = 11)
-g$rel_rank#; ggsave(file.path("results","f_236_BC_Ncoast_HW_rel_rank.png"), width = 9, height = 10)
-```
+<!-- - **Rank agreement** -->
+<!--   - Of the fisheries included and with recoveries, both FRAM and current RMIS rank many equivalently, but with NW AK troll largest in RMIS versus N BC troll largest in FRAM -->
+
+<!-- ```{r} -->
+<!-- g <- gg_stk(236) -->
+<!-- g$pseudo_er#; ggsave(file.path("results","f_236_BC_Ncoast_HW.png"), width = 9, height = 11) -->
+<!-- g$rel_rank#; ggsave(file.path("results","f_236_BC_Ncoast_HW_rel_rank.png"), width = 9, height = 10) -->
+<!-- ``` -->
 
 ### Across stocks
 
@@ -3967,7 +3998,7 @@ er_fram_rmis |>
   geom_vline(xintercept = c(-0.1, 0.1), linetype = 3) +
   labs(
     title = "Fishery-specific pseudo-ERs, distributions across stocks and years",
-    subtitle = "Min. 10 landed coho in FRAM, 0.001 < abs. diff < 0.5"
+    subtitle = "Min. 10 landed Coho in FRAM, 0.001 < abs. diff < 0.5"
   )
 ```
 
@@ -4020,46 +4051,52 @@ er_fram_rmis |>
 
 ## Conclusions
 
-We hypothesized that results of coho FRAM validation runs for the fishing years 2010-2019 would correspond poorly with those calculated directly from RMIS recoveries during the same time span. Contrary to this expectation, for the stocks and fisheries with adequate data included in this analysis, we found that the 1986-1992 FRAM base period parameterization yielded output with mostly modest differences in pseduo-ERs and with mostly good agreement in terms of the relative ranking of impacts among per-terminal fisheries. In addition, most larger differences between the two datasets were plausibly explained by sampling limitations in fisheries, escapement or both. Nonetheless, determining with certainty the more accurate of the two values was difficult or impossible in almost all cases. 
+We hypothesized that results of Coho FRAM validation runs for the fishing years 2010-2019 would correspond poorly with those calculated directly from RMIS recoveries during the same time span. Contrary to this expectation, for the stocks and fisheries with adequate data included in this analysis, we found that the 1986-1992 FRAM base period parameterization yielded output with mostly modest differences in pseduo-ERs and with mostly good agreement in terms of the relative ranking of impacts among pre-terminal fisheries. In addition, most larger differences between the two datasets were plausibly explained by sampling limitations in fisheries, escapement or both. Nonetheless, determining with certainty the more accurate of the two values was difficult or impossible in almost all cases. 
 
-This analysis may suggest a few specific stock-fishery interactions that warrant further scrutiny for possible adjustments in pre- and post-season modeling (e.g., how impacts are assigned among several Puget Sound sport fisheries). However, it clearly underscores the need for additional auditing of both the post-seaon coho FRAM and RMIS datasets. At minimum, additional careful review is warranted for the Backwards FRAM escapement targets (i.e., the numeric values of unharvested, returning adults) as well as the flagging to control mark rate composition of the cohorts constructed from those targets (i.e., were regionally-estimated values maintained as supplied, or did flagging to use pre-season or other mark rates alter the marked to unmarked ratio in the starting cohort). The catch values that are the other primary input to post-season coho FRAM runs would also benefit from additional cross-checking against those reported elsewhere in, among other sources, annual Pacific Fishery Management Council tables, RMIS catch and escapement, and agency-specific published values. Although still subject to observation error, the estimates of catch should be the least uncertain input to the post-season modeling effort, particularly for commercial fisheries.
+This analysis may suggest a few specific stock-fishery interactions that warrant further scrutiny for possible adjustments in pre- and post-season modeling (e.g., how impacts are assigned among several Puget Sound sport fisheries). However, it clearly underscores the need for additional sampling, data reporting, and auditing of both the post-seaon Coho FRAM and RMIS datasets. At minimum, additional careful review is warranted for the Backwards FRAM escapement targets and catch values, the other primary input to post-season Coho FRAM runs.
+
+The vast amount of data summarized and presented for this analysis can be the outset for further stock- and fishery- specific scrutiny and analysis by regional experts. Applying expert knowledge to some of the observed discrepancies has the potential to yield a substantial amount of data resolution.
 
 \newpage
 
-# Mixed Stock Model (MSM)
+# Investigation of Potential Pathways to Updating the Existing Base-period 
 
 ## Introduction
 
-## Mixed Stock Model Program Documentation {#MSMGuide}
+The [Mixed Stock Model (MSM)](#MSM) computer program was developed to produce the base period exploitation rates that form the foundation of Coho FRAM [(Packer J., 2007)](#Pac1). Evaluations of Coho salmon exploitation rates in fisheries along the Canadian and U.S. West Coast rely on [FRAM)](#FRAM). [CWT](#CWT) recoveries from 1986-1992, also referred to as the base-period, were used to develop the stock-fishery-time period specific exploitation rates that act as core model parameters driving FRAM calculations of the impacts associated with proposed and observed fisheries and returns. For this project, we investigated steps necessary for combining contemporary coded wire tags with existing base period coded wire tags to update MSM base period exploitation rates for stocks with sufficient [CWT](#CWT) recoveries. <br>
+For methods, we looked to the Chinook calibration that fairly recently updated the old base period using CWTs from fishing years 1978-1984 to CWTS from 2008-2013.
+For Chinook, the FRAM base period calibration procedures utilize CWTs outside of the base period years for a few stocks with missing CWT recoveries during the base period years.  However, the Chinook out-of-base procedure does not combine tags from outside of the base period years with tags from within the base period years, rather it combines stocks with recoveries from base period years with stocks represented by recoveries from a set of out-of-base years. To adapt the Chinook out-of-base procedure to several stocks at once for Coho and potentially combining data with current base period data, we identified several challenges and considerations detailed in the next paragraph.  
+
+Although we didn't update the existing base period due to the difficulties and timeframe associated with this project, to facilitate future development and updates, the following products were developed:
+ - Description of challenges and considerations when combining base period CWTs with contemporary recoveries
+ - Development of Mixed Stock Model documentation
+ - Updated instructions to map RMIS recoveries to FRAM stocks and fisheries
 
 ## Combining Contemporary CWTS with Existing Base Period
 
-WDFW investigated steps associated with combining contemporary coded wire tags with old base period coded wire tags to update base period exploitation rates. For Chinook, the FRAM calibration procedure utilizes CWTs outside of the base period years for the White River fingerling and yearling Chinook stocks (1991 to 1996 fishing years for White River; 2007 to 2013 fishing years for the Chinook base period).  However, the Chinook out-of-base procedure does not combine tags from outside of the base period years with tags from within the base period years.  To adapt the Chinook out-of-base procedure to several stocks at once for coho and potentially combining data with current base period data, we identified several potential challenges and considerations detailed below.  
-Note: where potential solutions are described, additional investigation is required.<br>
-1.)	Issue: Poor/No CWT sampling in some contemporary fisheries<br>
-Description: <br>
-To calculate base period exploitation rates for contemporary tags, modelers must develop estimates of cohort size (denominator in the base period exploitation rate calculation).  Because cohort size is a combination of escapement and mortality (both fishing and natural mortality from later time steps), it is not possible to exclude fisheries from out-of-base development that are poorly sampled and achieve correct cohort sizes.  Incorrect cohort sizes influence base period exploitation rate calculations for all fishery-time steps in the model, and therefore, even fisheries that are sampled well will require correct cohort sizes to estimate base exploitation rates.
+**1.)	Issue: Poor/No [CWT](#CWT) sampling in some contemporary fisheries**<br>
+Description: To calculate base period exploitation rates for contemporary tags, modelers must develop estimates of cohort size (denominator in the base period exploitation rate calculation). Because cohort size is a combination of escapement and mortality (both fishing and natural mortality from later time steps), it is not possible to exclude fisheries from out-of-base development that are poorly sampled and achieve correct cohort sizes.  Incorrect cohort sizes influence base period exploitation rate calculations for all fishery-time steps in the model, and therefore, even fisheries that are sampled well will require correct cohort sizes to estimate base exploitation rates.
 There are several potential causes of poor sampling:<br>
 a.) Sampling did not occur and no CWTs were recovered despite fishing. 
 <br>
-b.) Sampling did occur but there were sampling strata which included catch with 0 CWT recoveries.  These strata would not contribute to CWT expansions to represent the full catch of the fishery. 
+b.) Sampling did occur but there were sampling strata which included catch with 0 [CWT](#CWT) recoveries.  These strata would not contribute to CWT expansions to represent the full catch of the fishery. 
 <br>
 c.) Only a small portion of the fishery catch was sampled, resulting in a small number of CWTs returned which increases uncertainty in stock compositions. 
 <br>
-d.) The total catch of a fishery is unknown.  Catch did occur and CWTs were recovered, but were expanded to represent a CWT estimated number by using a surrogate area or time period. 
+d.) The total catch of a fishery is unknown.  Catch did occur and CWTs were recovered, but were expanded to represent a [CWT](#CWT) estimated number by using a surrogate area or time period. 
 <br>
-Potential Solutions: The Chinook Technical Committee (CTC) creates coded wire tags (referred to as auxiliary tags) when developing their annual exploitation rate analysis.  These tags are developed by regional CTC leads and represent impacts in fisheries where poor or no sampling occurred.  It may be possible to develop similar auxiliary tags for coho to address this issue.
+Potential Solutions: The Chinook Technical Committee (CTC) creates coded wire tags (referred to as auxiliary tags) when developing their annual exploitation rate analysis.  These tags are developed by regional CTC leads and represent impacts in fisheries where poor or no sampling occurred.  It may be possible to develop similar auxiliary tags for Coho to address this issue.
 <br>
-For freshwater areas it may be possible to develop auxiliary tags by assuming 100% of the catch comes from the local stock.  However, this assumption becomes problematic in freshwater areas that contain multiple stocks.   It would also be problematic if attempting to create auxiliaries for a marine area due to the mixed-stock nature of catch.  It is possible in mixed-stock fisheries to use base period CWT catches to develop contemporary auxiliaries, assuming that the base period CWTs are representative of contemporary CWTs. However, at least two adjustments would be required.  
+For freshwater areas it may be possible to develop auxiliary tags by assuming 100% of the catch comes from the local stock.  However, this assumption becomes problematic in freshwater areas that contain multiple stocks.   It would also be problematic if attempting to create auxiliaries for a marine area due to the mixed-stock nature of catch.  It is possible in mixed-stock fisheries to use base period [CWT](#CWT) catches to develop contemporary auxiliaries, assuming that the base period CWTs are representative of contemporary CWTs. However, at least two adjustments would be required.  
 
-* An adjustment must be made to base period CWT estimates to account for differences in fishery magnitude (base period vs. contemporary).  This adjustment may be achieved via post-season fishery scalers, which represent the magnitude of the contemporary fishery relative to the base period.
+* An adjustment must be made to base period [CWT](#CWT) estimates to account for differences in fishery magnitude (base period vs. contemporary).  This adjustment may be achieved via post-season fishery scalers, which represent the magnitude of the contemporary fishery relative to the base period.
 
-* An adjustment must be made to base period CWT estimates to account for differences in abundance (base period vs. contemporary).  It would be most appropriate to compare base period cohort size to contemporary cohort size, but the contemporary cohort size would be dependent upon the auxiliaries imputed. Therefore, this step represents a mathematical challenge as the cohort size is necessary to develop auxiliary CWTs, which are necessary to develop cohort size.  WDFW considered using a different abundance metric (e.g., escapement) to expand auxiliary CWTs. However, given changes to fishing regimes since the base period, a contemporary year could theoretically have an equivalent escapement to a base period year, but have a very different total number of fishing mortalities, and therefore a very different cohort.
+* An adjustment must be made to base period CWT estimates to account for differences in abundance (base period vs. contemporary).  It would be most appropriate to compare base period cohort size to contemporary cohort size, but the contemporary cohort size would be dependent upon the auxiliaries imputed. Therefore, this step represents a mathematical challenge as the cohort size is necessary to develop auxiliary CWTs, which are necessary to develop cohort size, an iterative approach is need for a solution.  
 <br>
 
-2.)	Consideration: When to aggregate annual data to produce base exploitation rate estimates
+**2.)	Issue: How to aggregate annual data to produce "average" base exploitation rate estimates**
 <br>
-Description: There are two potential approaches to producing base period exploitation rates.  One approach could be to calculate exploitation rates for each stock-age-fishery-time step annually, subsequently averaging annual rates across years to produce a base period exploitation rate.  An alternative approach could be to aggregate CWT catch and cohort sizes across years to produce a base period exploitation rate.  See an example of each approach below:
+Description: There are two potential approaches to producing base period exploitation rates.  One approach could be to calculate exploitation rates for each stock-age-fishery-time step annually, subsequently averaging annual rates across years to produce a base period exploitation rate.  An alternative approach could be to aggregate [CWT](#CWT) catch and cohort sizes across years to produce a base period exploitation rate.  See an example of each approach below:
 
 ```{r results ='asis'}
 tibble(
@@ -4083,35 +4120,49 @@ The advantage to approach 1 is that each year receives an equal weight in determ
 
 The advantage to approach 2 is that many fisheries have a small number of CWTs recovered.  If we use approach 1, it is possible that many zeroes will be averaged along with years with recoveries and an aggregate may better capture small sample size scenarios.
 <br>
-3.)	Consideration: Need for additional QAQC following out-of-base procedures<br>
+**3.)	Issue: Need for additional QAQC following out-of-base procedures**<br>
 Description: There were a number of anomalous results produced for out-of-base stocks relative to in-base stocks during the development of the Chinook base period that warranted additional investigation and QAQC (see [FRAM
 documentation](https://framverse.github.io/fram_doc/)). As out-of-base expansions are applied to fisheries recoveries during the out-of-base years, additional expansions to the estimated CWTs should be examined.
 <br>
-4.)	Issue: In the contemporary period, when fishing has not occurred in a particular area-time period, how can we develop base period exploitation rates in case that fishery does occur in the future?
-Description: Contemporary fisheries are generally of a smaller magnitude than during the coho base period years, with increasing spatio-temporal restrictions.  In some cases, fishery-time step combinations that previously had catch no longer have catches in the contemporary period.  This is problematic if there were a need to model the fishery in the future but solely use contemporary coded wire tags.
+**4.)	Issue: In the contemporary period, when fishing has not occurred in a particular area-time period, how can we develop base period exploitation rates in case that fishery does occur in the future?** <br>
+Description: Contemporary fisheries are generally of a smaller magnitude than during the Coho base period years, with increasing spatio-temporal restrictions.  In some cases, fishery-time step combinations that previously had catch no longer have catches in the contemporary period.  This is problematic if there were a need to model the fishery in the future but solely use contemporary coded wire tags.
 <br>
-Potential Solutions: Develop methods to use current base period coded wire tags to represent the contemporary period.  If solely using contemporary tags (e.g., not combining with current base period tags), it may be possible to use the current base period information as a surrogate for these fishery-time periods.  To do so, it may be necessary to divide both fishery catch and CWT recoveries from the current base period by a large number (e.g., 10000) prior to combining with contemporary tags.  Doing so would have minimal effect on the contemporary cohort size because added impacts would be minimal.  However, through the use of a fishery scaler, it would be possible in any future runs that did include the surrogate fishery-time step to model catches.  If using this strategy, in the contemporary tag set, calculated base period exploitation rates and base period catches would be low, but could be increased via the fishery scaler to produce desired catches.
+Potential Solutions: Develop methods to use old base period coded wire tags to represent the contemporary period.  If solely using contemporary tags (e.g., not combining with current base period tags), it may be possible to use the old base period information as a surrogate for these fishery-time periods.  To do so, it may be necessary to divide both fishery catch and [CWT](#CWT) recoveries from the old base period by a large number (e.g., 10000) prior to combining with contemporary tags.  Doing so would have minimal effect on the contemporary cohort size because added impacts would be minimal.  However, through the use of a fishery scaler, it would be possible in future runs that did include the surrogate fishery-time step to model catches.  If using this strategy, in the contemporary tag set, calculated base period exploitation rates and base period catches would be low, but could be increased via the fishery scaler to produce desired catches.
 <br>
-5.)	Issue: How to model stock-specific non-retention impacts during the out-of-base procedure
-Description: Expanded CWT recoveries only include landed catch, as CWTs are not recovered from released fish.  Non-retention fisheries do occur for coho coastwide, and impacts from these fisheries should be accounted for during the cohort reconstruction process.  The stock composition for non-retention impacts would typically be determined during the “all stocks” run, which is not performed during an out-of-base procedure. 
+**5.)	Issue: How to model stock-specific non-retention impacts during the out-of-base procedure**<br>
+Description: Expanded [CWT](#CWT) recoveries only include landed catch, as CWTs are not recovered from released fish.  Non-retention fisheries do occur for Coho coastwide, and impacts from these fisheries should be accounted for during the cohort reconstruction process.  The stock composition for non-retention impacts would typically be determined during the “all stocks” run, which is not performed during an out-of-base procedure. 
 <br>
 Potential Solutions: It may be possible to determine the percentage contribution of the stock-age to the marked retained catch in a fishery-time step and use that percentage to estimate the number of encounters for the stock given an estimate of marked released encounters in the fishery.  To examine this metric, biologists would need coast-wide estimates of marked released and marked retained fish by fishery-time step.  It may be possible to alternatively calculate an average non-retention impacts per marked fish and apply this across fisheries to produce estimates more quickly at the cost of fine-scale fishery accuracy.
 <br>
-6.)	Issue: During processing, it is possible for exploitation rates to exceed 100%
-Description: During the out-of-base process, a number of expansions are occurring on CWTs and it is mathematically possible to produce exploitation rates that exceed 100% for a stock-age.  In reality, it is not possible for a stock to experience exploitation rates greater than 100%.
+**6.)	Issue: During processing, it is possible for exploitation rates to exceed 100%**<br>
+Description: During the out-of-base process, a number of expansions are occurring on CWTs and it is mathematically possible to produce exploitation rates that exceed 100% for a stock-age.  
 <br>
-Potential Solutions: If a stock-age exceeds a 100% exploitation rate, it may be valuable to build and error check in the code that alerts the modeler when this occurs.  If QAQC does not find any errors in the code or input information, it may be possible to reset any exploitation rates over 100% to a maximum value (e.g., 95%).
+Potential Solutions: If a stock-age exceeds a 100% exploitation rate, it may be valuable to insert an error handling procedure in the program code that alerts the modeler when this occurs.  If QAQC does not find any errors in the code or input information, exploitation rates over 100% can be reset to a maximum value (e.g., 99%).
 <br>
-7.)	Issue: If a fishery occurred in the contemporary period, but not the base period, how can we integrate it into the current base period?
+**7.)	Issue: If a fishery occurred in the contemporary period, but not the base period, how can we integrate it into the current base period?**
 Description: If there is a contemporary fishery that was not fished during the base period years, no tag recoveries will exist for the fishery.  We cannot directly add the contemporary CWTs from the fishery to the base years if it did not occur because doing so will affect the cohort size and all of the other fishery base period exploitation rates. 
 <br>
 Potential Solutions: It may be possible to add the contemporary impacts to the old base period via CWTs that have been scaled by dividing by a large number (e.g., 10,000).  The resulting impacts to the cohort size would be negligible and it would be possible to scale the fishery in subsequent years using a fishery scaler.  
 
+## [Mixed Stock Model Software Documentation](#AHB2) 
+
+The [Mixed Stock Model](#MSM) was rewritten in Visual Basic in 2007. Although the document ["Coho FRAM Base Development"](#Pac1) describes the project, the current MSM lacks code documentation and a user guide, thus requiring a great deal of initiative by a new user to research the code, the data requirements, and re-(run) analyses. [Mixed Stock Model Software Documentation](#AHB2) was developed during the early stages of this project. This documentation was developed as a separate stand-alone product submitted along with this Southern Fund project.
+
+## Mapping RMIS Recoveries to FRAM Stocks and Fisheries
+
+For descriptions of the procedures to map RMIS [CWT](#CWT) recoveries to FRAM stocks and fisheries see chapters [2.1](#SM) and [2.2](#FM). This project developed two key mapping files. Both files are located on the [GitHub site](https://github.com/PSC-CoTC/coho_CWT_analysis/blob/main/lu_ahb_FishMap_20220826.csv) for this project. <br>
+1. Mapping RMIS [CWT](#CWT) releases to FRAM production regions, management units, and stocks.<br>
+We mapped every marked [CWT](#CWT) release along the West Coast starting with brood year 1994 to a FRAM stocks. The mapping file "lu_cct_MSM_Stock_CWT_20220913.csv" is in a format that can conveniently be imported into the MSM database and is compatible with the existing MSM mapping procedures.<br>
+2. Mapping RMIS [CWT](#CWT) recoveries to FRAM fisheries.<br>
+Fishery mapping instructions in the file "lu_ahb_FishMap_20220826.csv" map the vast majority of RMIS recoveries since 1986 to FRAM fisheries. Fisheries not mapped do not correspond to a FRAM fishery, such as certain High Seas or test fishery recoveries. The mapping instructions (see chapter [2.2](#22)) rely on the same logic needed by the MSM program to make valid FRAM fishery assignments.
+
+
+
 \newpage
 
-# Appendix
+# Appendix{#A}
 
-## List of Coho FRAM Fisheries
+## List of Coho FRAM Fisheries{#F}
 
 ```{r echo = FALSE, results='asis'}
 readRDS(paste0(table_dir,"framvs_doc_lu_fishery_coho.rds"))
@@ -4888,25 +4939,25 @@ dplyr::tibble(`Time Step` = c(1,2,3,4,5),
 
 # Bibliography
 
-Cope, R. (2011). Causes and Effects of Bias in Anticipated Mark Rates in
-Mark-Selective Fisheries for Coho Salmon. Portland: PFMC.
+<a id='Auer1'>Auerbach, Dan, Hagen-Breaux A., Dapp D., Bellman M., Miler O.. 2020. FRAM_VS User Guide. Portland:PFMC.
 
-FRAM Overview citation needed
+<a id='Pac1'>Cope, Robert. 2011. Causes and Effects of Bias in Anticipated Mar Rates in Mark-Selective Fisheries for Coho Salmon. Salmon Methodology Review Report, Portland: Pacific Fishery Management Council.
 
-Selective Fishery Evaluation Technical Committee (2021). ANALYSIS OF COHO SALMON DOUBLE INDEX TAG (DIT) GROUPS 
-FOR BROOD YEARS 1998:2011. Vancouver (BC): PSC
+<a id='AHB1'>Hagen-Breaux, Angelika. 2018. BkFRAM May 2 2018.docx. Olympia: Washington Department of Fish and Wildlife.
 
-Auerbach, Dan, Hagen-Breaux A., Dapp D., Bellman M., Miler O.. 2020. FRAM_VS User Guide. 14. January. https://wdfw-fp.github.io/framvs_doc/.
+<a id='AHB2'>Hagen-Breaux, Angelika. 2022. Mixed Stock Model Software Documentation (MSM_VS 1.2). Vancouver: Pacific Fishery Management Council.
 
-Cope, Robert. 2011. Causes and Effects of Bias in Anticipated Mar Rates in Mark-Selective Fisheries for Coho Salmon. Salmon Methodology Review Report, Portland: Pacific Fishery Management Council.
+<a id='Lapi1'>Lapi, L. et al. 1989. Information Content and Data Standards of a Coastwide Coded-Wire Tag Database. Report TCDS (89)-1. Vancouver: Pacific Salmon Commission.
 
-Hagen-Breaux, Angelika. 2018. BkFRAM May 2 2018.docx. Olympia: WDFW.
+<a id='MEW1'>Model Evaluation Workgroup. 2008. Fishery Regulation Assessment Model (FRAM) - An Overview for Coho and Chinook v 3.0. Portland: Pacific Fishery Management Council.
 
-Model Evaluation Workgroup. 2008. Fishery Regulation Assessment Model (FRAM) - An Overview for Coho and Chinook v 3.0. PFMC.
+<a id='PSC1'>Pacific Salmon Commission. 2014. Pacific Salmon Treaty. Vancouver: Pacific Salmon Commission.
 
-Pacific Salmon Commission. 2014. Pacific Salmon Treaty. Vancouver: Pacific Salmon Commission.
+<a id='PSC2'>Pacific Salmon Commission. 2020. Pacific Salmon Treaty. Vancouver: Pacific Salmon Commission.
 
-Pacific Salmon Commission. 2020. Pacific Salmon Treaty. Vancouver: Pacific Salmon Commission.
+<a id='Pac1'></a>Packer, James and Cook-Tabor C. 2007. Coho FRAM Base Period Development. Vancouver: Pacific Salmon Commission. 
 
-Packer, James and Cook-Tabor C. 2007. Coho FRAM Base Period Development. Vancouver: Pacific Salmon Commission. {"MSMDoc}
+<a id='SFEC1'>Selective Fishery Evaluation Technical Committee (2021). ANALYSIS OF COHO SALMON DOUBLE INDEX TAG (DIT) GROUPS 
+FOR BROOD YEARS 1998:2011. Vancouver (BC): Pacific Salmon Commission.
 
+<a id='SMAWG1'>Salmon modeling and analysis workgroup. 2022. FRAM Overview. https://framverse.github.io/fram_doc/ built September 29, 2022.
