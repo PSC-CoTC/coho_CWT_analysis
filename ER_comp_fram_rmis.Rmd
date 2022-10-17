@@ -62,8 +62,9 @@ lu <- list(
 # #for AHB, merging into her script
 # saveRDS(list(
 #   lu = lu,
-#   pal_ftype = pal_ftype, rmis_rr_rgn = rmis_rr_rgn, 
-#   samp_catch_coef_vals = samp_catch_coef_vals, 
+#   pal_ftype = pal_ftype, rmis_rr_rgn = rmis_rr_rgn,
+#   rmis_n_recs_per_stock = rmis_n_recs_per_stock,
+#   samp_catch_coef_vals = samp_catch_coef_vals,
 #   er_fram = er_fram, er_rmis = er_rmis, er_fram_rmis = er_fram_rmis,
 #   gg_stk = gg_stk
 # ), file = "T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Projects/Coho FRAM MSM CWT analysis/ER_comp_fram_rmis_obj.rds")
@@ -412,6 +413,11 @@ rmis_rr <- rmis_rr |>
   ) 
 
 # rmis_rr |> filter(FisheryID %in% c(35, 36, 38, 39, 42, 43)) |> distinct(FisheryID, FisheryName, fishery, gear)
+
+# rmis_rr |> 
+#   #filter(between(run_year, 2010, 2019)) |> 
+#   count(recovery_location_code) |> arrange(desc(n)) 
+
 ```
 
 ### Recovery patterns since 1986
@@ -492,6 +498,21 @@ rmis_rr_rgn |>
 ) +
   plot_layout(nrow = 1, guides = 'collect')
 ```
+
+```{r}
+#appendix table per AHB request
+rmis_n_recs_per_stock <- rmis_rr |> 
+  drop_na(estimated_number, StockID) |> 
+  filter(between(run_year, 2010, 2019)) |> 
+  count(StockID, f_type) |> 
+  drop_na(f_type) |> 
+  pivot_wider(names_from = f_type, values_from = n) |> 
+  left_join(fram$mort |> distinct(StockID, StockLongName), by = "StockID") |> 
+  drop_na(StockLongName) |> 
+  select(StockID, StockLongName, everything())
+
+```
+
 
 # Exploitation calculations
 
@@ -801,7 +822,8 @@ gg_stk <- function(sid = 20, min_fram_landed = 10){
     gg_rnk_col <- rnk |>
       ggplot(aes(fct_reorder(fidnm, pct, max), pct, group = var, fill = var)) +
       geom_col(position = position_dodge(width = 0.3), alpha = 0.5) +
-      coord_flip() +
+      coord_flip() + 
+      scale_x_discrete("") + scale_y_continuous("", labels = scales::percent) +
       scale_fill_manual(values = c(FRAM = "orange", RMIS = "purple")) + #scale_fill_grey() +
       theme(legend.position = "bottom")
 

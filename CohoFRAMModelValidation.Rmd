@@ -2663,9 +2663,7 @@ All recoveries of marked Coho between the years 1986 and 2020 were queried from 
 
 We then examined the recovery patterns for each stock to select a group of focal stocks for this analysis. These stocks were selected based on their importance to the [Pacific Salmon Treaty](#PST) and the number of [CWT](#CWT) recoveries in mixed stock fisheries and escapement.
 
-
-<!-- Add a focal stock table containing the number of CWT recoveries in mixed stock fisheries and escapements here!!! 
-The first three chunks preserve one-time operations to generate starting datasets from RMIS, and the fourth performs the stock and fishery mapping. -->
+The first three chunks preserve one-time operations to generate starting datasets from RMIS, and the fourth performs the stock and fishery mapping.
 
 ```{r read_in_rmis_recoveries, eval=FALSE}
 dir_rmis_recs <- "T:/DFW-Salmon Mgmt Modeling Team - General/Southern Fund Projects/Coho FRAM MSM CWT analysis/ERAnalysis/RMISRecoveries/"
@@ -2949,6 +2947,31 @@ rmis_rr_rgn |>
   plot_layout(nrow = 1, guides = 'collect')
 ```
 
+#### Recent year recovery counts for assessed stocks
+
+Relevance to the PST and the number of CWT recoveries during the years 2010-2019 were primary determinants of the the focal stocks assessed and presented here. 
+
+```{r}
+# rmis_n_recs_per_stock <- rmis_rr |> 
+#   drop_na(estimated_number, StockID) |> 
+#   filter(between(run_year, 2010, 2019)) |> 
+#   count(StockID, f_type) |> 
+#   drop_na(f_type) |> 
+#   pivot_wider(names_from = f_type, values_from = n) |> 
+#   left_join(fram$mort |> distinct(StockID, StockLongName), by = "StockID") |> 
+#   drop_na(StockLongName) |> 
+#   select(StockID, StockLongName, everything())
+
+rmis_n_recs_per_stock |> 
+  filter(StockID %in% c(20, 34, 48, 58, 68, 84, 96, 134, 142, 148, 152, 164, 166, 176, 210, 226, 230)) |> 
+  mutate(total = escp + net + sport + troll) |> 
+  arrange(desc(total)) |> 
+  gt::gt() |> 
+  gt::sub_missing() |> 
+  gt::fmt_number(columns = escp:total, decimals = 0)
+```
+
+
 ### Exploitation calculations
 
 Per stock, per year, a "pseudo-ER" was calculated by dividing the annual per-fishery landed catch (FRAM, non-selective + mark-selective, timesteps 1 to 5) or `estimated_number` (RMIS, summed over individual recoveries) by the sum of the total across fisheries and escapement. For the FRAM case:
@@ -3113,6 +3136,13 @@ er_fram_rmis <- full_join(
 The FRAM and RMIS pseudo-ERs can be compared from "stock-centric" and "fishery-centric" perspectives. 
 
 Differences across individual fisheries for single stocks are presented first, followed by differences organized by fishery, across stocks.
+
+The followings sections contain several plots per stock. First, bar charts of "total" pseudo-ER per year illustrate the values summed across fishery for each data source (FRAM and RMIS). The number of years in which the absolute difference was smaller than each of several thresholds is noted, and the overall pattern of differences offers an indication of whether the stock might be affected sampling issues in escapement and/or fisheries catches. 
+
+These plots are supplemented by an illustration of the per-year fishery-specific pseudo-ER differences (FRAM minus RMIS), which can help to clarify whether "total" differences are driven primarily by one or two key fisheries or are shared across many fisheries (with the latter perhaps indicating issues related to escapement sampling or input estimates). In these stock-year-fishery-specific plots, the points show both the relative magnitude of differences (as point size and color saturation) and whether FRAM (orange, upward pointing) or RMIS (purple, downward pointing) produced the larger value. In addition, values are shown as black dots for combinations in which a FRAM-generated impact estimate lacks a corresponding record in RMIS. Arithmetic means across fisheries per year (top of columns) and across years per fishery (right-most column) also suggest characteristic tendencies in each of these dimensions (noting the caveat that the means of opposing signs can approach 0 despite non-zero positive and negative values). 
+
+Following these pseudo-ER plots, two panels display the ranked proportional fishery impacts from each data source. These are based on the same subset of values, but emphasize the relative magnitudes among fisheries, as bars of greater and lesser lengths, or the differences in rank as "ladder rungs". Equivalence in rank is shown as a flat or level line between the FRAM and RMIS columns, with more steeply angled lines indicating greater divergence in ranks. For example, line sloping sharply down and right could highlight a fishery in which FRAM assigned a high percentage of cumulative catch mortality but which lacked a corresponding degree of recoveries in RMIS. In these plots, fisheries with assigned FRAM impacts but without any recoveries throughout 2010-2019 appear as light gray lines, typically sloping up from FRAM ranks that do not exist for RMIS.
+
 
 ```{r gg_stk_function, eval=FALSE}
 
@@ -3766,37 +3796,6 @@ er_fram_rmis |>
 
 ### British Columbia
 
-<!-- #### Strait of Georgia mainland -->
-
-<!-- - **Total across fisheries**  -->
-<!--   - pseudo-ER differences less than 0.01, 0.05 and 0.1 in 1, 2 and 3 years respectively, comparison possible in 6 years -->
-<!--   - RMIS escapement missing entirely in several years and almost completely in 2011 and 2012 -->
-
-<!-- - **Fishery-specific** -->
-<!--   - several Canadian fisheries excluded entirely due to limited sampling and very few recoveries for those included limit possible comparison -->
-<!--   - absence of recoveries for Area 7BCD net and larger FRAM values for 4/4B troll despite otherwise larger RMIS values may indicate shifts since the Coho FRAM base period  -->
-
-<!-- - **Rank agreement** -->
-<!--   - Of the fisheries included and with recoveries, both FRAM and current RMIS associate substantial proportions to Area 5 sport and Area 6-7A net -->
-<!--   - N BC troll has the highest ranked proportional impacts in recent RMIS recoveries but accounts for a considerably lower portion of FRAM catches -->
-
-<!-- ```{r} -->
-<!-- g <- gg_stk(206) -->
-<!-- g$pseudo_er#; ggsave(file.path("results","f_206_GeorgiaMain.png"), width = 9, height = 11) -->
-<!-- g$rel_rank#; ggsave(file.path("results","f_206_GeorgiaMain_rel_rank.png"), width = 9, height = 10) -->
-<!-- ``` -->
-
-<!-- ```{r} -->
-<!-- er_fram_rmis |> -->
-<!--   drop_na(rmis_est_num_yr_tot, fram_lnd_yr_tot) |>  -->
-<!--   filter(StockID==206, between(run_year, 2010, 2019)) |>  -->
-<!--   distinct(run_year, sidnm, fram_lnd_yr_tot, fram_escp, rmis_est_num_yr_tot, rmis_escp) |>  -->
-<!--   mutate( -->
-<!--     ratio_fsh = rmis_est_num_yr_tot / fram_lnd_yr_tot, -->
-<!--     ratio_escp = rmis_escp / fram_escp -->
-<!--     ) -->
-<!-- ``` -->
-
 #### Strait of Georgia Van. Isl.
 
 - **Total across fisheries** 
@@ -3864,37 +3863,16 @@ g$pseudo_er#; ggsave(file.path("results","f_230_FraserUpper.png"), width = 9, he
 g$rel_rank#; ggsave(file.path("results","f_230_FraserUpper_rel_rank.png"), width = 9, height = 10)
 ```
 
-<!-- #### BC N Coast H/W -->
-
-<!-- - **Total across fisheries**  -->
-<!--   - pseudo-ER differences less than 0.01, 0.05 and 0.1 in 1, 2 and 3 years respectively, comparison only possible up to 2017 -->
-<!--   - RMIS value larger in all years; likely affected by limited or missing RMIS fishery and/or escapement recoveries -->
-
-<!-- - **Fishery-specific** -->
-<!--   - several Canadian fisheries excluded entirely due to limited sampling, and only a few fishery-years allow comparison for those included -->
-<!--   - majority of information drawn from Alaskan fisheries which may be subject to mapping error -->
-
-<!-- - **Rank agreement** -->
-<!--   - Of the fisheries included and with recoveries, both FRAM and current RMIS rank many equivalently, but with NW AK troll largest in RMIS versus N BC troll largest in FRAM -->
-
-<!-- ```{r} -->
-<!-- g <- gg_stk(236) -->
-<!-- g$pseudo_er#; ggsave(file.path("results","f_236_BC_Ncoast_HW.png"), width = 9, height = 11) -->
-<!-- g$rel_rank#; ggsave(file.path("results","f_236_BC_Ncoast_HW_rel_rank.png"), width = 9, height = 10) -->
-<!-- ``` -->
-
 ### Across stocks
 
-The generally fewer recoveries for Canadian stocks appear to contribute to characteristically larger differences within British Columbia populations. This pattern could be related to rearing and release practices (i.e., limited tagging and/or marking), the type and coverage of fishery and escapement sampling, errors in mapping to FRAM stocks and/or fisheries, and/or errors in the validation run inputs.
-
-However, for the stocks with the most years in which comparison was possible, the FRAM values were larger, possibly due to the addition of supplemental escapement recoveries provided by DFO outside of RMIS. Notably, the "total" picture for a stock such as "BC North Coast Hatchery/Wild" is strongly driven by a few (mostly Alaskan) fisheries during the earlier years of the series considered here.
+Viewed across years, the distributions of differences in total pseudo-ER fell within +/- 5% for many of the focal assessed stocks (dashed vertical lines). As noted above, for the stocks with characteristic differences outside of +/- 10% and larger year to year variation (i.e., wider IQR), sampling issues in either significant fisheries (e.g., Hood Canal stocks) or escapement (e.g., Quillayute) likely contributed to the consistent biases (shown as dark colors further from the 0 line). 
 
 ```{r gg_total_er_boxes_focal}
 er_fram_rmis |> 
   drop_na(d_er_tot) |>
   filter(
     run_year != 2015,
-    StockID %in% c(20, 38, 48, 58, 68, 96, 134, 142, 148, 152, 164, 166, 176, 226, 230)
+    StockID %in% c(20, 34, 48, 58, 68, 84, 96, 134, 142, 148, 152, 164, 166, 176, 210, 226, 230)
     ) |> 
   group_by(sidnm) |> 
   distinct(sidnm, run_year, fram_er_tot, rmis_er_tot, d_er_tot) |> 
@@ -3906,6 +3884,7 @@ er_fram_rmis |>
   geom_boxplot(aes(weight = n), outlier.shape = NA, varwidth = T, show.legend = F) +
   geom_jitter(aes(color = d_er_tot_med), alpha = 0.6, show.legend = F) +
   coord_flip() +
+  scale_y_continuous(labels = scales::percent) +
   geom_hline(yintercept = 0, size = 1.3) + 
   geom_hline(yintercept = c(-0.05, 0.05), linetype = 2) +
   geom_hline(yintercept = c(-0.1, 0.1), linetype = 3) + 
@@ -4002,7 +3981,7 @@ er_fram_rmis |>
   )
 ```
 
-The pattern of most stock-year differences less than 0.1 or 0.05 pseudo-ER units holds when looking more closely at several fisheries presumed to have highly mixed stock composition.
+The pattern of most stock-year differences less than 0.1 or 0.05 pseudo-ER units holds when looking more closely at several fisheries presumed to have highly mixed stock composition. The plot below shows the distributions of differences across stocks when stratified by year. No strong trends in the central tendency of bias were evident across years, nor did the tails of the distributions (reflecting larger differences for one or two stocks) display a clear, uniform increase or decrease between fisheries (e.g., compare Area 2, with deeper negative tail since 2015 and Area 5 with deeper negative tail before 2015). 
 
 ```{r ggridges_4_fishery}
 er_fram_rmis |> 
@@ -4024,7 +4003,7 @@ er_fram_rmis |>
 
 ```
 
-Where larger differences occur for a fishery, the result may follow from one or a few stocks in one or several years in which errors can be traced to FRAM (input values, input flagging, stock mapping) and/or RMIS (sampling, reporting).
+Even for fisheries with highly mixed stock compositions, larger differences at the whole-fishery or total scale can follow from a single stock of a small set, particularly if one or several years exert leverage on the overall distribution. Such single-year, single-stock deviations are perhaps more likely to reflect errors in FRAM (input values, input flagging, stock mapping) and/or RMIS (sampling, reporting) than to indicate a consistent issue in how the FRAM base period represents stock composition. Further, the fundamental approach in FRAM - the application of base period exploitation rates derived as averages over several fishing years - is inherently less likely to capture single-year fluctuations that may occur within the RMIS dataset. 
 
 ```{r a10_focal}
 er_fram_rmis |> 
@@ -4036,11 +4015,12 @@ er_fram_rmis |>
   drop_na(d_er_fsh) |> 
   ggplot(aes(x = sidnm, y = d_er_fsh)) +
   geom_col(aes(fill = run_year), position = position_dodge(width = 0.7, preserve = "single")) +
-  coord_flip() +
+  coord_flip() + 
   geom_hline(yintercept = 0, size = 1.3) + 
   geom_hline(yintercept = c(-0.05, 0.05), linetype = 2) +
   geom_hline(yintercept = c(-0.1, 0.1), linetype = 3) + 
   scale_fill_brewer(palette = "Greens") +
+  scale_x_discrete("") +
   scale_y_continuous("Difference in pseudo-ER, FRAM - RMIS") +
   labs(
     title = "Fishery specific pseudo-ER differences",
@@ -4266,7 +4246,6 @@ fram_samp_fulla <- fram_samp_full |>
   arrange(FisheryID, Source)
 #write.csv(fram_samp_fulla, "fram_samp_fulla.csv", na = "")
 ```
-
 
 
 ```{r tab_foo,   results='asis' } 
@@ -4777,6 +4756,14 @@ stockmaptable<-as.data.frame(d_stockmap)|>
 stockmaptable
 ```
 
+## Number of tag recoveries 2010-2019 per assessed, mapped FRAM stock
+
+```{r}
+gt::gt(rmis_n_recs_per_stock) |> 
+  gt::sub_missing()
+```
+
+
 ## Run Information 
 
 FRAM Access Database Name: 'FramVS2-PSC-Coho-Backwards-86 to 2016 BEST.mdb'
@@ -4888,15 +4875,12 @@ dplyr::tibble(`NT FishID` = c(80,82,87,96,101,109,111,119,121,123,130,132,137,13
 ## FRAM Time Steps
 
 ```{r appendi2, echo= FALSE, results='asis'}
-dplyr::tibble(`Time Step` = c(1,2,3,4,5),
-  Duration =c("Jan-June","July","August","September","Oct-Dec"),
-       ) |> 
-  # Format as a table
+dplyr::tibble(
+  `Time Step` = c(1,2,3,4,5),
+  Duration =c("Jan-June","July","August","September","Oct-Dec")) |> 
   gt::gt() |> 
-  # Make column headers bold
   gt::cols_label(.list = list(`Time Step` = gt::md("**Time Step**"), 
                               Duration = gt::md("**Duration**"))) |> 
-  # Add title text
   gt::tab_header(title = "Coho FRAM time steps")
 ```
 
